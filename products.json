@@ -3,48 +3,48 @@
     "id": 1,
     "name": "Coconut & Vanilla",
     "category": "Velas",
-    "price": 18500
+    "price": null
   },
   {
     "id": 2,
     "name": "Patagonia Berries",
     "category": "Velas",
-    "price": 18500
+    "price": null
   },
   {
     "id": 3,
     "name": "Jasmine Garden",
     "category": "Velas",
-    "price": 19500
+    "price": null
   },
   {
     "id": 4,
     "name": "Blooming Rose",
     "category": "Velas",
-    "price": 19500
+    "price": null
   },
   {
     "id": 5,
     "name": "Orquídea Negra",
     "category": "Velas",
-    "price": 20500
+    "price": null
   },
   {
     "id": 6,
     "name": "Home Spray · Ambiente",
     "category": "Home Spray",
-    "price": 16000
+    "price": null
   },
   {
     "id": 7,
     "name": "Difusor · Edición Natural",
     "category": "Difusores",
-    "price": 22000
+    "price": null
   },
   {
     "id": 8,
     "name": "Hornito · Cerámica",
     "category": "Hornitos",
-    "price": 24500
+    "price": null
   }
 ]
