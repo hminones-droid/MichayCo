@@ -65,3 +65,15 @@ create policy "public reads site content" on site_content for select using (true
 -- products.sku = categoría-material-cc-tapa-color-versión (ej. VE-VI-080-S-TR-01).
 -- product_variants.sku agrega el código de fragancia (ej. VE-VI-080-S-TR-01-CV).
 -- En la base activa, categories/fragrances incluyen code y product_variants incluye sku/stock/publicación.
+
+-- Catálogos controlados que alimentan la composición automática del SKU.
+create table if not exists materials (
+ id uuid primary key default gen_random_uuid(), name text not null unique, code text not null,
+ published boolean not null default true, display_order int not null default 0,
+ created_at timestamptz not null default now(), updated_at timestamptz not null default now()
+);
+create table if not exists colors (
+ id uuid primary key default gen_random_uuid(), name text not null unique, code text not null,
+ published boolean not null default true, display_order int not null default 0,
+ created_at timestamptz not null default now(), updated_at timestamptz not null default now()
+);
