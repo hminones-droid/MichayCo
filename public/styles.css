@@ -185,3 +185,7 @@ body{background:linear-gradient(180deg,#fbf8f1 0%,#f6f0e6 48%,#fbf8f2 100%)}
 .scent-option .scent-head em{font:600 9px/1.2 Arial,sans-serif;letter-spacing:.7px;text-transform:uppercase;color:#6b6e50;font-style:normal;white-space:nowrap}
 .scent-option small{display:block;margin-top:7px;font:12px/1.45 Arial,sans-serif;color:#696359;max-width:560px}
 @media(max-width:600px){.scent-option .scent-head{display:block}.scent-option .scent-head em{display:block;margin-top:4px;white-space:normal}}
+
+/* v25 — encuadre de fotos administrable sin recortar el archivo original */
+.photo.real-photo img{object-position:var(--frame-x,50%) var(--frame-y,50%)!important;transform:scale(var(--frame-scale,1))!important;transform-origin:var(--frame-x,50%) var(--frame-y,50%)!important;transition:none!important}
+.photo.real-photo:hover img{transform:scale(var(--frame-scale,1))!important}
