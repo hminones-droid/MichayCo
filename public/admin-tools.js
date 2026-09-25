@@ -96,10 +96,22 @@ function downloadMaintenanceWorkbook(){
  let wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(priceRows),'Precios');XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(stockRows),'Stock');XLSX.writeFile(wb,'MichaCo_Precios_Stock.xlsx')
 }
 async function importMaintenanceWorkbook(file){
- try{gridMsg.textContent='Leyendo planilla…';let wb=XLSX.read(await file.arrayBuffer(),{type:'array'}),ps=wb.Sheets['Precios'],ss=wb.Sheets['Stock'];if(!ps&&!ss)throw new Error('La planilla debe contener las hojas Precios y/o Stock.');
- if(ps){for(let x of XLSX.utils.sheet_to_json(ps,{defval:''})){if(!x['Producto ID'])continue;let d={price:x.Precio===''?null:Number(x.Precio)};if(String(x.Mostrar).trim())d.published=/^(si|sí|true|1|x)$/i.test(String(x.Mostrar).trim());let r=await sb.from('products').update(d).eq('id',String(x['Producto ID']));if(r.error)throw r.error}}
- if(ss){for(let x of XLSX.utils.sheet_to_json(ss,{defval:''})){if(!x['Variante ID'])continue;let d={stock:Number(x.Stock||0)};if(String(x.Mostrar).trim())d.published=/^(si|sí|true|1|x)$/i.test(String(x.Mostrar).trim());let r=await sb.from('product_variants').update(d).eq('id',String(x['Variante ID']));if(r.error)throw r.error}}
- gridMsg.textContent='Planilla importada correctamente.';await adminLoad();renderMaintenanceGrid()}catch(e){gridMsg.textContent='No se pudo importar: '+(e.message||e)}
+ try{
+  gridMsg.textContent='Validando planilla…';
+  let wb=XLSX.read(await file.arrayBuffer(),{type:'array'}),ps=wb.Sheets['Precios'],ss=wb.Sheets['Stock'];
+  if(!ps&&!ss)throw new Error('La planilla debe contener las hojas Precios y/o Stock.');
+  let priceRows=ps?XLSX.utils.sheet_to_json(ps,{defval:''}):[],stockRows=ss?XLSX.utils.sheet_to_json(ss,{defval:''}):[],errors=[],changes=[];
+  let seenP=new Set(),seenV=new Set(),productIds=new Set(adminCache.products.map(x=>x.id)),variantIds=new Set(adminCache.variants.map(x=>x.id));
+  priceRows.forEach((x,n)=>{let id=String(x['Producto ID']||'').trim();if(!id)return;if(seenP.has(id))errors.push('Precios fila '+(n+2)+': Producto ID duplicado.');seenP.add(id);if(!productIds.has(id))errors.push('Precios fila '+(n+2)+': Producto ID desconocido.');if(x.Precio!==''&&(!Number.isFinite(Number(x.Precio))||Number(x.Precio)<0))errors.push('Precios fila '+(n+2)+': precio inválido.');changes.push({type:'product',id,row:x})});
+  stockRows.forEach((x,n)=>{let id=String(x['Variante ID']||'').trim();if(!id)return;if(seenV.has(id))errors.push('Stock fila '+(n+2)+': Variante ID duplicado.');seenV.add(id);if(!variantIds.has(id))errors.push('Stock fila '+(n+2)+': Variante ID desconocido.');if(!Number.isFinite(Number(x.Stock))||Number(x.Stock)<0)errors.push('Stock fila '+(n+2)+': stock inválido.');changes.push({type:'variant',id,row:x})});
+  if(errors.length){gridMsg.innerHTML='<b>No se aplicó ningún cambio.</b><br>'+errors.slice(0,12).map(ae).join('<br>')+(errors.length>12?'<br>… y '+(errors.length-12)+' errores más.':'');return}
+  let pc=changes.filter(x=>x.type==='product').length,vc=changes.filter(x=>x.type==='variant').length;
+  if(!changes.length){gridMsg.textContent='La planilla no contiene filas para actualizar.';return}
+  if(!confirm('Planilla validada sin errores.\n\nCambios a aplicar:\n• '+pc+' productos/precios\n• '+vc+' combinaciones de stock\n\n¿Aplicar ahora?')){gridMsg.textContent='Validación correcta. Importación cancelada antes de aplicar cambios.';return}
+  gridMsg.textContent='Aplicando '+changes.length+' cambios…';
+  for(let x of changes){let d,r;if(x.type==='product'){d={price:x.row.Precio===''?null:Number(x.row.Precio)};if(String(x.row.Mostrar).trim())d.published=/^(si|sí|true|1|x)$/i.test(String(x.row.Mostrar).trim());r=await sb.from('products').update(d).eq('id',x.id)}else{d={stock:Number(x.row.Stock||0)};if(String(x.row.Mostrar).trim())d.published=/^(si|sí|true|1|x)$/i.test(String(x.row.Mostrar).trim());r=await sb.from('product_variants').update(d).eq('id',x.id)}if(r.error)throw r.error}
+  gridMsg.textContent='Importación aplicada: '+pc+' productos y '+vc+' stocks actualizados.';await adminLoad();renderMaintenanceGrid()
+ }catch(e){gridMsg.textContent='No se pudo importar: '+(e.message||e)}
 }
 function trashIcon(){return '<svg class="trash-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3m-8 0 1 13h8l1-13M10 10v7m4-7v7"/></svg>'}
 function variantForm(id){
