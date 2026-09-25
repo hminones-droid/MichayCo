@@ -98,3 +98,19 @@ body{background:linear-gradient(180deg,#fbf8f1 0%,#f6f0e6 48%,#fbf8f2 100%)}
   .hero-benefits span{font-size:8px!important;}
   .hero-benefits b{width:23px!important;height:23px!important;font-size:11px!important;}
 }
+
+
+/* v15 — composición definitiva basada en la referencia aprobada */
+.top{height:88px!important;padding:0 4.2vw!important;background:#fbf8f2!important;display:grid!important;grid-template-columns:minmax(250px,1fr) auto minmax(250px,1fr)!important;align-items:center!important}
+.brand{font-size:34px!important;justify-self:start}.brand small{font-size:7px!important;letter-spacing:3px!important}
+.top nav{display:flex!important;gap:26px!important;align-items:center!important;justify-content:center!important;white-space:nowrap!important}.top nav a{font-size:13px!important;padding:31px 0 7px!important}
+.top-actions{justify-self:end;display:flex;align-items:center;gap:20px}.cart-button{padding:8px!important}.order-cta{display:inline-flex;align-items:center;justify-content:center;background:#505437;color:#fff;border-radius:999px;padding:13px 23px;font:14px Georgia,serif;white-space:nowrap}
+.hero{width:100%!important;height:auto!important;min-height:0!important;max-height:none!important;background:#eadbc7!important;overflow:hidden!important}
+.hero-approved{display:block!important;width:100%!important;height:auto!important;max-width:none!important;margin:0!important}
+.collection.section{padding:20px 4.2vw 54px!important}
+.collection-bar{display:flex;align-items:flex-end;justify-content:space-between;gap:28px;margin:0 0 16px!important}
+.collection-bar h2{font:46px/.95 Georgia,serif;margin:0 0 4px;color:#29271f}.collection-bar p{font:16px/1.3 Georgia,serif;margin:0;color:#5d574d}
+.collection .filters{margin:0!important;display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap}.collection .chip{padding:9px 18px!important;font-size:11px!important}
+.collection .grid{margin-top:0!important}
+@media(max-width:1250px){.top{grid-template-columns:260px 1fr auto!important}.top nav{gap:16px!important}.top nav a{font-size:12px!important}.order-cta{display:none}.collection-bar h2{font-size:40px}}
+@media(max-width:850px){.top{height:72px!important;display:flex!important}.top nav{display:none!important}.top-actions{margin-left:auto}.hero-approved{width:100%!important;height:auto!important}.collection.section{padding:18px 5vw 42px!important}.collection-bar{display:block}.collection .filters{justify-content:flex-start;margin-top:13px!important}.collection-bar h2{font-size:36px}}
