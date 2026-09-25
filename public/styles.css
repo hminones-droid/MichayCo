@@ -85,3 +85,16 @@ body{background:linear-gradient(180deg,#fbf8f1 0%,#f6f0e6 48%,#fbf8f2 100%)}
 .hero-reference{display:block!important;min-height:0!important;height:auto!important;background:#efe5d7!important;overflow:hidden!important}
 .hero-reference-image{width:100%;aspect-ratio:1566/473;background-repeat:no-repeat;background-position:center;background-size:100% 100%;display:block}
 @media(max-width:700px){.hero-reference-image{background-size:contain;background-position:center top;aspect-ratio:1566/473}}
+
+/* v14: hero compacto. Nunca ocupa más de 1/4 del viewport en desktop. */
+@media(min-width:851px){
+  .hero{height:25vh!important;min-height:210px!important;max-height:260px!important;width:100%!important;}
+  .hero-art{height:100%!important;min-height:0!important;max-height:none!important;width:100%!important;}
+  .hero-copy{width:38%!important;padding:18px 4vw!important;justify-content:center!important;}
+  .hero h1{font-size:clamp(38px,3.3vw,56px)!important;line-height:.92!important;margin:0 0 10px!important;}
+  .hero p{font-size:14px!important;line-height:1.35!important;max-width:430px!important;margin:0 0 12px!important;}
+  .hero .btn{padding:9px 18px!important;font-size:13px!important;}
+  .hero-benefits{margin-top:12px!important;gap:18px!important;}
+  .hero-benefits span{font-size:8px!important;}
+  .hero-benefits b{width:23px!important;height:23px!important;font-size:11px!important;}
+}
