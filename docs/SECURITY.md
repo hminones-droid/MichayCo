@@ -1,20 +1,28 @@
-# Micha & Co — arquitectura y seguridad
+# Micha & Co — Arquitectura y seguridad
+Actualizado: 2026-09-25
 
-## Flujo objetivo
-Cliente → dominio comercial → Cloudflare Worker/Static Assets → Supabase (PostgreSQL/Auth/Storage).
+## Flujo
+Cliente/Admin → dominio → Cloudflare Worker/Static Assets → Supabase PostgreSQL/Auth/Storage.
 
-GitHub es actualmente repositorio/versionado y disparador de despliegue; no es requisito de ejecución de la tienda.
+## Autenticación administrativa
+- Supabase Auth real.
+- Autorización explícita con public.admin_users e is_admin().
+- is_admin() restringida a authenticated.
+- No exponer contenido administrativo antes de validar sesión/autorización.
+- No almacenar contraseñas, service_role ni secretos en repositorio/frontend.
 
-## Reglas
-- No guardar tarjetas, CVV ni credenciales financieras.
-- No guardar service_role, API tokens ni contraseñas en este repositorio.
-- Admin real mediante Supabase Auth; eliminar el login demo antes de producción.
-- RLS habilitado en todas las tablas expuestas.
-- Fotos de producto en Supabase Storage; sólo rutas públicas/firmadas en frontend.
-- Validar tipo/tamaño/nombre de uploads.
-- Registrar cambios administrativos relevantes en audit_log.
-- Pago informado no equivale a pago confirmado.
-- Mercado Pago futuro mediante checkout alojado por proveedor.
+## Pedidos
+create_guest_order es SECURITY DEFINER y permanece invocable por clientes invitados por diseño. Debe validar íntegramente nombre/teléfono, cantidad, publicación, precio y stock del lado servidor.
+Desde la migración use_product_price_for_orders, el precio confiable se toma de products.price; el navegador y product_variants.price no son fuente de verdad.
 
-## Despliegue
-Cloudflare Workers + Static Assets. workers.dev sólo para prueba. Producción deberá usar dominio comercial propio con HTTPS.
+## Storage
+Bucket product-images; tipos JPG/PNG/WebP; máximo 5 MB. Lectura pública según políticas vigentes; escritura/borrado reservados a administración autorizada. Reemplazos deben subir el nuevo archivo antes de eliminar el anterior.
+
+## RLS y mínimo privilegio
+RLS obligatorio en tablas expuestas. CRUD administrativo requiere autorización explícita. Revisar políticas después de cada cambio de esquema y ejecutar asesores de seguridad.
+
+## Importación Excel
+Los IDs de producto/variante son claves de actualización. Antes de producción, agregar validación previa, límites de tamaño/filas, rechazo de IDs desconocidos/duplicados, resumen de cambios y estrategia transaccional para evitar importaciones parciales.
+
+## Producción
+HTTPS, dominio propio, URLs Auth autorizadas, rate limiting, backups, observabilidad, auditoría de cambios y pruebas de permisos. Pago futuro mediante checkout alojado; nunca almacenar tarjeta/CVV.
