@@ -4,7 +4,7 @@ create extension if not exists pgcrypto;
 
 create table if not exists categories (
  id uuid primary key default gen_random_uuid(), name text not null unique,
- slug text not null unique, display_order int not null default 0,
+ slug text not null unique, code text, display_order int not null default 0,
  published boolean not null default true, created_at timestamptz not null default now(),
  updated_at timestamptz not null default now()
 );
@@ -12,6 +12,8 @@ create table if not exists products (
  id uuid primary key default gen_random_uuid(), sku text unique, name text not null,
  slug text not null unique, category_id uuid references categories(id),
  short_description text, description text, scent text, presentation text,
+ material text, material_code text, capacity_cc int, has_lid boolean not null default false,
+ color text, color_code text, version_code text not null default '01',
  price numeric(12,2), stock int, published boolean not null default false,
  featured boolean not null default false, display_order int not null default 0,
  created_at timestamptz not null default now(), updated_at timestamptz not null default now()
@@ -58,3 +60,8 @@ using (exists(select 1 from products p where p.id=product_id and p.published=tru
 create policy "public reads site content" on site_content for select using (true);
 -- Escrituras administrativas y creación segura de pedidos se implementarán mediante
 -- funciones/Worker autenticado; nunca exponer service_role en el navegador.
+
+-- SKU descriptivo: el UUID sigue siendo la clave técnica.
+-- products.sku = categoría-material-cc-tapa-color-versión (ej. VE-VI-080-S-TR-01).
+-- product_variants.sku agrega el código de fragancia (ej. VE-VI-080-S-TR-01-CV).
+-- En la base activa, categories/fragrances incluyen code y product_variants incluye sku/stock/publicación.
