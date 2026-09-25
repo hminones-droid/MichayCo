@@ -146,10 +146,14 @@ new MutationObserver(()=>{if(!adminApp.hidden)bindAdminTools()}).observe(documen
 document.addEventListener('DOMContentLoaded',bindAdminTools);
 
 async function deleteProduct(id,name){
- if(!confirm('¿Eliminar definitivamente "'+name+'"?\n\nSi solo querés sacarlo temporalmente de la tienda, cancelá y destildá Publicado.'))return;
+ if(!confirm('¿Eliminar definitivamente "'+name+'"?\n\nSe eliminarán también sus combinaciones de fragancia y fotos. Si el producto ya figura en un pedido histórico, se conservará oculto para no perder ese registro.'))return;
+ let refs=await sb.from('order_items').select('id',{count:'exact',head:true}).eq('product_id',id);
+ if(refs.error)return alert('No se pudo verificar el historial: '+refs.error.message);
+ if((refs.count||0)>0){let h=await sb.from('products').update({published:false}).eq('id',id);if(h.error)return alert('No se pudo ocultar: '+h.error.message);alert('"'+name+'" ya aparece en un pedido histórico. No se puede borrar sin romper ese pedido; quedó oculto de la tienda.');return openProducts()}
  let imgs=adminCache.images.filter(x=>x.product_id===id);
- if(imgs.length){let rr=await sb.storage.from('product-images').remove(imgs.map(x=>x.storage_path));if(rr.error)return alert(rr.error.message)}
- let r=await sb.from('products').delete().eq('id',id);if(r.error)return alert('No se pudo eliminar: '+r.error.message);openProducts()
+ let r=await sb.from('products').delete().eq('id',id);if(r.error)return alert('No se pudo eliminar: '+r.error.message);
+ if(imgs.length){let rr=await sb.storage.from('product-images').remove(imgs.map(x=>x.storage_path));if(rr.error)console.warn('Producto eliminado; no se pudo limpiar algún archivo de imagen.',rr.error)}
+ await adminLoad();openProducts()
 }
 async function deleteFragrance(id,name){
  if(!confirm('¿Eliminar definitivamente la fragancia "'+name+'"?\n\nSi es temporal, cancelá y destildá Publicada.'))return;
