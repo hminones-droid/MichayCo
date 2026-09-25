@@ -203,3 +203,18 @@ body{background:linear-gradient(180deg,#fbf8f1 0%,#f6f0e6 48%,#fbf8f2 100%)}
 .collection .photo.real-photo{display:flex!important;align-items:center!important;justify-content:center!important;aspect-ratio:1/1!important;padding:8px!important;overflow:hidden!important}
 .collection .photo.real-photo img{display:block!important;width:auto!important;height:auto!important;max-width:100%!important;max-height:100%!important;object-fit:contain!important;object-position:var(--frame-x,50%) var(--frame-y,50%)!important;transform:scale(var(--frame-scale,1))!important;transform-origin:var(--frame-x,50%) var(--frame-y,50%)!important}
 .collection .card:hover .photo.real-photo img{transform:scale(var(--frame-scale,1))!important}
+
+/* v31 — catálogo más compacto: aprovechar el ancho sin volver a recortar fotos */
+@media(min-width:1450px){
+ .collection.section{padding-left:1.3vw!important;padding-right:1.3vw!important}
+ .collection .grid{grid-template-columns:repeat(7,minmax(0,1fr))!important;gap:12px!important}
+ .collection .card-info{padding:9px 10px 0!important}
+ .collection .card h3{font-size:14px!important;margin:3px 0 7px!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
+ .collection .card .price{font-size:13px!important}
+ .collection .card .add{font-size:10px!important;padding:9px 5px!important}
+ .collection .photo.real-photo{padding:7px!important}
+}
+@media(min-width:1100px) and (max-width:1449px){
+ .collection.section{padding-left:2.5vw!important;padding-right:2.5vw!important}
+ .collection .grid{grid-template-columns:repeat(6,minmax(0,1fr))!important;gap:12px!important}
+}
