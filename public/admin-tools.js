@@ -18,8 +18,8 @@ function adminRow(title,sub,meta,fn){
 }
 async function openProducts(){
  await adminLoad();let w=adminShell();w.innerHTML='<div class="admin-toolbar"><div><span class="eyebrow">PRESENTACIONES</span><h2>Productos</h2></div><button class="btn" id="newProduct">+ Nueva</button></div><div id="toolList"></div>';
- toolList.innerHTML=adminCache.products.map(p=>adminRow(p.name,p.category&&p.category.name||'Sin categoría',p.price==null?'Precio a confirmar':'$ '+Number(p.price).toLocaleString('es-AR'),'p:'+p.id)).join('');
- newProduct.onclick=()=>productForm();toolList.onclick=e=>{let b=e.target.closest('[data-edit]');if(b)productForm(b.dataset.edit.slice(2))};
+ toolList.innerHTML=adminCache.products.map(p=>catalogRow(p,'product')).join('');
+ newProduct.onclick=()=>productForm();toolList.onclick=async e=>{let edit=e.target.closest('[data-edit]'),vis=e.target.closest('[data-visible]'),del=e.target.closest('[data-trash]');if(edit)return productForm(edit.dataset.edit);if(vis)return toggleCatalogVisibility('products',vis.dataset.visible,vis.checked);if(del)return deleteProduct(del.dataset.trash,del.dataset.name)};
 }
 function productForm(id){
  let p=adminCache.products.find(x=>x.id===id)||{},w=adminShell();
@@ -28,8 +28,8 @@ function productForm(id){
 }
 async function openFragrances(){
  await adminLoad();let w=adminShell();w.innerHTML='<div class="admin-toolbar"><div><span class="eyebrow">AROMAS</span><h2>Fragancias</h2></div><button class="btn" id="newFrag">+ Nueva</button></div><div id="toolList"></div>';
- toolList.innerHTML=adminCache.fragrances.map(f=>adminRow(f.name,f.olfactory_family||'Sin familia',f.short_description||'', 'f:'+f.id)).join('');
- newFrag.onclick=()=>fragForm();toolList.onclick=e=>{let b=e.target.closest('[data-edit]');if(b)fragForm(b.dataset.edit.slice(2))};
+ toolList.innerHTML=adminCache.fragrances.map(f=>catalogRow(f,'fragrance')).join('');
+ newFrag.onclick=()=>fragForm();toolList.onclick=async e=>{let edit=e.target.closest('[data-edit]'),vis=e.target.closest('[data-visible]'),del=e.target.closest('[data-trash]');if(edit)return fragForm(edit.dataset.edit);if(vis)return toggleCatalogVisibility('fragrances',vis.dataset.visible,vis.checked);if(del)return deleteFragrance(del.dataset.trash,del.dataset.name)};
 }
 function fragForm(id){
  let f=adminCache.fragrances.find(x=>x.id===id)||{},w=adminShell();
@@ -37,9 +37,26 @@ function fragForm(id){
  if(id){let box=document.querySelector('.admin-form');box.insertAdjacentHTML('beforeend','<button class="danger-btn" id="afDelete" type="button">Eliminar fragancia discontinuada</button>');afDelete.onclick=()=>deleteFragrance(id,f.name)} toolBack.onclick=openFragrances;afSave.onclick=async()=>{let d={name:afName.value.trim(),slug:aslug(afName.value),short_description:afShort.value.trim()||null,olfactory_family:afFamily.value.trim()||null,published:afPub.checked};let r=id?await sb.from('fragrances').update(d).eq('id',id):await sb.from('fragrances').insert(d);if(r.error)return afMsg.textContent=r.error.message;openFragrances()};
 }
 async function openVariants(){
- await adminLoad();let w=adminShell();w.innerHTML='<div class="admin-toolbar"><div><span class="eyebrow">COMBINACIONES</span><h2>Stock y precios</h2></div><button class="btn" id="newVar">+ Nueva</button></div><div id="toolList"></div>';
- toolList.innerHTML=adminCache.variants.map(v=>adminRow((v.product&&v.product.name||'Producto')+' · '+(v.fragrance&&v.fragrance.name||'Sin fragancia'),'Stock: '+(v.stock??'—'),v.price==null?'Precio base':'$ '+Number(v.price).toLocaleString('es-AR'),'v:'+v.id)).join('');
- newVar.onclick=()=>variantForm();toolList.onclick=e=>{let b=e.target.closest('[data-edit]');if(b)variantForm(b.dataset.edit.slice(2))};
+ await adminLoad();let w=adminShell();w.innerHTML='<div class="admin-toolbar"><div><span class="eyebrow">EDICIÓN MASIVA</span><h2>Precios y stock</h2><p class="admin-help">Filtrá, pegá valores como en una planilla y guardá todos los cambios juntos.</p></div><div class="toolbar-actions"><button class="btn secondary" id="addMissing">Completar combinaciones</button><button class="btn" id="saveGrid">Guardar cambios</button></div></div><div class="sheet-filters"><label>Producto<select id="fltProduct"><option value="">Todos</option>'+adminCache.products.map(p=>'<option value="'+p.id+'">'+ae(p.name)+'</option>').join('')+'</select></label><label>Fragancia<select id="fltFrag"><option value="">Todas</option>'+adminCache.fragrances.map(f=>'<option value="'+f.id+'">'+ae(f.name)+'</option>').join('')+'</select></label><label>Precio mín.<input id="fltMin" type="number" min="0"></label><label>Precio máx.<input id="fltMax" type="number" min="0"></label><button class="filter-clear" id="clearFilters">Limpiar filtros</button></div><div class="sheet-wrap"><table class="stock-sheet"><thead><tr><th>Producto</th><th>Fragancia</th><th>Precio</th><th>Stock</th><th>Mostrar</th><th></th></tr></thead><tbody id="stockBody"></tbody></table></div><div id="gridMsg" class="grid-msg"></div>';
+ renderVariantGrid();
+ [fltProduct,fltFrag,fltMin,fltMax].forEach(x=>x.oninput=renderVariantGrid);clearFilters.onclick=()=>{fltProduct.value=fltFrag.value=fltMin.value=fltMax.value='';renderVariantGrid()};saveGrid.onclick=saveVariantGrid;addMissing.onclick=createMissingVariants;
+}
+function renderVariantGrid(){
+ let rows=adminCache.variants.filter(v=>(!fltProduct.value||v.product_id===fltProduct.value)&&(!fltFrag.value||v.fragrance_id===fltFrag.value)&&(!fltMin.value||Number(v.price||0)>=Number(fltMin.value))&&(!fltMax.value||Number(v.price||0)<=Number(fltMax.value)));
+ stockBody.innerHTML=rows.map(v=>'<tr data-row="'+v.id+'"><td>'+ae(v.product&&v.product.name||'—')+'</td><td>'+ae(v.fragrance&&v.fragrance.name||'Sin fragancia')+'</td><td><input class="cell-price" type="number" min="0" value="'+(v.price??'')+'" placeholder="Base"></td><td><input class="cell-stock" type="number" min="0" value="'+(v.stock??'')+'"></td><td class="center"><input class="visibility-check" type="checkbox" '+(v.published!==false?'checked':'')+' title="Tildado = visible"></td><td><button class="icon-trash" data-vartrash="'+v.id+'" title="Eliminar combinación" aria-label="Eliminar combinación">⌫</button></td></tr>').join('')||'<tr><td colspan="6" class="sheet-empty">No hay combinaciones con estos filtros.</td></tr>';
+ stockBody.onclick=async e=>{let b=e.target.closest('[data-vartrash]');if(!b)return;if(!confirm('¿Eliminar definitivamente esta combinación?'))return;let r=await sb.from('product_variants').delete().eq('id',b.dataset.vartrash);if(r.error)return alert(r.error.message);openVariants()};
+}
+async function saveVariantGrid(){
+ let rows=[...stockBody.querySelectorAll('tr[data-row]')];if(!rows.length)return;
+ saveGrid.disabled=true;gridMsg.textContent='Guardando…';
+ for(let tr of rows){let d={price:tr.querySelector('.cell-price').value===''?null:Number(tr.querySelector('.cell-price').value),stock:tr.querySelector('.cell-stock').value===''?null:Number(tr.querySelector('.cell-stock').value),published:tr.querySelector('.visibility-check').checked};let r=await sb.from('product_variants').update(d).eq('id',tr.dataset.row);if(r.error){saveGrid.disabled=false;gridMsg.textContent='Error: '+r.error.message;return}}
+ saveGrid.disabled=false;gridMsg.textContent='Cambios guardados.';await adminLoad();renderVariantGrid()
+}
+async function createMissingVariants(){
+ if(!confirm('Se crearán las combinaciones que falten entre productos y fragancias publicados. ¿Continuar?'))return;
+ let existing=new Set(adminCache.variants.map(v=>v.product_id+'|'+v.fragrance_id)),rows=[];
+ adminCache.products.filter(p=>p.published!==false).forEach(p=>adminCache.fragrances.filter(f=>f.published!==false).forEach(f=>{if(!existing.has(p.id+'|'+f.id))rows.push({product_id:p.id,fragrance_id:f.id,price:null,stock:0,published:true})}));
+ if(!rows.length)return alert('No faltan combinaciones.');let r=await sb.from('product_variants').insert(rows);if(r.error)return alert(r.error.message);openVariants()
 }
 function variantForm(id){
  let v=adminCache.variants.find(x=>x.id===id)||{},w=adminShell();
@@ -81,4 +98,12 @@ async function replacePhoto(id,file){
  let r=await sb.from('product_images').update({storage_path:path}).eq('id',id);
  if(r.error){await sb.storage.from('product-images').remove([path]);return alert(r.error.message)}
  await sb.storage.from('product-images').remove([img.storage_path]);openPhotos()
+}
+
+function catalogRow(x,type){
+ let isProduct=type==='product',sub=isProduct?(x.category&&x.category.name||'Sin categoría'):(x.olfactory_family||x.short_description||'Sin familia');
+ return '<article class="catalog-row"><button class="catalog-main" data-edit="'+x.id+'" title="Editar"><span><b>'+ae(x.name)+'</b><small>'+ae(sub)+'</small></span></button><div class="catalog-actions"><label class="visibility-control" title="'+(x.published!==false?'Visible en la tienda':'Oculto en la tienda')+'"><input type="checkbox" data-visible="'+x.id+'" '+(x.published!==false?'checked':'')+'><span>Mostrar</span></label><button class="icon-edit" data-edit="'+x.id+'" title="Editar" aria-label="Editar">✎</button><button class="icon-trash" data-trash="'+x.id+'" data-name="'+ae(x.name)+'" title="Eliminar definitivamente" aria-label="Eliminar">⌫</button></div></article>'
+}
+async function toggleCatalogVisibility(table,id,visible){
+ let r=await sb.from(table).update({published:visible}).eq('id',id);if(r.error){alert(r.error.message);visible?event.target.checked=false:event.target.checked=true}
 }
