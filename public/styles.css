@@ -114,3 +114,11 @@ body{background:linear-gradient(180deg,#fbf8f1 0%,#f6f0e6 48%,#fbf8f2 100%)}
 .collection .grid{margin-top:0!important}
 @media(max-width:1250px){.top{grid-template-columns:260px 1fr auto!important}.top nav{gap:16px!important}.top nav a{font-size:12px!important}.order-cta{display:none}.collection-bar h2{font-size:40px}}
 @media(max-width:850px){.top{height:72px!important;display:flex!important}.top nav{display:none!important}.top-actions{margin-left:auto}.hero-approved{width:100%!important;height:auto!important}.collection.section{padding:18px 5vw 42px!important}.collection-bar{display:block}.collection .filters{justify-content:flex-start;margin-top:13px!important}.collection-bar h2{font-size:36px}}
+
+/* v16 — fotografía de producto: el objeto completo es inviolable */
+.collection .photo.real-photo{aspect-ratio:1/1!important;background:#f2ece3!important;padding:10px!important;overflow:hidden!important}
+.collection .photo.real-photo:has(img)::before,.collection .photo.real-photo:has(img)::after{display:none!important}
+.collection .photo.real-photo img{display:block!important;width:100%!important;height:100%!important;max-width:100%!important;max-height:100%!important;object-fit:contain!important;object-position:50% 50%!important;padding:0!important;margin:auto!important;transform:none!important}
+.collection .card:hover .photo.real-photo img{transform:none!important}
+@media(min-width:1100px){.collection .grid{grid-template-columns:repeat(5,minmax(0,1fr))!important;gap:14px!important}.collection .card-info{padding:13px 14px 0!important}.collection .card h3{font-size:17px!important}.collection .card .add{padding:11px 8px!important}}
+@media(max-width:1099px) and (min-width:701px){.collection .grid{grid-template-columns:repeat(3,minmax(0,1fr))!important}}
