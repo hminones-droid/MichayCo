@@ -263,3 +263,22 @@ button,input,select,textarea,.announcement,.eyebrow,.chip,.cart-button{font-fami
 .stock-reservation-note{margin:18px 0 4px;font:12px/1.5 var(--font-body);color:#696359}
 
 .cart-main .cart-stock{color:var(--olive);font:600 11px/1.4 var(--font-ui)}
+
+/* Compact administrator navigation at normal browser zoom. */
+.admin-side{padding:24px 22px;min-height:100dvh;overflow:hidden}
+.admin-side-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.admin-side .brand{font-size:25px;line-height:1.1}
+.admin-side nav{margin-top:30px;gap:2px;min-height:0;overflow-y:auto;scrollbar-width:thin;scrollbar-color:#777965 transparent}
+.admin-side nav button{display:block;width:100%;padding:10px 12px;font-size:12px;line-height:1.25}
+.admin-nav-group{border-top:1px solid #ffffff20;margin-top:7px;padding-top:6px}
+.admin-nav-group summary{list-style:none;display:flex;align-items:center;justify-content:space-between;padding:10px 12px;color:#dfdfd4;font-size:12px;letter-spacing:.3px;cursor:pointer;border-radius:3px}
+.admin-nav-group summary::-webkit-details-marker{display:none}
+.admin-nav-group summary::after{content:'+';font:18px/12px var(--font-ui);color:#aeb29c}
+.admin-nav-group[open] summary::after{content:'−'}
+.admin-nav-group summary:hover,.admin-nav-group[open] summary{background:#ffffff0b;color:#fff}
+.admin-nav-group>div{padding-left:10px}
+.admin-nav-group>div button{font-size:11px;padding:8px 12px;color:#c9c9bc}
+.admin-side-foot{margin-top:auto;padding-top:12px;border-top:1px solid #ffffff20;display:flex;flex-direction:column;gap:10px}
+.admin-side-foot .admin-signout,.admin-side-foot .admin-store{margin:0;padding:4px 12px;font-size:10px}
+.admin-menu-toggle{display:none}
+@media(max-width:850px){.admin-side{position:relative;min-height:0;overflow:visible;padding:16px 20px}.admin-side .brand{font-size:23px}.admin-side nav{display:none;margin:16px 0 0;max-height:55vh;overflow:auto}.admin-side nav.mobile-open{display:flex}.admin-menu-toggle{display:block;margin-top:5px;border:1px solid #b2b49e;color:#f5f0e7;background:transparent;border-radius:3px;padding:8px 12px;font-size:12px;cursor:pointer}.admin-side-foot{display:none}.admin-side:has(.mobile-open) .admin-side-foot{display:flex}}
