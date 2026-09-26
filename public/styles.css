@@ -282,3 +282,8 @@ button,input,select,textarea,.announcement,.eyebrow,.chip,.cart-button{font-fami
 .admin-side-foot .admin-signout,.admin-side-foot .admin-store{margin:0;padding:4px 12px;font-size:10px}
 .admin-menu-toggle{display:none}
 @media(max-width:850px){.admin-side{position:relative;min-height:0;overflow:visible;padding:16px 20px}.admin-side .brand{font-size:23px}.admin-side nav{display:none;margin:16px 0 0;max-height:55vh;overflow:auto}.admin-side nav.mobile-open{display:flex}.admin-menu-toggle{display:block;margin-top:5px;border:1px solid #b2b49e;color:#f5f0e7;background:transparent;border-radius:3px;padding:8px 12px;font-size:12px;cursor:pointer}.admin-side-foot{display:none}.admin-side:has(.mobile-open) .admin-side-foot{display:flex}}
+
+.product-clone{border:1px solid #d2c8b7;background:#faf7f0;color:#515741;border-radius:3px;padding:7px 9px;font:600 10px/1.2 var(--font-ui);cursor:pointer;white-space:nowrap}
+.product-clone:hover{background:#eae4d7}
+.clone-explainer{padding:13px 16px;background:#eee8dc;border-left:3px solid var(--olive);line-height:1.55}
+@media(max-width:760px){.product-clone{padding:7px;font-size:10px}}
