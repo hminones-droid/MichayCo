@@ -93,7 +93,7 @@ async function saveMaintenanceGrid(){
  saveGrid.disabled=false;gridMsg.textContent='Cambios guardados.';await adminLoad();renderMaintenanceGrid()
 }
 function downloadMaintenanceWorkbook(){
- let priceRows=adminCache.products.map(p=>({'Producto ID':p.id,'SKU Producto':p.sku||'','Producto':p.name,'Categoría':p.category&&p.category.name||'','Precio':p.price??'','Mostrar':p.published!==false?'SI':'NO'}));
+ let priceRows=priceGenericGroups().map(g=>({'SKU Genérico':g.generic_sku,'Categoría':g.category&&g.category.name||'','Producto':g.name,'Precio':g.price??'','Mostrar':g.published?'SI':'NO'}));
  let stockRows=adminCache.variants.map(v=>({'Variante ID':v.id,'SKU Variante':v.sku||'','Producto':v.product&&v.product.name||'','Fragancia':v.fragrance&&v.fragrance.name||'','Stock':v.stock??0,'Mostrar':v.published!==false?'SI':'NO'}));
  let wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(priceRows),'Precios');XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(stockRows),'Stock');XLSX.writeFile(wb,'MichaCo_Precios_Stock.xlsx')
 }
