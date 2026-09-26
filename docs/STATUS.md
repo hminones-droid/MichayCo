@@ -26,10 +26,10 @@ Actualizado: 2026-09-26
 - Excel: descarga/subida con hojas Precios y Stock y IDs estables.
 - Filtros de mantenimiento.
 - Productos sin fragancia administrables, exportados/importados como una sola fila -NA; la tienda omite el selector de aroma.
-- Importación Excel con elección de stock total o incremental y confirmación visual. Si una escritura falla, las anteriores pueden persistir: se informa la cantidad aplicada y no se debe reimportar completa una planilla incremental sin revisar el stock.
+- Importación Excel con elección de stock total o incremental y confirmación visual. La aplicación por lote usa `apply_inventory_import`: un rechazo del servidor revierte precios y stock de la planilla completa. Si se corta la conexión sin respuesta, verificar el stock antes de reintentar una carga incremental.
 
 ## P0
-1. Probar de punta a punta exportación/importación Excel con datos reales; hacer atómica la aplicación por lote para evitar actualizaciones parciales.
+1. Probar de punta a punta exportación/importación Excel con datos reales desde el administrador publicado, incluidos permisos, modo incremental y rechazo sin cambios.
 2. Agregar preview de diferencias por fila antes de aplicar importaciones grandes.
 3. Cargar fotografías reales y completar composición editorial.
 4. Completar editor de Contenido.
