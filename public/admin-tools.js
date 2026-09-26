@@ -95,7 +95,7 @@ async function saveMaintenanceGrid(){
 function downloadMaintenanceWorkbook(){
  let priceRows=priceGenericGroups().map(g=>({'SKU Genérico':g.generic_sku,'Categoría':g.category&&g.category.name||'','Producto':g.name,'Precio':g.price??'','Mostrar':g.published?'SI':'NO'}));
  let stockRows=[];adminCache.products.filter(p=>p.published!==false&&p.sku).forEach(p=>adminCache.fragrances.filter(f=>f.published!==false).forEach(f=>{let v=adminCache.variants.find(x=>x.product_id===p.id&&x.fragrance_id===f.id);stockRows.push({'SKU Completo':p.sku+'-'+normCode(f.code,2),'Categoría':p.category&&p.category.name||'','Producto':p.name,'Color':p.color||'','Fragancia':f.name,'Código Fragancia':f.code||'','Stock':v?Number(v.stock||0):0})}));
- let wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(priceRows),'Precios');XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(stockRows),'Stock');XLSX.writeFile(wb,'MichaCo_Precios_Stock.xlsx')
+ stockRows.sort((a,b)=>String(a.Categoría).localeCompare(String(b.Categoría),'es')||String(a.Producto).localeCompare(String(b.Producto),'es')||String(a.Color).localeCompare(String(b.Color),'es')||String(a.Fragancia).localeCompare(String(b.Fragancia),'es'));let wb=XLSX.utils.book_new(),wps=XLSX.utils.json_to_sheet(priceRows),wss=XLSX.utils.json_to_sheet(stockRows);wps['!autofilter']={ref:wps['!ref']};wss['!autofilter']={ref:wss['!ref']};wss['!cols']=[{wch:28},{wch:22},{wch:34},{wch:18},{wch:28},{wch:16},{wch:10}];XLSX.utils.book_append_sheet(wb,wps,'Precios');XLSX.utils.book_append_sheet(wb,wss,'Stock');XLSX.writeFile(wb,'MichaCo_Precios_Stock.xlsx')
 }
 async function importMaintenanceWorkbook(file){
  try{
