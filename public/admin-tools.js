@@ -1,5 +1,9 @@
 
 let adminCache={products:[],fragrances:[],variants:[],categories:[],materials:[],colors:[],images:[]};
+let adminView='summary',adminParentView='summary';
+function setAdminView(view,parent){if(parent)adminParentView=parent;adminView=view}
+function returnAdminParent(){let p=adminParentView;if(p==='products')return openProducts();if(p==='categories')return openCategories();if(p==='materials')return openLookup('materials');if(p==='colors')return openLookup('colors');if(p==='fragrances')return openFragrances();if(p==='variants')return openVariants();if(p==='photos')return openPhotos();if(p==='orders')return openOrders();location.reload()}
+
 const ae=s=>String(s==null?'':s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 const aslug=s=>s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
 async function adminLoad(){
