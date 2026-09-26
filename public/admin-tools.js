@@ -118,6 +118,21 @@ function downloadMaintenanceWorkbook(){
  stockRows.sort((a,b)=>String(a.Categoría).localeCompare(String(b.Categoría),'es')||String(a.Producto).localeCompare(String(b.Producto),'es')||String(a.Color).localeCompare(String(b.Color),'es')||String(a.Fragancia).localeCompare(String(b.Fragancia),'es'));let wb=XLSX.utils.book_new(),wps=XLSX.utils.json_to_sheet(priceRows),wss=XLSX.utils.json_to_sheet(stockRows);wps['!autofilter']={ref:wps['!ref']};wss['!autofilter']={ref:wss['!ref']};wss['!cols']=[{wch:22},{wch:30},{wch:34},{wch:18},{wch:28},{wch:16},{wch:10}];XLSX.utils.book_append_sheet(wb,wps,'Precios');XLSX.utils.book_append_sheet(wb,wss,'Stock');XLSX.writeFile(wb,'MichaCo_Precios_Stock.xlsx')
 }
 function importDialog(html){return new Promise(resolve=>{let old=document.getElementById('importDialog');if(old)old.remove();let wrap=document.createElement('div');wrap.id='importDialog';wrap.className='import-dialog-backdrop';wrap.innerHTML='<section class="import-dialog" role="dialog" aria-modal="true">'+html+'</section>';document.body.appendChild(wrap);wrap.addEventListener('click',e=>{let b=e.target.closest('[data-import-result]');if(b){let v=b.dataset.importResult;wrap.remove();resolve(v)}else if(e.target===wrap){wrap.remove();resolve('cancel')}})})}
+function buildImportPreview(changes,groups,skuMap,mode){
+ let rows=changes.map(x=>{
+  if(x.type==='pricegroup'){
+   let g=groups.find(y=>y.generic_sku===x.id),next=x.row.Precio===''?null:Number(x.row.Precio),show=String(x.row.Mostrar).trim(),published=show?/^(si|sí|true|1|x)$/i.test(show):null;
+   let changed=g.products.some(p=>(p.price==null?null:Number(p.price))!==next||(published!==null&&(p.published!==false)!==published));
+   let current=g.mixedPrice?'precios distintos':g.price==null?'sin precio':Number(g.price).toLocaleString('es-AR');
+   let target=next==null?'sin precio':next.toLocaleString('es-AR');
+   if(published!==null){current+=' · visibilidad '+(g.products.every(p=>p.published!==false)?'sí':g.products.every(p=>p.published===false)?'no':'mixta');target+=' · visibilidad '+(published?'sí':'no')}
+   return {type:'price',label:g.name+' · '+x.id,from:current,to:target,changed}
+  }
+  let m=skuMap.get(x.id),current=m.noFragrance?Number(m.p.stock||0):Number(m.v&&m.v.stock||0),target=mode==='incremental'?current+Number(x.row.Stock):Number(x.row.Stock);
+  return {type:'stock',label:m.p.name+' · '+(m.noFragrance?'sin fragancia':m.f.name)+' · '+x.id,from:String(current),to:String(target),target,changed:current!==target}
+ });
+ return {rows,changed:rows.filter(x=>x.changed).length,unchanged:rows.filter(x=>!x.changed).length}
+}
 async function importMaintenanceWorkbook(file){
  let completed=false;
  try{
@@ -133,7 +148,10 @@ async function importMaintenanceWorkbook(file){
   let pc=changes.filter(x=>x.type==='pricegroup').length,vc=changes.filter(x=>x.type==='stocksku').length;if(!changes.length){gridMsg.textContent='La planilla no contiene filas para actualizar.';return}
   let stockMode='total';
   if(vc){let mode=await importDialog('<div class="import-dialog-kicker">PLANILLA VALIDADA</div><h3>¿Cómo querés aplicar el stock?</h3><p>Elegí el tratamiento de las cantidades de la planilla. Esta elección se aplica a toda la hoja Stock.</p><div class="import-mode-grid"><button class="import-mode-card" data-import-result="total"><b>Stock total</b><span>Reemplaza el stock actual.</span><small>Usalo después de un recuento o auditoría. Si el sistema tiene 7 y la planilla dice 4, queda 4.</small></button><button class="import-mode-card" data-import-result="incremental"><b>Stock incremental</b><span>Suma al stock actual.</span><small>Usalo para producción o reposición. Si hay 7 y cargás 4, queda 11.</small></button></div><button class="import-cancel" data-import-result="cancel">Cancelar importación</button>');if(mode==='cancel'){gridMsg.textContent='Importación cancelada. No se aplicó ningún cambio.';return}stockMode=mode}
-  let confirmResult=await importDialog('<div class="import-dialog-kicker">CONFIRMACIÓN</div><h3>Todo listo para aplicar</h3><div class="import-summary"><div><b>'+pc+'</b><span>precios genéricos</span></div><div><b>'+vc+'</b><span>filas de stock</span></div>'+(vc?'<div><b>'+(stockMode==='incremental'?'Incremental':'Total')+'</b><span>modo de stock</span></div>':'')+'</div><p>'+(stockMode==='incremental'?'Las cantidades de Stock se sumarán a las existentes. Un 0 no modifica el inventario.':'Las cantidades de Stock reemplazarán las existentes, incluso cuando sean 0.')+'</p><div class="import-dialog-actions"><button class="btn secondary" data-import-result="cancel">Volver sin aplicar</button><button class="btn" data-import-result="apply">Aplicar cambios</button></div>');if(confirmResult!=='apply'){gridMsg.textContent='Importación cancelada. No se aplicó ningún cambio.';return}
+  let preview=buildImportPreview(changes,groups,skuMap,stockMode),limit=40;
+  if(preview.rows.some(x=>x.type==='stock'&&(!Number.isSafeInteger(x.target)||x.target>2147483647)))throw new Error('El stock resultante excede el máximo permitido. Revisá la planilla.');
+  let details=preview.rows.slice(0,limit).map(x=>'<div class="import-preview-row"><b>'+ae(x.label)+'</b><span>'+ae(x.from)+' → '+ae(x.to)+'</span><small>'+(x.changed?'Cambiará':'Sin cambio')+'</small></div>').join('');
+  let confirmResult=await importDialog('<div class="import-dialog-kicker">VISTA PREVIA</div><h3>Revisá los cambios</h3><div class="import-summary"><div><b>'+preview.changed+'</b><span>filas con cambios</span></div><div><b>'+preview.unchanged+'</b><span>sin cambios</span></div><div><b>'+(stockMode==='incremental'?'Incremental':'Total')+'</b><span>modo de stock</span></div></div><p>La planilla incluye '+pc+' grupos de precio y '+vc+' filas de stock. Revisá los valores actuales y resultantes antes de aplicar.</p><div class="import-preview-list">'+details+(preview.rows.length>limit?'<p>Se muestran '+limit+' de '+preview.rows.length+' filas. El resto también se validó y se aplicará.</p>':'')+'</div><div class="import-dialog-actions"><button class="btn secondary" data-import-result="cancel">Volver sin aplicar</button><button class="btn" data-import-result="apply">Aplicar cambios</button></div>');if(confirmResult!=='apply'){gridMsg.textContent='Importación cancelada. No se aplicó ningún cambio.';return}
   let priceUpdates=changes.filter(x=>x.type==='pricegroup').map(x=>({sku:x.id,price:x.row.Precio===''?null:Number(x.row.Precio),published:String(x.row.Mostrar).trim()? /^(si|sí|true|1|x)$/i.test(String(x.row.Mostrar).trim()):null}));
   let stockUpdates=changes.filter(x=>x.type==='stocksku').map(x=>({sku:x.id,stock:Number(x.row.Stock)}));
   gridMsg.textContent='Aplicando '+changes.length+' cambios…';uploadSheet.disabled=true;saveGrid.disabled=true;
