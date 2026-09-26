@@ -1,10 +1,10 @@
 # Micha & Co — Estado técnico y funcional
-Actualizado: 2026-09-25
+Actualizado: 2026-09-26
 
 ## Decisiones vigentes
 - Producto = presentación física; fragancia = opción/variante.
 - Precio comercial pertenece a products.price. No varía por fragancia.
-- Stock puede variar por product_variants (producto × fragancia).
+- Stock de productos con fragancia: product_variants (producto × fragancia). Productos sin fragancia: products.stock y SKU de inventario terminado en -NA.
 - Categorías son dinámicas y administrables.
 - Ocultar es reversible; eliminar es definitivo y siempre requiere confirmación.
 - Fotografías reales son la fuente visual; no usar imágenes genéricas de producto.
@@ -25,10 +25,12 @@ Actualizado: 2026-09-25
 - Stock: edición por producto + fragancia.
 - Excel: descarga/subida con hojas Precios y Stock y IDs estables.
 - Filtros de mantenimiento.
+- Productos sin fragancia administrables, exportados/importados como una sola fila -NA; la tienda omite el selector de aroma.
+- Importación Excel con elección de stock total o incremental y confirmación visual. Si una escritura falla, las anteriores pueden persistir: se informa la cantidad aplicada y no se debe reimportar completa una planilla incremental sin revisar el stock.
 
 ## P0
-1. Probar de punta a punta exportación/importación Excel con datos reales.
-2. Agregar preview/validación por lote antes de aplicar importaciones grandes.
+1. Probar de punta a punta exportación/importación Excel con datos reales; hacer atómica la aplicación por lote para evitar actualizaciones parciales.
+2. Agregar preview de diferencias por fila antes de aplicar importaciones grandes.
 3. Cargar fotografías reales y completar composición editorial.
 4. Completar editor de Contenido.
 5. Probar CRUD/permisos con ambos administradores.
