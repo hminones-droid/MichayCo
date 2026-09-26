@@ -240,3 +240,6 @@ body{background:linear-gradient(180deg,#fbf8f1 0%,#f6f0e6 48%,#fbf8f2 100%)}
 
 /* v51 — tipografía global administrable */
 button,input,select,textarea,.announcement,.eyebrow,.chip,.cart-button{font-family:var(--font-ui)}
+
+/* v52 — foto integrada en producto */
+.inline-photo-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;align-items:center}.danger-btn.compact{padding:10px 12px;margin:0;font-size:10px}.inline-photo-current>div{min-width:0}.inline-photo-current small{display:block;margin-top:4px}
