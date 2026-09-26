@@ -26,3 +26,12 @@ Los IDs de producto/variante son claves de actualización. Antes de producción,
 
 ## Producción
 HTTPS, dominio propio, URLs Auth autorizadas, rate limiting, backups, observabilidad, auditoría de cambios y pruebas de permisos. Pago futuro mediante checkout alojado; nunca almacenar tarjeta/CVV.
+
+
+## Inventario y checkout (2026-09-26)
+- create_guest_order valida stock dentro de la base y bloquea las filas relevantes durante la transacción para evitar vender por encima del stock disponible.
+- El stock se descuenta únicamente al confirmar correctamente el pedido.
+- Productos con fragancia se validan/descuentan en product_variants.
+- Productos sin fragancia se validan/descuentan en products.stock y el pedido admite variant_id nulo.
+- El precio confiable continúa siendo products.price; el cliente no envía un precio aceptado por el servidor.
+- Nunca confiar en disponibilidad, cantidad ni precio calculados solamente en JavaScript.
