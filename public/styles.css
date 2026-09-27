@@ -363,3 +363,4 @@ button,input,select,textarea,.announcement,.eyebrow,.chip,.cart-button{font-fami
 @media(min-width:851px) and (max-width:1099px){.collection .grid{grid-template-columns:repeat(4,minmax(0,1fr))!important}}
 @media(max-width:850px){.mobile-catalog-link{display:inline-flex;align-items:center;padding:8px 0;font:13px var(--font-heading);border-bottom:1px solid #73795b}.top-actions{gap:13px}}
 @media(max-width:390px){.mobile-catalog-link{font-size:12px}.top-actions{gap:5px}.cart-button{letter-spacing:0!important}}
+.aroma-loading{align-self:center;margin:0;padding:22px;color:#686b53;font:13px/1.5 var(--font-body)}
