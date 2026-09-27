@@ -365,3 +365,17 @@ button,input,select,textarea,.announcement,.eyebrow,.chip,.cart-button{font-fami
 @media(max-width:390px){.mobile-catalog-link{font-size:12px}.top-actions{gap:5px}.cart-button{letter-spacing:0!important}}
 .aroma-loading{align-self:center;margin:0;padding:22px;color:#686b53;font:13px/1.5 var(--font-body)}
 .scent-option.is-recommended{background:#eef0e6!important;border-left:3px solid #596447!important;padding-left:13px!important}.scent-option.is-recommended::before{content:'EL AROMA QUE ESTABAS EXPLORANDO';font:700 9px/1.3 var(--font-ui);letter-spacing:.09em;color:#596447;margin-bottom:6px}
+
+/* Proporción editorial y encuadre compartido entre editor, galería y catálogo */
+.story{width:min(1280px,calc(100% - 12vw));min-height:0;margin:58px auto;grid-template-columns:45% 55%;overflow:hidden}
+.story-image,.story-image.has-real-photo{min-height:420px}
+.story-copy{padding:42px 8%}
+.story-copy h2{font-size:clamp(34px,3.2vw,46px);line-height:1.08;letter-spacing:-.02em;margin:14px 0 20px}
+.story-copy p{font-size:16px;line-height:1.6;margin:0 0 14px}
+.story-copy .text-link{margin-top:12px}
+.collection .photo.real-photo img{width:100%!important;height:100%!important;max-width:100%!important;max-height:100%!important;object-fit:contain!important;object-position:center!important;transform:translate(var(--frame-offset-x,0%),var(--frame-offset-y,0%)) scale(var(--frame-scale,1))!important;transform-origin:center!important}
+.collection .card:hover .photo.real-photo img{transform:translate(var(--frame-offset-x,0%),var(--frame-offset-y,0%)) scale(var(--frame-scale,1))!important}
+.photo-admin-preview{aspect-ratio:1;overflow:hidden;background:#f1ebe1;display:grid;place-items:center}
+.photo-admin-grid .photo-admin-preview img{display:block;width:100%;height:100%;aspect-ratio:1;object-fit:contain!important;object-position:center!important;padding:0!important;background:transparent!important;transform:translate(var(--frame-offset-x,0%),var(--frame-offset-y,0%)) scale(var(--frame-scale,1))!important;transform-origin:center}
+@media(max-width:850px){.story{width:90%;margin:42px auto}.story-image.has-real-photo{min-height:360px}}
+@media(max-width:760px){.story{grid-template-columns:1fr!important;margin:34px auto}.story-image,.story-image.has-real-photo{min-height:280px}.story-copy{padding:30px 7% 36px}.story-copy h2{font-size:clamp(31px,7vw,42px)}.story-copy p{font-size:15px}}
