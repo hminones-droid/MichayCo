@@ -406,3 +406,6 @@ button,input,select,textarea,.announcement,.eyebrow,.chip,.cart-button{font-fami
 .editorial-admin-preview .editorial-preview-copy{display:none}
 .editorial-admin-preview.hero.custom .editorial-preview-copy{display:grid;gap:4px;position:absolute;inset:0 auto 0 0;width:55%;align-content:center;padding:5%;background:linear-gradient(90deg,rgba(246,240,230,.95),rgba(246,240,230,.65) 70%,transparent);font:clamp(14px,2vw,24px)/1.05 var(--font-heading)}
 .editorial-preview-copy small{font:11px var(--font-body)}
+
+/* Operators manage catalog visibility and content; permanent deletion belongs to administrators. */
+html[data-admin-role="operador"] .admin-body .icon-trash,html[data-admin-role="operador"] .admin-body .danger-btn,html[data-admin-role="operador"] .admin-body [data-del]{display:none!important}
