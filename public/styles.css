@@ -351,29 +351,41 @@ button,input,select,textarea,.announcement,.eyebrow,.chip,.cart-button{font-fami
 @media(max-width:850px){.aroma-discovery{padding:45px 5vw 49px}.aroma-discovery-inner{grid-template-columns:1fr;gap:20px}.aroma-intro{display:grid;grid-template-columns:1fr auto;column-gap:20px}.aroma-intro .eyebrow,.aroma-intro h2,.aroma-intro p{grid-column:1}.aroma-intro h2{max-width:650px}.aroma-controls{grid-column:2;grid-row:2/4;align-self:end;margin:0 0 4px}.aroma-moments{margin-right:-5vw;padding-right:5vw}.aroma-world{flex-basis:230px;width:230px}#aromaFocus{grid-template-columns:1fr;gap:15px}}
 @media(max-width:560px){.aroma-discovery{padding:38px 5vw 41px}.aroma-intro h2{font-size:36px;max-width:340px}.aroma-intro p{font-size:13px}.aroma-controls{display:none}.aroma-world{flex-basis:220px;width:220px}.aroma-world-image{height:150px}.aroma-results{padding:20px 16px;margin-top:13px}.aroma-result-head h3{font-size:25px}.aroma-focus-products .aroma-product{flex-basis:190px}}
 
-/* Every available aroma moment stays visible; the grid has no sideways navigation. */
-.aroma-discovery-inner{display:block;max-width:1120px}
-.aroma-intro{margin:0 0 25px;max-width:720px}
-.aroma-intro h2{max-width:720px;margin:9px 0 10px;font-size:clamp(34px,3.4vw,49px)}
-.aroma-intro p{max-width:600px}
-.aroma-moments{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;overflow:visible;padding:0;margin:0}
-.aroma-world{width:100%;min-width:0;min-height:0;scroll-snap-align:unset}
-.aroma-world-image{height:auto;aspect-ratio:2.05}
-.aroma-world-copy{min-height:98px;padding:15px 18px 17px}
-.aroma-world b{margin:0 0 12px;font-size:clamp(20px,1.8vw,25px)}
-@media(max-width:850px){
- .aroma-intro{display:block;margin-bottom:22px}
- .aroma-intro h2{max-width:650px}
- .aroma-moments{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:0;padding:0}
+/* Compact editorial index: six visible scenes without sideways navigation. */
+.aroma-discovery{padding-top:42px;padding-bottom:45px}
+.aroma-discovery-inner{max-width:1300px;display:grid;grid-template-columns:minmax(230px,275px) minmax(0,1fr);gap:36px;align-items:center}
+.aroma-intro{display:block;max-width:275px;margin:0}
+.aroma-intro h2{max-width:275px;margin:12px 0 15px;font-size:clamp(34px,2.9vw,43px)}
+.aroma-intro p{max-width:265px}
+.aroma-moments{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;overflow:visible;padding:0;margin:0}
+.aroma-world{display:flex;flex-direction:row;width:100%;height:138px;min-width:0;min-height:0;scroll-snap-align:unset}
+.aroma-world-image{flex:0 0 40%;width:40%;height:100%;aspect-ratio:auto}
+.aroma-world-scene{left:50%;width:138px;max-width:none;transform:translate(-50%,-50%)}
+.aroma-world-copy{min-width:0;min-height:0;padding:14px 11px 13px}
+.aroma-world b{margin:0 0 10px;font-size:clamp(17px,1.55vw,21px)}
+.aroma-world .aroma-world-explore{font-size:10px;line-height:1.35}
+@media(max-width:1020px){
+ .aroma-discovery-inner{display:block;max-width:760px}
+ .aroma-intro{max-width:720px;margin-bottom:22px}
+ .aroma-intro h2{max-width:720px;font-size:clamp(34px,4vw,45px)}
+ .aroma-intro p{max-width:600px}
+ .aroma-world{height:126px}
+ .aroma-world-scene{width:126px}
 }
-@media(max-width:560px){
- .aroma-intro h2{font-size:clamp(32px,8vw,39px)}
+@media(max-width:700px){
  .aroma-moments{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
- .aroma-world-copy{min-height:100px;padding:12px}
- .aroma-world b{font-size:clamp(16px,4.5vw,21px);margin-bottom:9px}
- .aroma-world .aroma-world-explore{font-size:10px;line-height:1.35}
+ .aroma-world{height:116px}
+ .aroma-world-scene{width:116px}
 }
-@media(max-width:360px){.aroma-moments{grid-template-columns:1fr}.aroma-world-image{aspect-ratio:2.8}.aroma-world-copy{min-height:0}}
+@media(max-width:420px){
+ .aroma-intro h2{font-size:33px}
+ .aroma-world{height:144px;flex-direction:column}
+ .aroma-world-image{flex:none;width:100%;height:72px}
+ .aroma-world-scene{width:100%;min-width:144px}
+ .aroma-world-copy{padding:8px 10px}
+ .aroma-world b{font-size:17px;margin-bottom:5px}
+}
+@media(max-width:330px){.aroma-moments{grid-template-columns:1fr}.aroma-world{height:116px;flex-direction:row}.aroma-world-image{width:40%;height:100%}.aroma-world-scene{width:116px}.aroma-world-copy{padding:12px}}
 
 /* Shared storefront rhythm: readable product cards and clear navigation. */
 .mobile-catalog-link{display:none}
