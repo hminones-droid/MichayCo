@@ -409,3 +409,5 @@ button,input,select,textarea,.announcement,.eyebrow,.chip,.cart-button{font-fami
 
 /* Operators manage catalog visibility and content; permanent deletion belongs to administrators. */
 html[data-admin-role="operador"] .admin-body .icon-trash,html[data-admin-role="operador"] .admin-body .danger-btn,html[data-admin-role="operador"] .admin-body [data-del]{display:none!important}
+
+.order-qty-edit{display:flex;align-items:center;gap:7px}.order-qty-edit input[type=number]{width:62px;border:1px solid #cfc5b7;background:#fff;padding:8px;font:14px var(--font-body)}.order-qty-edit button{border:1px solid #7b8464;background:#f9f8f4;color:#39452e;padding:8px 10px;cursor:pointer;font:12px var(--font-ui)}.order-detail #orderDetailMsg{min-height:20px;color:#526044;font-size:13px}
