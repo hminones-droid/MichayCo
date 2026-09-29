@@ -20,17 +20,17 @@ function sanitizeCart(){cart=cart.filter(x=>{let p=products.find(y=>String(y.id)
 function safeFontStack(v,fallback){let s=String(v||'').trim();return /^[A-Za-z0-9 ,"'.\-]+$/.test(s)&&s.length<160?s:fallback}
 function applySiteTypography(){let root=document.documentElement;root.style.setProperty('--font-heading',safeFontStack(siteContent.font_heading,'Georgia, Times New Roman, serif'));root.style.setProperty('--font-body',safeFontStack(siteContent.font_body,'Arial, Helvetica, sans-serif'));root.style.setProperty('--font-ui',safeFontStack(siteContent.font_ui,'Arial, Helvetica, sans-serif'))}function safePublicUrl(v){let s=String(v||'').trim();return /^https:\/\//i.test(s)?s:''}function applySiteContent(){for(let [key,id] of [['shop_aroma_intro','shopAromaIntro'],['shop_cart_intro','shopCartIntro'],['shop_gift_hint','shopGiftHint'],['shop_checkout_help','shopCheckoutHelp']]){let el=$(id),value=String(siteContent[key]||'').trim();if(el&&value)el.textContent=value}let ft=$('footerTagline');if(ft&&siteContent.footer_tagline)ft.textContent=siteContent.footer_tagline;let host=$('contactLinks');if(host){let links=[['Instagram',safePublicUrl(siteContent.contact_instagram)],['Facebook',safePublicUrl(siteContent.contact_facebook)],['WhatsApp',safePublicUrl(siteContent.contact_whatsapp)]].filter(x=>x[1]);host.innerHTML=links.length?links.map(x=>'<a href="'+x[1]+'" target="_blank" rel="noopener">'+x[0]+'</a>').join(' · '):'Contacto disponible próximamente'}}
 const aromaWorlds=[
- {name:'Pausa y calma',note:'Para bajar el ritmo y regalarle silencio al día.'},
- {name:'Volver a lo natural',note:'Verdes, maderas y flores que acercan el afuera.'},
- {name:'Aire y frescura',note:'Para renovar el ambiente y sentirlo más liviano.'},
- {name:'Energía y luz',note:'Aromas vivos para empezar, activar y acompañar.'},
- {name:'Calidez y refugio',note:'Para hacer de la casa un lugar donde quedarse.'},
- {name:'Compartir y disfrutar',note:'Aromas amables para encuentros y pequeños rituales.'}
+ {name:'Pausa y calma',image:0,note:'Para bajar el ritmo y regalarle silencio al día.'},
+ {name:'Energía y luz',image:3,note:'Aromas vivos para empezar, activar y acompañar.'},
+ {name:'Volver a lo natural',image:1,note:'Verdes, maderas y flores que acercan el afuera.'},
+ {name:'Calidez y refugio',image:4,note:'Para hacer de la casa un lugar donde quedarse.'},
+ {name:'Aire y frescura',image:2,note:'Para renovar el ambiente y sentirlo más liviano.'},
+ {name:'Compartir y disfrutar',image:5,note:'Aromas amables para encuentros y pequeños rituales.'}
 ];
 function renderAromaDiscovery(){
  let host=$('aromaMoments');if(!host)return;
  let available=fragrances.filter(f=>variants.some(v=>Number(v.stock)>0&&String(v.fragrance?.id)===String(f.id)&&storefrontReady(products.find(p=>String(p.id)===String(v.product_id)))));
- host.innerHTML=aromaWorlds.map((w,i)=>{let count=available.filter(f=>(f.discovery_moments||[]).includes(w.name)).length;if(!count)return '';return '<button class="aroma-world" data-aroma-world="'+i+'" aria-expanded="false" aria-controls="aromaResults"><span class="aroma-world-image" aria-hidden="true"><span class="aroma-world-scene image-'+i+'"></span></span><span class="aroma-world-copy"><b>'+aromaText(w.name)+'</b><span class="aroma-world-note">'+aromaText(w.note)+'</span><span class="aroma-world-explore">Explorar '+count+' '+(count===1?'aroma':'aromas')+' <span aria-hidden="true">↗</span></span></span></button>'}).join('')||'<p class="aroma-empty">Estamos preparando nuevas experiencias aromáticas. Volvé pronto para descubrirlas.</p>';
+ host.innerHTML=aromaWorlds.map((w,i)=>{let count=available.filter(f=>(f.discovery_moments||[]).includes(w.name)).length;if(!count)return '';return '<button class="aroma-world" data-aroma-world="'+i+'" aria-expanded="false" aria-controls="aromaResults"><span class="aroma-world-image" aria-hidden="true"><span class="aroma-world-scene image-'+w.image+'"></span></span><span class="aroma-world-copy"><b>'+aromaText(w.name)+'</b><span class="aroma-world-note">'+aromaText(w.note)+'</span><span class="aroma-world-explore">Explorar '+count+' '+(count===1?'aroma':'aromas')+' <span aria-hidden="true">↗</span></span></span></button>'}).join('')||'<p class="aroma-empty">Estamos preparando nuevas experiencias aromáticas. Volvé pronto para descubrirlas.</p>';
  host.onclick=e=>{let b=e.target.closest('[data-aroma-world]');if(b)showAromaWorld(Number(b.dataset.aromaWorld),b)};
 }
 function aromaText(value){return String(value||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
