@@ -30,11 +30,10 @@ const aromaWorlds=[
 function renderAromaDiscovery(){
  let host=$('aromaMoments');if(!host)return;
  let available=fragrances.filter(f=>variants.some(v=>Number(v.stock)>0&&String(v.fragrance?.id)===String(f.id)&&storefrontReady(products.find(p=>String(p.id)===String(v.product_id)))));
- host.innerHTML=aromaWorlds.map((w,i)=>{let count=available.filter(f=>(f.discovery_moments||[]).includes(w.name)).length;if(!count)return '';return '<button class="aroma-world" data-aroma-world="'+i+'" aria-expanded="false" aria-controls="aromaResults"><span class="aroma-world-image" aria-hidden="true"><span class="aroma-world-scene image-'+i+'"></span></span><span class="aroma-world-copy"><span class="aroma-world-kicker">MOMENTO 0'+(i+1)+'</span><b>'+w.name+'</b><span class="aroma-world-explore">Explorar '+count+' '+(count===1?'aroma':'aromas')+' <span aria-hidden="true">↗</span></span></span></button>'}).join('')||'<p class="aroma-empty">Estamos preparando nuevas experiencias aromáticas. Volvé pronto para descubrirlas.</p>';
+ host.innerHTML=aromaWorlds.map((w,i)=>{let count=available.filter(f=>(f.discovery_moments||[]).includes(w.name)).length;if(!count)return '';return '<button class="aroma-world" data-aroma-world="'+i+'" aria-expanded="false" aria-controls="aromaResults"><span class="aroma-world-image" aria-hidden="true"><span class="aroma-world-scene image-'+i+'"></span></span><span class="aroma-world-copy"><b>'+w.name+'</b><span class="aroma-world-explore">Explorar '+count+' '+(count===1?'aroma':'aromas')+' <span aria-hidden="true">↗</span></span></span></button>'}).join('')||'<p class="aroma-empty">Estamos preparando nuevas experiencias aromáticas. Volvé pronto para descubrirlas.</p>';
  host.onclick=e=>{let b=e.target.closest('[data-aroma-world]');if(b)showAromaWorld(Number(b.dataset.aromaWorld),b)};
 }
 function aromaText(value){return String(value||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
-function moveAromaMoments(direction){let host=$('aromaMoments');if(host)host.scrollBy({left:direction*290,behavior:'smooth'})}
 function availableAromaVariants(fragranceId){return variants.filter(v=>Number(v.stock)>0&&String(v.fragrance?.id)===String(fragranceId)&&storefrontReady(products.find(p=>String(p.id)===String(v.product_id))))}
 let selectedAromaWorld=null,selectedAromaButton=null;
 function showAromaWorld(index,button){
