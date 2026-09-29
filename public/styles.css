@@ -362,7 +362,8 @@ button,input,select,textarea,.announcement,.eyebrow,.chip,.cart-button{font-fami
 .aroma-world-image{flex:0 0 40%;width:40%;height:100%;aspect-ratio:auto}
 .aroma-world-scene{left:50%;width:138px;max-width:none;transform:translate(-50%,-50%)}
 .aroma-world-copy{min-width:0;min-height:0;padding:14px 11px 13px}
-.aroma-world b{margin:0 0 10px;font-size:clamp(17px,1.55vw,21px)}
+.aroma-world b{margin:0 0 5px;font-size:clamp(17px,1.55vw,21px)}
+.aroma-world .aroma-world-note{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;overflow:hidden;font:11px/1.28 var(--font-body);color:#716b5e;margin:0 0 7px}
 .aroma-world .aroma-world-explore{font-size:10px;line-height:1.35}
 @media(max-width:1020px){
  .aroma-discovery-inner{display:block;max-width:760px}
@@ -379,13 +380,14 @@ button,input,select,textarea,.announcement,.eyebrow,.chip,.cart-button{font-fami
 }
 @media(max-width:420px){
  .aroma-intro h2{font-size:33px}
- .aroma-world{height:144px;flex-direction:column}
+ .aroma-world{height:190px;flex-direction:column}
  .aroma-world-image{flex:none;width:100%;height:72px}
  .aroma-world-scene{width:100%;min-width:144px}
  .aroma-world-copy{padding:8px 10px}
  .aroma-world b{font-size:17px;margin-bottom:5px}
+ .aroma-world .aroma-world-note{font-size:10px;line-height:1.25;margin-bottom:5px}
 }
-@media(max-width:330px){.aroma-moments{grid-template-columns:1fr}.aroma-world{height:116px;flex-direction:row}.aroma-world-image{width:40%;height:100%}.aroma-world-scene{width:116px}.aroma-world-copy{padding:12px}}
+@media(max-width:330px){.aroma-moments{grid-template-columns:1fr}.aroma-world{height:126px;flex-direction:row}.aroma-world-image{width:40%;height:100%}.aroma-world-scene{width:126px}.aroma-world-copy{padding:12px}}
 
 /* Shared storefront rhythm: readable product cards and clear navigation. */
 .mobile-catalog-link{display:none}
