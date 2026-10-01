@@ -83,18 +83,19 @@ function fragForm(id){setAdminView('fragrance-form','fragrances');
  if(id){let box=document.querySelector('.admin-form');box.insertAdjacentHTML('beforeend','<button class="danger-btn" id="afDelete" type="button">Eliminar fragancia discontinuada</button>');afDelete.onclick=()=>deleteFragrance(id,f.name)}
  toolBack.onclick=openFragrances;afSave.onclick=async()=>{let code=normCode(afCode.value,2);if(!code)return afMsg.textContent='Ingresá un código corto de fragancia.';let d={name:afName.value.trim(),slug:aslug(afName.value),code,short_description:afShort.value.trim()||null,olfactory_family:afFamily.value.trim()||null,published:afPub.checked};let r=id?await sb.from('fragrances').update(d).eq('id',id):await sb.from('fragrances').insert(d);if(r.error)return afMsg.textContent=r.error.message;if(id){await adminLoad();for(let v of adminCache.variants.filter(x=>x.fragrance_id===id)){let p=adminCache.products.find(x=>x.id===v.product_id);if(p&&p.sku)await sb.from('product_variants').update({sku:p.sku+'-'+code}).eq('id',v.id)}}openFragrances()};
 }
-async function openVariants(){setAdminView('variants','variants');
+async function openVariants(){setAdminView('variants','variants');maintenancePriceDrafts.clear();
  await adminLoad();let w=adminShell();w.innerHTML='<div class="admin-toolbar"><div><span class="eyebrow">MANTENIMIENTO</span><h2>Precios y stock</h2><p class="admin-help">Precio por SKU genérico. Stock por presentación/color + fragancia.</p></div><div class="toolbar-actions"><button class="btn secondary" id="downloadSheet">↓ Bajar planilla</button><label class="btn secondary file-btn">↑ Subir planilla<input id="uploadSheet" hidden type="file" accept=".xlsx,.xls"></label><button class="btn" id="saveGrid">Guardar cambios</button></div></div><div class="sheet-tabs"><button class="active" data-sheet="prices">Precios</button><button data-sheet="stock">Stock por producto</button></div><div class="sheet-filters" id="gridFilters"></div><div id="stockOverview" class="stock-overview" hidden></div><div class="sheet-wrap"><table class="stock-sheet"><thead id="gridHead"></thead><tbody id="stockBody"></tbody></table></div><div id="gridMsg" class="grid-msg"></div>';
  window.stockMode='prices';renderMaintenanceGrid();document.querySelector('.sheet-tabs').onclick=e=>{let b=e.target.closest('[data-sheet]');if(!b)return;window.stockMode=b.dataset.sheet;document.querySelectorAll('.sheet-tabs button').forEach(x=>x.classList.toggle('active',x===b));renderMaintenanceGrid()};saveGrid.onclick=saveMaintenanceGrid;downloadSheet.onclick=downloadMaintenanceWorkbook;uploadSheet.onchange=e=>e.target.files[0]&&importMaintenanceWorkbook(e.target.files[0])
 }
+let maintenancePriceDrafts=new Map();
 function priceGenericKey(p){return genericSku(p)}
-function priceGenericGroups(){let m=new Map();for(let p of adminCache.products){let k=priceGenericKey(p);if(!k)continue;if(!m.has(k))m.set(k,{key:k,generic_sku:k,name:p.name,category_id:p.category_id,category:p.category,products:[]});m.get(k).products.push(p)}return [...m.values()].map(g=>{let prices=[...new Set(g.products.map(p=>p.price).filter(v=>v!=null).map(Number))];g.price=prices.length===1?prices[0]:null;g.mixedPrice=prices.length>1;g.published=g.products.every(p=>p.published!==false);return g})}
+function priceGenericGroups(){let m=new Map();for(let p of adminCache.products){let k=priceGenericKey(p);if(!k)continue;if(!m.has(k))m.set(k,{key:k,generic_sku:k,name:p.name,category_id:p.category_id,category:p.category,products:[]});m.get(k).products.push(p)}return [...m.values()].map(g=>{let prices=[...new Set(g.products.map(p=>p.price==null?null:Number(p.price)))];g.price=prices.length===1?prices[0]:null;g.mixedPrice=prices.length>1;g.published=g.products.every(p=>p.published!==false);return g})}
 function renderMaintenanceGrid(){
  stockOverview.hidden=stockMode!=='stock';
  if(stockMode==='prices'){
   gridFilters.innerHTML='<label>Buscar producto<input id="fltText" placeholder="Nombre"></label><label>Categoría<select id="fltCat"><option value="">Todas</option>'+adminCache.categories.map(x=>'<option value="'+x.id+'">'+ae(x.name)+'</option>').join('')+'</select></label><label>Precio mín.<input id="fltMin" type="number" min="0"></label><label>Precio máx.<input id="fltMax" type="number" min="0"></label><button class="filter-clear" id="clearFilters">Limpiar</button>';
   gridHead.innerHTML='<tr><th>Categoría</th><th>Producto</th><th>Precio</th><th>Mostrar</th></tr>';
-  let draw=()=>{let q=(fltText.value||'').toLowerCase(),rows=priceGenericGroups().filter(g=>(!q||g.name.toLowerCase().includes(q))&&(!fltCat.value||g.category_id===fltCat.value)&&(!fltMin.value||Number(g.price||0)>=Number(fltMin.value))&&(!fltMax.value||Number(g.price||0)<=Number(fltMax.value)));stockBody.innerHTML=rows.map(g=>'<tr data-price-group="'+ae(g.key)+'"><td>'+ae(g.category&&g.category.name||'—')+'</td><td><b>'+ae(g.name)+'</b><small class="cell-sub">'+ae(g.generic_sku)+' · '+g.products.length+' variante'+(g.products.length===1?'':'s')+(g.products.length>1?' · '+ae(g.products.map(p=>p.color||'s/color').join(', ')):'')+'</small></td><td><input class="cell-price" type="number" min="0" value="'+(g.price??'')+'" placeholder="'+(g.mixedPrice?'Precios distintos':'Sin precio')+'">'+(g.mixedPrice?'<small class="cell-sub">Hay precios distintos: al guardar se unifican.</small>':'')+'</td><td class="center"><input class="visibility-check" type="checkbox" '+(g.published?'checked':'')+'></td></tr>').join('')||'<tr><td colspan="4" class="sheet-empty">Sin resultados.</td></tr>'};[fltText,fltCat,fltMin,fltMax].forEach(x=>x.oninput=draw);clearFilters.onclick=()=>{fltText.value=fltCat.value=fltMin.value=fltMax.value='';draw()};draw()
+  let draw=()=>{let q=(fltText.value||'').toLowerCase(),rows=priceGenericGroups().filter(g=>(!q||g.name.toLowerCase().includes(q))&&(!fltCat.value||g.category_id===fltCat.value)&&(!fltMin.value||Number(g.price||0)>=Number(fltMin.value))&&(!fltMax.value||Number(g.price||0)<=Number(fltMax.value)));stockBody.innerHTML=rows.map(g=>renderPriceGroupRow(g)).join('')||'<tr><td colspan="4" class="sheet-empty">Sin resultados.</td></tr>';stockBody.oninput=recordPriceGridEdit};[fltText,fltCat,fltMin,fltMax].forEach(x=>x.oninput=draw);clearFilters.onclick=()=>{fltText.value=fltCat.value=fltMin.value=fltMax.value='';draw()};draw()
  }else{
   gridFilters.innerHTML='<label>Producto / color<select id="fltProduct">'+adminCache.products.filter(p=>genericSku(p)).map(p=>'<option value="'+p.id+'">'+ae(photoProductLabel(p))+'</option>').join('')+'</select></label><label class="check"><input id="fltPositive" type="checkbox"> Sólo con stock</label>';
   gridHead.innerHTML='<tr><th>Fragancia</th><th>Familia</th><th>Stock</th><th>SKU completo</th></tr>';
@@ -103,7 +104,66 @@ function renderMaintenanceGrid(){
   stockOverview.innerHTML='<div class="stock-overview-head"><b>Atención de inventario</b><span>'+empty.length+' sin stock · '+low.length+' con 1 a 3 unidades · '+hidden.length+' con fragancias ocultas y stock</span></div>'+(flagged.length?'<div class="stock-overview-list">'+flagged.map(x=>'<button type="button" data-stock-product="'+x.product.id+'"><span>'+ae(photoProductLabel(x.product))+'</span><small>'+ae(x.product.sku||'')+(x.hidden?' · '+x.hidden+' fragancia(s) oculta(s) con stock':'')+'</small><b>'+x.stock+' un.</b></button>').join('')+'</div><small>Se muestran hasta 10 presentaciones para revisar. Usá el selector de producto para ver el resto.</small>':'<p>No hay productos sin stock, con stock bajo ni fragancias ocultas con stock.</p>');stockOverview.onclick=e=>{let b=e.target.closest('[data-stock-product]');if(!b)return;fltProduct.value=b.dataset.stockProduct;fltPositive.checked=false;drawStock();document.querySelector('.sheet-wrap')?.scrollIntoView({behavior:'smooth',block:'nearest'})}
  }
 }
+
+function renderPriceGroupRow(g){
+ let draft=maintenancePriceDrafts.get(g.key)||{},price=Object.hasOwn(draft,'price')?draft.price:(g.price??''),visibility=draft.visibility||'keep';
+ let status=g.products.every(p=>p.published!==false)?'Todos visibles':g.products.every(p=>p.published===false)?'Todos ocultos':'Visibilidad por color';
+ return '<tr data-price-group="'+ae(g.key)+'"><td>'+ae(g.category&&g.category.name||'—')+'</td><td><b>'+ae(g.name)+'</b><small class="cell-sub">'+ae(g.generic_sku)+' · '+g.products.length+' variante(s)'+(g.products.length>1?' · '+ae(g.products.map(p=>p.color||'s/color').join(', ')):'')+'</small></td><td><input class="cell-price" aria-label="Precio de '+ae(g.name)+'" type="number" step="0.01" min="0" value="'+ae(price)+'" placeholder="'+(g.mixedPrice?'Precios distintos':'Sin precio')+'">'+(g.mixedPrice?'<small class="cell-sub">Se conservan los precios por color. Editá para unificarlos.</small>':'')+'</td><td><select class="visibility-choice" aria-label="Visibilidad de '+ae(g.name)+'"><option value="keep" '+(visibility==='keep'?'selected':'')+'>Conservar</option><option value="show" '+(visibility==='show'?'selected':'')+'>Mostrar todos</option><option value="hide" '+(visibility==='hide'?'selected':'')+'>Ocultar todos</option></select><small class="cell-sub">'+status+'</small></td></tr>';
+}
+function recordPriceGridEdit(e){
+ let row=e.target.closest('tr[data-price-group]');if(!row)return;
+ let key=row.dataset.priceGroup,g=priceGenericGroups().find(x=>x.key===key);if(!g)return;
+ let draft=maintenancePriceDrafts.get(key)||{};
+ if(e.target.matches('.cell-price')){
+  let value=e.target.value;draft.invalidPrice=!!e.target.validity?.badInput;
+  if(!g.mixedPrice&&value===String(g.price??''))delete draft.price;else draft.price=value;
+ }else if(e.target.matches('.visibility-choice')){
+  if(e.target.value==='keep')delete draft.visibility;else draft.visibility=e.target.value;
+ }else return;
+ if(!draft.invalidPrice)delete draft.invalidPrice;
+ if(Object.keys(draft).length)maintenancePriceDrafts.set(key,draft);else maintenancePriceDrafts.delete(key);
+ gridMsg.textContent=maintenancePriceDrafts.size?maintenancePriceDrafts.size+' grupo(s) con ediciones pendientes. Se conservan al filtrar; Guardar aplica también las filas filtradas.':'No hay cambios pendientes.';
+}
+function priceGridUpdates(groups,drafts){
+ let updates=[];
+ for(let [key,draft] of drafts){
+  let g=groups.find(x=>x.key===key);if(!g)throw Error('El producto ya no está disponible. Volvé a abrir Precios y stock.');
+  let patch={};if(draft.invalidPrice)throw Error('Precio inválido en '+g.name+'.');
+  if(Object.hasOwn(draft,'price')){
+   let raw=String(draft.price).trim(),price=raw===''?null:Number(raw);
+   if(price!==null&&(!Number.isFinite(price)||price<0||price>9999999999.99||Math.abs(price*100-Math.round(price*100))>0.0001))throw Error('Precio inválido en '+g.name+'. Usá un importe positivo o cero, con hasta dos decimales.');
+   patch.price=price;
+  }
+  if(draft.visibility==='show')patch.published=true;
+  else if(draft.visibility==='hide')patch.published=false;
+  else if(draft.visibility&&draft.visibility!=='keep')throw Error('Visibilidad inválida.');
+  for(let p of g.products){
+   let data={};
+   if(Object.hasOwn(patch,'price')&&(p.price==null?null:Number(p.price))!==patch.price)data.price=patch.price;
+   if(Object.hasOwn(patch,'published')&&(p.published!==false)!==patch.published)data.published=patch.published;
+   if(Object.keys(data).length)updates.push({id:p.id,data});
+  }
+ }
+ return updates;
+}
+async function savePriceGrid(){
+ let updates;
+ try{updates=priceGridUpdates(priceGenericGroups(),maintenancePriceDrafts)}catch(e){gridMsg.textContent=e.message;return}
+ if(!updates.length){maintenancePriceDrafts.clear();gridMsg.textContent='No hay cambios para guardar.';return}
+ saveGrid.disabled=true;uploadSheet.disabled=true;let saved=0;
+ try{
+  for(let change of updates){
+   let r=await sb.from('products').update(change.data).eq('id',change.id).select('id').single();
+   if(r.error||!r.data)throw Error(r.error?.message||'No se confirmó la actualización.');
+   Object.assign(adminCache.products.find(p=>p.id===change.id),change.data);saved++;
+  }
+  maintenancePriceDrafts.clear();renderMaintenanceGrid();gridMsg.textContent='Cambios guardados en '+saved+' presentación(es).';
+ }catch(e){gridMsg.textContent='Se confirmaron '+saved+' de '+updates.length+' actualizaciones. '+(e.message||e)+' Las ediciones pendientes se conservaron. Revisá antes de reintentar.'}
+ finally{saveGrid.disabled=false;uploadSheet.disabled=false}
+}
+
 async function saveMaintenanceGrid(){
+ if(stockMode==='prices')return savePriceGrid();
  if(stockMode==='stock'){
   let cells=[...stockBody.querySelectorAll('.matrix-stock')];
   if(cells.some(input=>input.value.trim()===''||!Number.isSafeInteger(Number(input.value))||Number(input.value)<0)){
@@ -111,8 +171,7 @@ async function saveMaintenanceGrid(){
   }
  }
  saveGrid.disabled=true;gridMsg.textContent='Guardando…';
- if(stockMode==='prices'){let groups=priceGenericGroups();for(let tr of stockBody.querySelectorAll('tr[data-price-group]')){let g=groups.find(x=>x.key===tr.dataset.priceGroup);if(!g)continue;let d={price:tr.querySelector('.cell-price').value===''?null:Number(tr.querySelector('.cell-price').value),published:tr.querySelector('.visibility-check').checked};for(let p of g.products){let r=await sb.from('products').update(d).eq('id',p.id);if(r.error){saveGrid.disabled=false;return gridMsg.textContent='Error: '+r.error.message}}}}
- else if(stockMode==='stock'){let pid=fltProduct.value,p=adminCache.products.find(x=>x.id===pid),na=stockBody.querySelector('tr[data-na-product]');if(na){let stock=Number(na.querySelector('.matrix-stock').value||0),rr=await sb.from('products').update({stock}).eq('id',pid);if(rr.error){saveGrid.disabled=false;return gridMsg.textContent='Error: '+rr.error.message}}for(let tr of stockBody.querySelectorAll('tr[data-matrix-fragrance]')){let fid=tr.dataset.matrixFragrance,f=adminCache.fragrances.find(x=>x.id===fid),vid=tr.dataset.variant,stock=Number(tr.querySelector('.matrix-stock').value||0),sku=p&&p.sku&&f&&f.code?p.sku+'-'+normCode(f.code,2):null,r;if(vid)r=await sb.from('product_variants').update({stock,published:stock>0,sku}).eq('id',vid);else if(stock>0)r=await sb.from('product_variants').insert({product_id:pid,fragrance_id:fid,sku,stock,published:true});if(r&&r.error){saveGrid.disabled=false;return gridMsg.textContent='Error: '+r.error.message}}} else{for(let tr of stockBody.querySelectorAll('tr[data-variant]')){let d={stock:Number(tr.querySelector('.cell-stock').value||0),published:tr.querySelector('.visibility-check').checked},r=await sb.from('product_variants').update(d).eq('id',tr.dataset.variant);if(r.error){saveGrid.disabled=false;return gridMsg.textContent='Error: '+r.error.message}}}
+ if(stockMode==='stock'){let pid=fltProduct.value,p=adminCache.products.find(x=>x.id===pid),na=stockBody.querySelector('tr[data-na-product]');if(na){let stock=Number(na.querySelector('.matrix-stock').value||0),rr=await sb.from('products').update({stock}).eq('id',pid);if(rr.error){saveGrid.disabled=false;return gridMsg.textContent='Error: '+rr.error.message}}for(let tr of stockBody.querySelectorAll('tr[data-matrix-fragrance]')){let fid=tr.dataset.matrixFragrance,f=adminCache.fragrances.find(x=>x.id===fid),vid=tr.dataset.variant,stock=Number(tr.querySelector('.matrix-stock').value||0),sku=p&&p.sku&&f&&f.code?p.sku+'-'+normCode(f.code,2):null,r;if(vid)r=await sb.from('product_variants').update({stock,published:stock>0,sku}).eq('id',vid);else if(stock>0)r=await sb.from('product_variants').insert({product_id:pid,fragrance_id:fid,sku,stock,published:true});if(r&&r.error){saveGrid.disabled=false;return gridMsg.textContent='Error: '+r.error.message}}} else{for(let tr of stockBody.querySelectorAll('tr[data-variant]')){let d={stock:Number(tr.querySelector('.cell-stock').value||0),published:tr.querySelector('.visibility-check').checked},r=await sb.from('product_variants').update(d).eq('id',tr.dataset.variant);if(r.error){saveGrid.disabled=false;return gridMsg.textContent='Error: '+r.error.message}}}
  saveGrid.disabled=false;gridMsg.textContent='Cambios guardados.';await adminLoad();renderMaintenanceGrid()
 }
 // Empty/CONSERVAR leaves each presentation's visibility unchanged.
@@ -146,6 +205,7 @@ function buildImportPreview(changes,groups,skuMap,mode){
  return {rows,changed:rows.filter(x=>x.changed).length,unchanged:rows.filter(x=>!x.changed).length}
 }
 async function importMaintenanceWorkbook(file){
+ if(maintenancePriceDrafts.size){gridMsg.textContent='Guardá las ediciones de precios antes de importar otra planilla.';uploadSheet.value='';return}
  let completed=false;
  try{
   gridMsg.textContent='Validando planilla…';
