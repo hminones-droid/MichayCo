@@ -1,0 +1,11 @@
+/* Catalog forms: retain the site's cream/olive design and compact rhythm. */
+.catalog-guide{margin:0 0 1.2rem;padding:.8rem 1rem;border-left:3px solid #62674e;background:#f3efe6;color:#45483b;font-size:.9rem;line-height:1.55}
+.catalog-advanced{margin:1rem 0;padding:.8rem 1rem;border:1px solid #d9d2c5;border-radius:3px}
+.catalog-advanced summary{cursor:pointer;font-size:.9rem;font-weight:600;color:#45483b}
+.catalog-advanced[open] summary{margin-bottom:.8rem}
+.catalog-advanced label{display:block;margin:.8rem 0}
+.catalog-advanced input{width:100%;box-sizing:border-box}
+.admin-form input[readonly]{background:#eeeade;color:#626452}
+.admin-form [role=status]:not(:empty){padding:.75rem 0;line-height:1.5}
+.admin-form input:focus-visible,.admin-form textarea:focus-visible,.catalog-advanced summary:focus-visible{outline:2px solid #62674e;outline-offset:3px}
+@media(max-width:640px){.catalog-guide,.catalog-advanced{padding:.75rem}.catalog-advanced input{max-width:100%}}
