@@ -12,7 +12,8 @@ assert.deepEqual(plan({visibility:'hide'}),[{id:'a',data:{published:false}}]);
 assert.deepEqual(plan({price:''}),[{id:'a',data:{price:null}}]);
 for(const price of ['-1','1.234','Infinity','foo'])assert.throws(()=>plan({price}),/Precio inválido/);
 const calls=[];let fail=false;
-ctx.sb={from:()=>({update:data=>({eq:(_,id)=>({select:()=>({single:async()=>{calls.push({id,data:plain(data)});return fail?{error:{message:'fallo'}}:{data:{id}}}})})})})};
+ctx.sb={rpc:async(name,args)=>{calls.push({name,args:plain(args)});return fail?{error:{message:'fallo'}}:{data:{presentations:2}}}};
+run('adminLoad=async()=>{}');
 run('renderMaintenanceGrid=()=>{}');
 async function test(){
  await run('saveMaintenanceGrid()');assert.equal(calls.length,0);
@@ -21,7 +22,7 @@ async function test(){
  await run('saveMaintenanceGrid()');assert.equal(calls.length,0);
  run("maintenancePriceDrafts.set('HO-CE-000-N-01',{visibility:'show'})");
  await run('saveMaintenanceGrid()');
- assert.deepEqual(calls,[{id:'b',data:{published:true}}]);
+ assert.deepEqual(calls,[{name:'save_generic_price_grid',args:{p_changes:[{sku:'HO-CE-000-N-01',published:true}]}}]);
  assert.equal(run("adminCache.products[1].price"),null);
  assert.equal(run('maintenancePriceDrafts.size'),0);
  // Pending state is used by every redraw, including filters.
@@ -30,7 +31,8 @@ async function test(){
  assert.match(html,/value="310"/);assert.match(html,/value="hide" selected/);
  fail=true;await run('saveMaintenanceGrid()');
  assert.equal(run('maintenancePriceDrafts.size'),1);
- assert.equal(ctx.saveGrid.disabled,false);assert.match(ctx.gridMsg.textContent,/Se confirmaron 0/);
- console.log('PASS: no-op, mixed null/numeric prices, field isolation, explicit clearing, validation, save, redraw and failure retention');
+ assert.equal(ctx.saveGrid.disabled,false);assert.match(ctx.gridMsg.textContent,/No se pudo confirmar/);
+ console.log('PASS: no-op, inconsistent null/numeric detection, field isolation, explicit clearing, validation, save, redraw and failure retention');
 }
 test().catch(e=>{console.error(e);process.exitCode=1});
+
