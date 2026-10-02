@@ -1,0 +1,23 @@
+/* One framing geometry for editor, admin cards and storefront cards. */
+.micha-photo-frame,
+.collection .photo.real-photo.micha-photo-frame,
+#inlinePhotoBox .article-photo-stage.micha-photo-frame,
+#frameEditor .frame-preview.micha-photo-frame{
+ position:relative!important;display:block!important;box-sizing:border-box!important;
+ aspect-ratio:1.12/1!important;height:auto!important;min-height:0!important;
+ padding:0!important;overflow:hidden!important;
+}
+.micha-photo-frame>img,
+.article-photo-module .article-photo-stage.micha-photo-frame>img,
+.collection .photo.real-photo.micha-photo-frame>img,
+.collection .card:hover .photo.real-photo.micha-photo-frame>img,
+#frameEditor .frame-preview.micha-photo-frame>img{
+ position:absolute!important;inset:0!important;display:block!important;
+ box-sizing:border-box!important;width:100%!important;height:100%!important;
+ max-width:100%!important;max-height:100%!important;padding:0!important;margin:0!important;
+ object-fit:contain!important;object-position:center!important;
+ transform:translate(var(--frame-offset-x,0%),var(--frame-offset-y,0%)) scale(var(--frame-scale,1))!important;
+ transform-origin:center!important;transition:none!important;
+}
+.product-thumb.micha-photo-frame{height:64px!important;aspect-ratio:1.12/1!important;width:auto!important;min-width:72px}
+.product-thumb.micha-photo-frame>small{position:absolute;bottom:0;left:0;right:0;background:#faf7f0e8;z-index:1;font-size:10px}
