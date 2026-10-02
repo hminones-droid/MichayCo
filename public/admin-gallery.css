@@ -1,0 +1,13 @@
+.photo-admin-grid{grid-template-columns:repeat(auto-fill,minmax(240px,1fr))!important;align-items:start}
+.article-photo-module{background:#faf7f0;border:1px solid #dfd6c7;padding:14px;border-radius:8px;min-width:0}
+.article-photo-module header{display:grid;gap:5px;margin-bottom:10px}.article-photo-module header small{color:#696355}.article-photo-module code{font-size:10px;overflow-wrap:anywhere}
+.article-photo-stage{position:relative;display:block;width:100%;height:190px;padding:8px;background:#eee7dc;border:0;cursor:zoom-in;color:#655f50}
+.article-photo-module .article-photo-stage img{width:100%!important;height:100%!important;object-fit:contain!important;transform:none!important}
+.article-photo-stage span{position:absolute;bottom:8px;left:8px;background:#faf7f0;padding:4px 8px;font-size:12px}
+.article-photo-nav{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:8px 0;font-size:12px}
+.article-photo-nav button{min-width:40px;min-height:40px}.article-photo-actions{display:flex;flex-wrap:wrap;gap:6px}
+.article-photo-module button:not(.article-photo-stage),.article-photo-filters button{border:1px solid #cfc5b2;border-radius:5px;background:#faf7f0;padding:7px 9px;color:#504d3e;cursor:pointer;font:inherit;font-size:12px}
+.article-photo-module button:disabled{opacity:.45;cursor:default}.article-photo-module button:focus-visible{outline:2px solid #776f4f;outline-offset:2px}
+.article-photo-message{font-size:12px;line-height:1.4;margin:8px 0 0}.article-photo-filters{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin:18px 0}.article-photo-filters>input{flex:1;min-width:180px;padding:10px}.article-photo-filters label{font-size:13px}
+.article-photo-zoom{width:min(850px,94vw);max-height:90dvh;border:1px solid #d9cfbd;background:#faf7f0;padding:14px;border-radius:8px}.article-photo-zoom::backdrop{background:#26241dc4}.article-photo-zoom img{display:block;width:100%;height:70dvh;object-fit:contain}.article-photo-zoom button{display:block;margin-left:auto;padding:10px;cursor:pointer}
+#inlinePhotoBox.article-photo-module{max-width:560px}#inlinePhotoBox .article-photo-stage{height:240px}
