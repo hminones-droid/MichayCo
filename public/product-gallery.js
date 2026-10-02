@@ -39,7 +39,16 @@ function openProductGallery(productId) {
   const error = el('p', 'gallery-error', 'No pudimos cargar esta foto. Podés elegir otra imagen.');
   error.hidden = true;
   large.onerror = () => { error.hidden = false; };
-  large.onload = () => { error.hidden = true; };
+  const fitFrame = () => {
+    if (!large.naturalWidth || !large.naturalHeight) return;
+    const padding = window.innerWidth <= 600 ? 28 : 32;
+    const height = Math.min(window.innerHeight * .58, 520);
+    const photoWidth = height * large.naturalWidth / large.naturalHeight;
+    dialog.style.width = Math.min(window.innerWidth - 24, Math.max(320, Math.min(900, photoWidth + padding + 2))) + 'px';
+    stage.style.height = Math.min(height, (dialog.clientWidth - padding) * large.naturalHeight / large.naturalWidth) + 'px';
+  };
+  large.onload = () => { error.hidden = true; fitFrame(); };
+  window.addEventListener('resize', fitFrame);
   const controls = el('div', 'gallery-controls');
   const counter = el('span', 'gallery-counter');
   counter.setAttribute('aria-live', 'polite');
@@ -80,7 +89,10 @@ function openProductGallery(productId) {
     }
   };
   dialog.onclick = event => { if (event.target === dialog) dialog.close(); };
-  dialog.onclose = () => document.documentElement.classList.remove('gallery-is-open');
+  dialog.onclose = () => {
+    document.documentElement.classList.remove('gallery-is-open');
+    window.removeEventListener('resize', fitFrame);
+  };
   show(0);
   document.documentElement.classList.add('gallery-is-open');
   dialog.showModal();
