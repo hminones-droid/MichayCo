@@ -1,0 +1,23 @@
+.product-photo-button{position:relative;width:100%;border:0;border-radius:0;cursor:zoom-in;font:inherit;color:inherit;text-align:left}
+.photo-gallery-hint{position:absolute;bottom:12px;right:12px;z-index:1;background:rgba(255,252,247,.94);color:#514b3f;border:1px solid #ded4c4;border-radius:20px;padding:6px 10px;font:500 11px/1.2 sans-serif;letter-spacing:.02em}
+.product-photo-button:focus-visible{outline:3px solid #756d52;outline-offset:3px}
+.gallery-is-open{overflow:hidden}
+.product-gallery{box-sizing:border-box;width:min(760px,calc(100% - 24px));max-height:calc(100dvh - 32px);padding:20px;border:1px solid #dcd1c1;border-radius:12px;background:#faf7f1;color:#39382e;overflow-y:auto}
+.product-gallery::backdrop{background:rgba(30,29,24,.65)}
+.gallery-header{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:12px}
+.gallery-header h2{font-size:20px;line-height:1.3;margin:0}
+.gallery-close,.gallery-arrow,.gallery-thumb{cursor:pointer;font:inherit;color:inherit;background:transparent;border:1px solid #dcd1c1;border-radius:6px}
+.gallery-close{padding:10px;flex-shrink:0;font-size:13px}
+.gallery-stage{position:relative;height:min(52dvh,460px);background:#f0e9df;border-radius:6px}
+.gallery-image{display:block;width:100%;height:100%;object-fit:contain}
+.gallery-error{position:absolute;bottom:0;background:#faf7f1;padding:10px;font-size:13px}
+.gallery-controls{display:flex;justify-content:center;align-items:center;gap:20px;padding:12px 0}
+.gallery-arrow{width:44px;height:44px;font-size:20px}
+.gallery-counter{font-size:13px;min-width:46px;text-align:center}
+.gallery-thumbnails{display:flex;flex-wrap:wrap;justify-content:center;gap:8px}
+.gallery-thumb{padding:3px;width:62px;height:62px;border:2px solid transparent;background:#f0e9df}
+.gallery-thumb[aria-pressed="true"]{border-color:#756d52}
+.gallery-thumb img{width:100%;height:100%;object-fit:contain}
+.product-gallery [hidden]{display:none!important}
+.product-gallery button:focus-visible{outline:3px solid #756d52;outline-offset:2px}
+@media(max-width:600px){.product-gallery{padding:14px}.gallery-header h2{font-size:17px}.gallery-stage{height:46dvh}.gallery-thumb{width:54px;height:54px}}
