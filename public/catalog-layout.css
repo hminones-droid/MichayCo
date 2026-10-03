@@ -1,0 +1,33 @@
+.admin-form.catalog-organized{max-width:1120px;gap:0}
+.catalog-organized .catalog-guide{padding:.65rem .85rem;margin:0 0 .85rem;font-size:.88rem}
+.catalog-topic{border:1px solid #dedcd2;border-radius:7px;margin:0 0 .7rem;background:#fbfaf6;min-width:0}
+.catalog-topic>summary{padding:.8rem 1rem;font-size:1rem;font-weight:600;letter-spacing:normal;cursor:pointer}
+.catalog-topic-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.65rem 1rem;padding:0 1rem .85rem;align-items:start}
+.catalog-topic-grid:empty{display:none}
+.catalog-organized label{margin:0;min-width:0}
+.catalog-organized input,.catalog-organized select,.catalog-organized textarea{box-sizing:border-box;max-width:100%;min-width:0;padding:.65rem .75rem;font-size:.92rem}
+.catalog-organized textarea{min-height:76px}
+.catalog-organized .check{display:flex;align-items:center;gap:.5rem;min-height:44px}
+.catalog-organized .check input{width:auto;flex:none}
+.catalog-organized .quick-add-master{display:inline-block;margin:.2rem 0 0;padding:.2rem 0;min-height:28px}
+.catalog-organized .catalog-advanced{margin:.65rem 0;padding:.75rem 1rem}
+.catalog-organized .catalog-advanced>label{display:inline-block;width:calc(50% - .7rem);vertical-align:top;margin:.4rem .5rem .4rem 0}
+.catalog-main-actions{display:flex;align-items:center;flex-wrap:wrap;gap:.65rem;margin:1rem 0}
+.catalog-main-actions>#afMsg,.catalog-main-actions>#catMsg{flex-basis:100%}
+.catalog-main-actions .btn{margin:0}
+.catalog-topic .product-photo-inline{margin:0;padding:0 1rem 1rem;border:0}
+.catalog-topic .product-photo-inline h3,.catalog-topic .product-photo-inline .eyebrow{display:none}
+.catalog-topic .mfg-section{border:0;margin:0;background:transparent}
+.catalog-topic [data-physical-measures]{padding:0 1rem .5rem}
+.catalog-topic [data-physical-measures] .mfg-measure-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:.65rem}
+.catalog-organized .mfg-body p{margin:.45rem 0}
+.catalog-organized .mfg-recipe-card{padding:.4rem 0}
+.catalog-organized .mfg-recipe-row{padding:.3rem 0;gap:.75rem}
+.catalog-organized .mfg-measures,.catalog-organized .mfg-copy{padding:.65rem .8rem;margin:.6rem 0}
+.catalog-organized .mfg-preview ul{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.3rem 1.5rem}
+.catalog-organized .mfg-preview li{break-inside:avoid}
+.mfg-row-summary{display:flex;justify-content:space-between;gap:1rem;cursor:pointer;align-items:center;min-height:42px;font-size:.9rem}
+.mfg-row-summary output{font-variant-numeric:tabular-nums;text-align:right;color:#555d43}
+.mfg-recipe-card>details>summary small{color:#6a6c61;margin-left:.5rem}
+@media(max-width:700px){.catalog-topic [data-physical-measures] .mfg-measure-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.catalog-organized .mfg-preview ul{grid-template-columns:1fr}}
+@media(max-width:480px){.catalog-topic-grid{grid-template-columns:1fr}.catalog-organized .catalog-advanced>label{width:100%;margin-right:0}.catalog-topic>summary{padding:.75rem}.catalog-topic-grid{padding:0 .75rem .75rem}}

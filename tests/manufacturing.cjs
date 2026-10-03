@@ -8,7 +8,7 @@ assert.match(run("Mfg.validate({status:'ready',lines:[{name:'Lavanda',percent:80
 assert.equal(run("Mfg.validate({status:'draft',lines:[{name:'Lavanda',percent:80}]},'fragrance').length"),0);
 assert.equal(run("Mfg.validate({status:'ready',lines:[{name:'A',percent:70},{name:'B',percent:30}]},'fragrance').length"),0);
 assert.match(run("Mfg.validate({status:'ready',lines:[{name:'LAVÁNDA',percent:50},{name:' lavanda ',percent:50}]},'fragrance').join()"),/repetidas/);
-run(`let recipe={kind:'candle',status:'ready',measures:{final_mass_g:112,internal_height_cm:8,wick_allowance_cm:2},lines:Mfg.preset('candle').lines.slice(0,6).map(l=>({...l,name:l.label,quantity:{vessel:1,wax:null,catalyst:2,fragrance:10,wick:2,tab:2}[l.key]}))}`);
+run(`let recipe={kind:'candle',status:'ready',measures:{final_mass_g:112,internal_height_cm:8,wick_allowance_cm:2},lines:Mfg.preset('candle').lines.slice(0,6).map(l=>({...l,name:l.label,basis:{wax:'wax',fragrance:'per100wax',wick:'wick',tab:'fixed'}[l.key]||l.basis,unit:l.key==='fragrance'?'g':l.unit,quantity:{vessel:1,wax:null,catalyst:2,fragrance:10,wick:2,tab:2}[l.key]}))}`);
 assert.ok(Math.abs(run('Mfg.totals(recipe).wax')-100)<1e-9);
 assert.equal(run("Mfg.totals(recipe).rows.find(l=>l.key==='wick').total"),20);
 assert.equal(run("Mfg.validate(recipe,'product').length"),0);

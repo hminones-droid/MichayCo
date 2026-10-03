@@ -8,7 +8,7 @@ Object.defineProperty(window.HTMLInputElement.prototype,'checked',{get(){return 
 const memory={},context={document,console,Event:window.Event,MutationObserver:window.MutationObserver,crypto:require('node:crypto').webcrypto,setTimeout,clearTimeout,mountArticlePhotos(){},location:{},confirm:()=>true};
 context.window=context;for(const id of new Set([...source.matchAll(/id="([\w-]+)"/g)].map(x=>x[1])))Object.defineProperty(context,id,{get:()=>document.getElementById(id),configurable:true});
 context.sb={from(table){let op='read',payload,filters={};const api={select(){return api},eq(k,v){filters[k]=v;return api},insert(d){op='insert';payload=d;return api},update(d){op='update';payload=d;return api},async maybeSingle(){return api.single()},async single(){let old=memory[table];if(op==='read')return {data:old||null};if(op==='update'&&old?.revision!==filters.revision)return {data:null};const data={...old,...payload,revision:(old?.revision||0)+1};memory[table]=data;return {data}}};return api}};
-vm.createContext(context);vm.runInContext(source,context);vm.runInContext(fs.readFileSync(__dirname+'/../public/manufacturing.js','utf8'),context);
+vm.createContext(context);vm.runInContext(source,context);vm.runInContext(fs.readFileSync(__dirname+'/../public/catalog-layout.js','utf8'),context);vm.runInContext(fs.readFileSync(__dirname+'/../public/manufacturing.js','utf8'),context);
 const run=s=>vm.runInContext(s,context),tick=()=>new Promise(r=>setImmediate(r)),q=s=>document.querySelector(s);
 (async()=>{
 run("adminCache.categories=[{id:'c1',name:'Velas Soja',code:'VS'}];adminCache.products=[{id:'p1',name:'Vela',category_id:'c1',capacity_cc:200,sku:'VS-CR-200-N-01-BL',material:'Cristal',color:'Blanco',version_code:'01',price:100}];adminCache.materials=[{name:'Cristal',code:'CR'}];adminCache.colors=[{name:'Blanco',code:'BL'}];adminCache.fragrances=[{id:'f1',name:'Prueba',code:'PR'}];categoryForm('c1')");await tick();
@@ -17,5 +17,20 @@ run("productForm('p1')");await tick();assert.equal(document.querySelectorAll('[d
 run("fragForm('f1')");await tick();let rows=document.querySelectorAll('[data-blend]');rows[0].querySelector('[data-name]').value='A';rows[0].querySelector('[data-percent]').value='70';rows[1].querySelector('[data-name]').value='B';rows[1].querySelector('[data-percent]').value='30';q('[data-status]').value='ready';await q('[data-save]').onclick();assert.equal(memory.fragrance_compositions.revision,1);assert.equal(memory.fragrance_compositions.data.lines.length,2);
 // Stale edit rejected without replacing existing content.
 memory.fragrance_compositions={...memory.fragrance_compositions,revision:2};rows[0].querySelector('[data-percent]').value='60';rows[1].querySelector('[data-percent]').value='40';await q('[data-save]').onclick();assert.match(q('[data-msg]').textContent,/otra sesión/);assert.equal(memory.fragrance_compositions.data.lines[0].percent,70);
+// Product preview expands its associated fragrance and groups presentation once.
+run("adminCache.variants=[{product_id:'p1',fragrance_id:'f1'}];productForm('p1')");await tick();
+assert.equal(document.querySelectorAll('.mfg-presentation').length,1);
+assert.equal(document.querySelectorAll('.catalog-topic').length,5);
+assert.ok(q('[data-physical-measures] [data-measure="external_height_cm"]'));
+assert.ok(q('[data-content-slot] .mfg-section'));
+assert.ok(q('#quickMaterial'));assert.ok(q('#quickColor'));
+assert.equal(document.querySelectorAll('#afSave').length,1);
+assert.equal(document.querySelectorAll('[data-measure="external_height_cm"]').length,1);
+assert.equal(document.querySelectorAll('.mfg-presentation [data-recipe-line]').length,4);
+q('[data-fragrance]').value='f1';await q('[data-fragrance]').onchange();
+assert.match(q('[data-preview]').textContent,/A \(70 %\)/);assert.match(q('[data-preview]').textContent,/5,95/);
+q('[data-recipe-line="vessel"] [data-name]').value='Vaso Tennessee';q('[data-measure="external_height_cm"]').value='10';q('[data-status]').value='ready';await q('[data-save]').onclick();assert.equal(memory.product_manufacturing_recipes.data.status,'ready');
+q('[data-recipe-line="wick"] [data-quantity]').value='3';q('[data-recipe-line="wick"] [data-quantity]').dispatchEvent(new window.Event('input',{bubbles:true}));assert.match(q('[data-preview]').textContent,/Chapita base: 3/);
+q('[data-reset-template]').onclick();await tick();assert.equal(q('[data-fragrance]').value,'f1');assert.ok(q('[data-recipe-line="fragrance"] [data-fragrance]'));
 console.log('PASS: real form DOM, category save, inheritance, draft/ready, blend save, stale edit rejection (mock API; not visual QA)');
 })().catch(e=>{console.error(e);process.exit(1)});
