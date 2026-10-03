@@ -71,7 +71,7 @@
     document.getElementById('catSave').onclick=async()=>{const n=name.value.trim(),c=normCode(code.value,2),msg=document.getElementById('catMsg');const err=catalogValidation(n,c,adminCache.categories,id,[]);if(err){msg.textContent=err;return}const d={name:n,slug:aslug(n),code:c,display_order:Number(document.getElementById('catOrder').value||0),published:document.getElementById('catPub').checked};const r=id?await sb.from('categories').update(d).eq('id',id):await sb.from('categories').insert(d);if(r.error){msg.textContent=r.error.message;return}openCategories()};
   };
 
-  const supplyTypeLabel={container:'Envase',essence:'Esencia',raw_material:'Materia prima',accessory:'Accesorio',presentation:'Presentación'};
+  const supplyTypeLabel={container:'Envase',essence:'Esencia',raw_material:'Materia prima',accessory:'Accesorio',component:'Componente',presentation:'Presentación'};
   window.openSupplies=async function(){
     setAdminView('supplies','supplies');const w=adminShell();
     const r=await sb.from('supplies').select('*').order('type').order('purchase_name');
