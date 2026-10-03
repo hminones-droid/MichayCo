@@ -2,7 +2,7 @@
 create table if not exists public.supplies (
   id uuid primary key default gen_random_uuid(),
   code text not null unique,
-  type text not null check (type in ('container','essence','raw_material','accessory','presentation')),
+  type text not null check (type in ('container','essence','raw_material','accessory','component','presentation')),
   purchase_name text not null,
   description text,
   stock_unit text not null check (stock_unit in ('unit','ml','g','cm')),
@@ -42,7 +42,7 @@ create or replace function public.next_supply_code(p_type text)
 returns text language plpgsql security definer set search_path=public as $$
 declare prefix text; n integer;
 begin
- prefix:=case p_type when 'container' then 'ENV' when 'essence' then 'ESC' when 'raw_material' then 'MAT' when 'accessory' then 'ACC' when 'presentation' then 'PRE' else null end;
+ prefix:=case p_type when 'container' then 'ENV' when 'essence' then 'ESC' when 'raw_material' then 'MAT' when 'accessory' then 'ACC' when 'component' then 'COM' when 'presentation' then 'PRE' else null end;
  if prefix is null then raise exception 'Tipo de insumo inválido'; end if;
  if not public.is_admin() then raise exception 'No autorizado'; end if;
  select coalesce(max(nullif(regexp_replace(code,'^'||prefix||'-','','i'),'')::integer),0)+1 into n from public.supplies where code ~* ('^'||prefix||'-[0-9]+$');
@@ -50,3 +50,27 @@ begin
 end $$;
 revoke all on function public.next_supply_code(text) from public;
 grant execute on function public.next_supply_code(text) to authenticated;
+
+
+-- Relación flexible producto-insumo. El tipo describe al insumo; role describe su función en este producto.
+create table if not exists public.product_supplies (
+  id uuid primary key default gen_random_uuid(),
+  product_id uuid not null references public.products(id) on delete cascade,
+  supply_id uuid not null references public.supplies(id) on delete restrict,
+  role text not null check (role in ('primary','use_container','content_container','secondary','closure','applicator','consumable','presentation','replacement')),
+  quantity numeric(14,3) check (quantity is null or quantity > 0),
+  quantity_rule text not null default 'fixed' check (quantity_rule in ('fixed','by_capacity','by_recipe','by_length','per_unit')),
+  content_container_supply_id uuid references public.supplies(id) on delete restrict,
+  notes text,
+  display_order integer not null default 0,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  unique(product_id,supply_id,role)
+);
+comment on table public.product_supplies is 'Componentes físicos y consumibles de un producto. Separa tipo de insumo de su rol dentro del artículo o kit.';
+create index if not exists product_supplies_product_idx on public.product_supplies(product_id,display_order);
+alter table public.product_supplies enable row level security;
+create policy "product_supplies_admin_select" on public.product_supplies for select to authenticated using (public.is_admin());
+create policy "product_supplies_admin_insert" on public.product_supplies for insert to authenticated with check (public.is_admin());
+create policy "product_supplies_admin_update" on public.product_supplies for update to authenticated using (public.is_admin()) with check (public.is_admin());
+create policy "product_supplies_admin_delete" on public.product_supplies for delete to authenticated using (public.is_admin());
