@@ -2,6 +2,15 @@
    Capa de transición: mejora UX sin alterar el contrato público de la tienda. */
 (function(){
   const state={categoryFilter:'all',categoryQuery:''};
+  const relationStack=[];
+  function rememberDraft(root){const values={};root.querySelectorAll('input,select,textarea').forEach(el=>{if(!el.id)return;values[el.id]=el.type==='checkbox'?el.checked:el.value});return values}
+  function restoreDraft(values){Object.entries(values||{}).forEach(([id,value])=>{const el=document.getElementById(id);if(!el)return;if(el.type==='checkbox')el.checked=!!value;else el.value=value})}
+  window.catalogQuickCreate=function(options){
+    const root=adminShell(),draft=rememberDraft(root);relationStack.push({draft,onReturn:options.onReturn});
+    const overlay=document.createElement('dialog');overlay.className='catalog-quick-create';overlay.innerHTML='<form method="dialog" class="catalog-quick-card"><header><div><span class="eyebrow">'+ae(options.eyebrow||'CATÁLOGO')+'</span><h3>'+ae(options.title)+'</h3></div><button value="cancel" aria-label="Cerrar">×</button></header><div class="catalog-quick-body"></div></form>';
+    document.body.appendChild(overlay);options.render(overlay.querySelector('.catalog-quick-body'),async value=>{overlay.close();overlay.remove();const ctx=relationStack.pop();restoreDraft(ctx.draft);if(ctx.onReturn)await ctx.onReturn(value)});
+    overlay.addEventListener('close',()=>{if(overlay.isConnected){overlay.remove();relationStack.pop()}});overlay.showModal();
+  };
 
   function categoryStats(c){
     const products=adminCache.products.filter(p=>p.category_id===c.id);
