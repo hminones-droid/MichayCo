@@ -1,0 +1,10 @@
+const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm'),path=require('node:path');
+const source=fs.readFileSync(path.join(__dirname,'../public/catalog-admin-v2.js'),'utf8');
+assert.match(source,/window\.openCategories/);
+assert.match(source,/categoryStats/);
+assert.match(source,/catalogQuickCreate/);
+assert.match(source,/rememberDraft/);
+const css=fs.readFileSync(path.join(__dirname,'../public/catalog-admin-v2.css'),'utf8');
+assert.match(css,/@media\(max-width:600px\)/);
+assert.match(css,/catalog-quick-create/);
+console.log('catalog admin v2 smoke: ok');
