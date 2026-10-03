@@ -1,0 +1,13 @@
+const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict');
+const source=fs.readFileSync(__dirname+'/../public/app.js','utf8');
+const take=(a,b)=>source.slice(source.indexOf('function '+a+'('),source.indexOf('function '+b+'('));
+const host={innerHTML:''},context={products:[{id:'visible',price:100}],variants:[{product_id:'hidden',stock:2,fragrance:{id:'f1'}},{product_id:'visible',stock:3,fragrance:{id:'f1'}}],fragrances:[{id:'f1',name:'Fresh Peony',discovery_moments:['Calma']}],images:[{product_id:'visible'}],aromaWorlds:[{name:'Calma',image:1,note:'Pausa'}],$:()=>host,aromaText:x=>x};
+vm.createContext(context);
+vm.runInContext(take('availableStock','productMeta')+take('productPhoto','photoUrl')+take('renderAromaDiscovery','aromaText')+take('availableAromaVariants','showAromaWorld'),context);
+assert.equal(vm.runInContext('storefrontReady(undefined)',context),false);
+assert.equal(vm.runInContext('productPhoto(undefined)',context),null);
+vm.runInContext('renderAromaDiscovery()',context);assert.match(host.innerHTML,/Explorar 1 aroma/);
+assert.equal(vm.runInContext("availableAromaVariants('f1').length",context),1);
+context.fragrances[0].name='Peony Blush';vm.runInContext('renderAromaDiscovery()',context);assert.match(host.innerHTML,/Explorar 1 aroma/);
+context.products=[];vm.runInContext('renderAromaDiscovery()',context);assert.match(host.innerHTML,/preparando nuevas experiencias/);
+console.log('PASS: hidden/missing products do not interrupt aroma discovery; rename preserves identity; empty result is handled');
