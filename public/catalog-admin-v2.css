@@ -1,0 +1,12 @@
+/* Micha & Co — patrón administrativo V2 */
+.catalog-v2-toolbar{align-items:flex-end}.catalog-v2-actions{display:flex;gap:.55rem;flex-wrap:wrap}
+.catalog-v2-controls{display:grid;grid-template-columns:minmax(220px,1fr) 190px;gap:.65rem;margin:.8rem 0}
+.catalog-v2-controls input,.catalog-v2-controls select{box-sizing:border-box;width:100%;min-height:42px}
+.catalog-v2-head,.catalog-v2-row{display:grid;grid-template-columns:minmax(220px,2fr) repeat(5,minmax(72px,.7fr)) minmax(110px,.9fr) 92px;gap:.6rem;align-items:center}
+.catalog-v2-head{padding:.55rem .8rem;color:#68695f;font-size:.72rem;text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid #dedcd2}
+.catalog-v2-row{padding:.65rem .8rem;border-bottom:1px solid #e5e2d8;min-height:54px}
+.catalog-v2-name{appearance:none;border:0;background:none;text-align:left;padding:0;cursor:pointer;color:inherit}.catalog-v2-name b,.catalog-v2-name small{display:block}.catalog-v2-name small{margin-top:.15rem;color:#73746c}
+.catalog-v2-row>span{font-variant-numeric:tabular-nums}.catalog-v2-row-actions{display:flex;justify-content:flex-end;gap:.25rem}.v2-warn{color:#8a5a16}.v2-ok{color:#536344}
+.catalog-v2-form{max-width:760px}.catalog-v2-form-grid{display:grid;grid-template-columns:minmax(0,2fr) minmax(120px,.7fr);gap:.8rem}.catalog-v2-form .catalog-advanced{margin:.7rem 0}.catalog-v2-form .catalog-advanced label{display:block;max-width:220px}
+@media(max-width:900px){.catalog-v2-head{display:none}.catalog-v2-row{grid-template-columns:repeat(3,1fr);gap:.65rem;padding:.8rem;border:1px solid #e1ded4;border-radius:8px;margin:.55rem 0}.catalog-v2-name{grid-column:1/-1}.catalog-v2-row>span,.catalog-v2-row>.visibility-control{display:flex;justify-content:space-between;gap:.5rem}.catalog-v2-row>span:before,.catalog-v2-row>.visibility-control:before{content:attr(data-label);color:#77786f;font-size:.75rem}.catalog-v2-row-actions{grid-column:3;justify-self:end}}
+@media(max-width:600px){.catalog-v2-controls{grid-template-columns:1fr}.catalog-v2-row{grid-template-columns:1fr 1fr}.catalog-v2-row-actions{grid-column:2}.catalog-v2-form-grid{grid-template-columns:1fr}.catalog-v2-toolbar{align-items:stretch}.catalog-v2-actions .btn{width:100%}}
