@@ -38,16 +38,26 @@ create policy "supplies_admin_insert" on public.supplies for insert to authentic
 create policy "supplies_admin_update" on public.supplies for update to authenticated using (public.is_admin()) with check (public.is_admin());
 create policy "supplies_admin_delete" on public.supplies for delete to authenticated using (public.is_admin());
 
+create table if not exists public.supply_code_counters (
+  type text primary key check (type in ('container','essence','raw_material','accessory','component','presentation')),
+  next_value integer not null check (next_value > 0)
+);
+alter table public.supply_code_counters enable row level security;
+insert into public.supply_code_counters(type,next_value) values
+ ('container',1),('essence',1),('raw_material',1),('accessory',1),('component',1),('presentation',1)
+on conflict (type) do nothing;
+
 create or replace function public.next_supply_code(p_type text)
-returns text language plpgsql security definer set search_path=public as $$
+returns text language plpgsql security definer set search_path=public as $
 declare prefix text; n integer;
 begin
  prefix:=case p_type when 'container' then 'ENV' when 'essence' then 'ESC' when 'raw_material' then 'MAT' when 'accessory' then 'ACC' when 'component' then 'COM' when 'presentation' then 'PRE' else null end;
  if prefix is null then raise exception 'Tipo de insumo inválido'; end if;
  if not public.is_admin() then raise exception 'No autorizado'; end if;
- select coalesce(max(nullif(regexp_replace(code,'^'||prefix||'-','','i'),'')::integer),0)+1 into n from public.supplies where code ~* ('^'||prefix||'-[0-9]+$');
+ update public.supply_code_counters set next_value=next_value+1 where type=p_type returning next_value-1 into n;
+ if n is null then raise exception 'Contador de código no configurado'; end if;
  return prefix||'-'||lpad(n::text,3,'0');
-end $$;
+end $;
 revoke all on function public.next_supply_code(text) from public;
 grant execute on function public.next_supply_code(text) to authenticated;
 
@@ -74,3 +84,16 @@ create policy "product_supplies_admin_select" on public.product_supplies for sel
 create policy "product_supplies_admin_insert" on public.product_supplies for insert to authenticated with check (public.is_admin());
 create policy "product_supplies_admin_update" on public.product_supplies for update to authenticated using (public.is_admin()) with check (public.is_admin());
 create policy "product_supplies_admin_delete" on public.product_supplies for delete to authenticated using (public.is_admin());
+
+
+create or replace function public.validate_product_supply_container()
+returns trigger language plpgsql set search_path=public as $$
+declare container_type text;
+begin
+ if new.content_container_supply_id is null then return new; end if;
+ select type into container_type from public.supplies where id=new.content_container_supply_id;
+ if container_type is distinct from 'container' then raise exception 'El contenedor asociado debe ser un insumo de tipo Envase'; end if;
+ return new;
+end $$;
+drop trigger if exists validate_product_supply_container_trg on public.product_supplies;
+create trigger validate_product_supply_container_trg before insert or update of content_container_supply_id on public.product_supplies for each row execute function public.validate_product_supply_container();
