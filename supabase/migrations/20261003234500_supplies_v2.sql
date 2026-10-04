@@ -87,13 +87,13 @@ create policy "product_supplies_admin_delete" on public.product_supplies for del
 
 
 create or replace function public.validate_product_supply_container()
-returns trigger language plpgsql set search_path=public as $$
+returns trigger language plpgsql set search_path=public as $fn$
 declare container_type text;
 begin
  if new.content_container_supply_id is null then return new; end if;
  select type into container_type from public.supplies where id=new.content_container_supply_id;
  if container_type is distinct from 'container' then raise exception 'El contenedor asociado debe ser un insumo de tipo Envase'; end if;
  return new;
-end $$;
+end $fn$;
 drop trigger if exists validate_product_supply_container_trg on public.product_supplies;
 create trigger validate_product_supply_container_trg before insert or update of content_container_supply_id on public.product_supplies for each row execute function public.validate_product_supply_container();
