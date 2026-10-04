@@ -1,7 +1,7 @@
 /* Micha & Co — Catálogo administrativo V2
    Capa de transición: mejora UX sin alterar el contrato público de la tienda. */
 (function(){
-  const state={categoryFilter:'all',categoryQuery:''};
+  const state={categoryFilter:'all',categoryQuery:'',supplyFilter:'all',supplyQuery:''};
   const relationStack=[];
   function rememberDraft(root){const values={};root.querySelectorAll('input,select,textarea').forEach(el=>{if(!el.id)return;values[el.id]=el.type==='checkbox'?el.checked:el.value});return values}
   function restoreDraft(values){Object.entries(values||{}).forEach(([id,value])=>{const el=document.getElementById(id);if(!el)return;if(el.type==='checkbox')el.checked=!!value;else el.value=value})}
@@ -72,16 +72,18 @@
   };
 
   const supplyTypeLabel={container:'Envase',essence:'Esencia',raw_material:'Materia prima',accessory:'Accesorio',component:'Componente',presentation:'Presentación'};
+  const money=v=>v==null?'—':Number(v).toLocaleString('es-AR',{style:'currency',currency:'ARS'});
+  const unitCost=x=>x.last_purchase_cost!=null&&Number(x.purchase_quantity)>0?Number(x.last_purchase_cost)/Number(x.purchase_quantity):null;
+  const supplyStatus=x=>Number(x.stock||0)<=0?'Sin stock':x.min_stock!=null&&Number(x.stock)<Number(x.min_stock)?'Bajo mínimo':'OK';
   window.openSupplies=async function(){
     setAdminView('supplies','supplies');const w=adminShell();
-    const r=await sb.from('supplies').select('*').order('type').order('purchase_name');
-    const rows=r.error?[]:(r.data||[]);
-    w.innerHTML='<div class="admin-toolbar catalog-v2-toolbar"><div><span class="eyebrow">CATÁLOGO</span><h2>Insumos</h2><p class="admin-help">Envases, esencias, materias primas, accesorios y presentación en un único maestro.</p></div><div class="catalog-v2-actions"><button class="btn" id="newSupply">+ Nuevo</button></div></div>'+
-    (r.error?'<p class="catalog-v2-notice">El maestro de Insumos todavía no está habilitado en esta base.</p>':'<div class="catalog-v2-controls"><input id="supplySearch" type="search" placeholder="Buscar insumo"><select id="supplyType"><option value="">Todos los tipos</option>'+Object.entries(supplyTypeLabel).map(([k,v])=>'<option value="'+k+'">'+v+'</option>').join('')+'</select></div><div id="supplyList" class="catalog-v2-list">'+rows.map(x=>'<article class="catalog-v2-row supply-v2-row"><button class="catalog-v2-name" data-supply="'+x.id+'"><b>'+ae(x.purchase_name)+'</b><small>'+ae(x.code)+' · '+ae(supplyTypeLabel[x.type]||x.type)+'</small></button><span data-label="Stock">'+Number(x.stock||0)+' '+ae(x.stock_unit)+'</span><span data-label="Mínimo">'+(x.min_stock??'—')+'</span><span data-label="Objetivo">'+(x.target_stock??'—')+'</span><span data-label="Costo">'+(x.last_purchase_cost==null?'—':Number(x.last_purchase_cost).toLocaleString('es-AR',{style:'currency',currency:'ARS'}))+'</span><span data-label="Estado">'+(x.active?'Activo':'Oculto')+'</span></article>').join('')+'</div>');
-    const b=w.querySelector('#newSupply');if(b)b.onclick=()=>supplyForm();
-    const search=w.querySelector('#supplySearch'),type=w.querySelector('#supplyType'),list=w.querySelector('#supplyList');
-    if(list)list.onclick=e=>{const b=e.target.closest('[data-supply]');if(b)supplyForm(b.dataset.supply)};
-    const draw=()=>{if(!list)return;const q=(search.value||'').toLowerCase(),t=type.value;list.querySelectorAll('.supply-v2-row').forEach((el,i)=>{const x=rows[i];el.hidden=!!((q&&!x.purchase_name.toLowerCase().includes(q))||(t&&x.type!==t))})};if(search)search.oninput=draw;if(type)type.onchange=draw;
+    const [r,usageR]=await Promise.all([sb.from('supplies').select('*').order('type').order('purchase_name'),sb.from('product_supplies').select('supply_id')]);
+    const rows=r.error?[]:(r.data||[]),usage=(usageR.data||[]).reduce((m,x)=>(m[x.supply_id]=(m[x.supply_id]||0)+1,m),{});
+    const filtered=()=>rows.filter(x=>{const q=state.supplyQuery,t=state.supplyFilter,status=supplyStatus(x);return (!q||(x.purchase_name+' '+x.code+' '+(x.supplier||'')).toLowerCase().includes(q))&&(t==='all'||t==='active'&&x.active||t==='hidden'&&!x.active||t==='low'&&status==='Bajo mínimo'||t==='empty'&&status==='Sin stock'||x.type===t)});
+    const draw=()=>{const list=document.getElementById('supplyList');if(!list)return;list.innerHTML=filtered().map(x=>'<article class="catalog-v2-row supply-v2-row"><button class="catalog-v2-name" data-supply="'+x.id+'"><b>'+ae(x.purchase_name)+'</b><small>'+ae(x.code)+' · '+ae(supplyTypeLabel[x.type]||x.type)+'</small></button><span data-label="Stock">'+Number(x.stock||0)+' '+ae(x.stock_unit)+'</span><span data-label="Usado en">'+(usage[x.id]||0)+' producto(s)</span><span data-label="Costo unit.">'+money(unitCost(x))+'</span><span data-label="Estado"><b class="'+(supplyStatus(x)==='OK'?'v2-ok':'v2-warn')+'">'+supplyStatus(x)+'</b></span><span data-label="Catálogo">'+(x.active?'Activo':'Oculto')+'</span></article>').join('')||'<p class="sheet-empty">No hay insumos para este filtro.</p>';list.onclick=e=>{const b=e.target.closest('[data-supply]');if(b)supplyForm(b.dataset.supply)}};
+    w.innerHTML='<div class="admin-toolbar catalog-v2-toolbar"><div><span class="eyebrow">CATÁLOGO</span><h2>Insumos</h2><p class="admin-help">Maestro único de elementos físicos, compras y existencias.</p></div><div class="catalog-v2-actions"><button class="btn" id="newSupply">+ Nuevo</button></div></div>'+
+    (r.error?'<p class="catalog-v2-notice">El maestro de Insumos todavía no está habilitado en esta base.</p>':'<div class="catalog-v2-controls"><input id="supplySearch" type="search" placeholder="Buscar nombre, código o proveedor"><select id="supplyType"><option value="all">Todos</option><option value="active">Activos</option><option value="hidden">Ocultos</option><option value="low">Bajo mínimo</option><option value="empty">Sin stock</option>'+Object.entries(supplyTypeLabel).map(([k,v])=>'<option value="'+k+'">'+v+'</option>').join('')+'</select></div><div class="catalog-v2-head supply-v2-head" aria-hidden="true"><span>Insumo</span><span>Stock</span><span>Usado en</span><span>Costo unit.</span><span>Estado</span><span>Catálogo</span></div><div id="supplyList" class="catalog-v2-list"></div>');
+    const b=w.querySelector('#newSupply');if(b)b.onclick=()=>supplyForm();const search=w.querySelector('#supplySearch'),type=w.querySelector('#supplyType');if(search){search.value=state.supplyQuery;search.oninput=()=>{state.supplyQuery=search.value.trim().toLowerCase();draw()}}if(type){type.value=state.supplyFilter;type.onchange=()=>{state.supplyFilter=type.value;draw()}}draw();
   };
   window.supplyForm=async function(id){
     const existing=id?(await sb.from('supplies').select('*').eq('id',id).single()).data:{};
