@@ -15,7 +15,7 @@ Complejidad debajo, simplicidad para el usuario. Un dato se carga una sola vez e
 ## Modelo objetivo
 Categoría → reglas comunes de fabricación → Producto → Variante física/envase → SKU vendible.
 Fragancia es transversal y se formula con Esencias.
-Insumos unificados por tipo: ENV, ESC, MAT, ACC, PRE.
+Insumos unificados por tipo: ENV, ESC, MAT, ACC, COM, PRE.
 Envases agregan atributos físicos estructurados (material, color, capacidad y dimensiones).
 SKU final combina identidad comercial/variante física con fragancia; el usuario no construye combinaciones manualmente.
 
@@ -24,3 +24,8 @@ La tienda actual continúa recibiendo los campos que espera mientras el backoffi
 
 ## Primer incremento
 Categorías V2 usa el patrón compacto común: búsqueda, estado, métricas calculadas, visibilidad, acciones y edición responsive. La ficha expone sólo datos comerciales; el código queda en opciones técnicas para preservar los SKU existentes.
+
+## Insumos y composición física
+El tipo del insumo es estable; el rol se define en cada relación con un producto. Un producto puede tener múltiples envases y componentes. La relación Producto → Insumo guarda rol, cantidad o regla de cantidad y, cuando corresponde, el envase concreto que recibe un contenido. Esto cubre kits y artículos como Difusor Volcán sin forzar que todo sea un único envase principal.
+
+El monitor de Insumos separa stock, uso, costo unitario derivado, estado de reposición y visibilidad del catálogo. Stock bajo mínimo y sin stock son estados operativos, no equivalen a ocultar el insumo.
