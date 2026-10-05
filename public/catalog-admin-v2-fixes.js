@@ -4,15 +4,15 @@
   const v2OpenCategories=window.openCategories;
   const v2SupplyForm=window.supplyForm;
 
-  function linkAvailability(link){
+  function linkManufacturingCapacity(link){
     const supply=suppliesById[link.supply_id];
     if(!supply)return 0;
     const stock=Number(supply.stock||0);
     if(stock<=0)return 0;
     const qty=Number(link.quantity);
-    // Fixed/per-unit relations with an explicit quantity can be converted into
-    // finished units. Formula/capacity/length rules require their resolver and
-    // are intentionally not guessed here.
+    // This is manufacturing capacity from input stock, never finished-product stock.
+    // Fixed/per-unit relations with an explicit quantity are directly resolvable.
+    // Formula/capacity/length rules require the manufacturing resolver and are not guessed.
     if(['fixed','per_unit'].includes(link.quantity_rule)&&Number.isFinite(qty)&&qty>0)return Math.floor(stock/qty);
     return null;
   }
@@ -25,14 +25,29 @@
     if(typeof articlePhotos==='function'&&!articlePhotos(p.id)[0])missing.push('foto');
     const links=usageByProduct[p.id]||[];
     if(!links.length)missing.push('componentes');
-    const availability=links.map(linkAvailability);
+
+    const capacities=links.map(linkManufacturingCapacity);
     const hasMissingSupply=links.some(x=>!suppliesById[x.supply_id]);
-    const known=availability.filter(x=>x!==null);
-    const stock=links.length&&!hasMissingSupply&&known.length===availability.length?Math.min(...known):null;
-    if(p?.published!==false&&stock===0)warnings.push('sin stock disponible');
-    if(p?.published!==false&&stock===null&&links.length)warnings.push('stock pendiente de resolver por fórmula/capacidad');
+    const known=capacities.filter(x=>x!==null);
+    const manufacturingCapacity=links.length&&!hasMissingSupply&&known.length===capacities.length?Math.min(...known):null;
+
+    // Catalog completeness is structural. Current input stock must never make a
+    // correctly configured product incomplete or not sellable: finished stock is separate.
+    if(p?.published!==false&&manufacturingCapacity===0)warnings.push('sin capacidad de fabricación con el stock actual de insumos');
+    if(p?.published!==false&&manufacturingCapacity===null&&links.length)warnings.push('capacidad de fabricación pendiente de resolver por receta/capacidad');
     if(p?.published!==false&&missing.length)warnings.push('visible incompleto');
-    return {missing,warnings,stock,state:missing.length?'incomplete':'complete',label:missing.length?'Falta '+missing.join(' · '):'Configuración completa',salesReady:!missing.length&&p?.published!==false&&stock!==0};
+
+    return {
+      missing,
+      warnings,
+      manufacturingCapacity,
+      // Legacy alias kept temporarily so older UI consumers do not break. It means
+      // manufacturing capacity, NOT finished stock, and must be retired with legacy admin.
+      stock:manufacturingCapacity,
+      state:missing.length?'incomplete':'complete',
+      label:missing.length?'Falta '+missing.join(' · '):'Configuración completa',
+      salesReady:!missing.length&&p?.published!==false
+    };
   }
 
   async function loadV2ReadinessContext(){
