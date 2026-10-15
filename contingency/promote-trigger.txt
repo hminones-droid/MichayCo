@@ -1,0 +1,4 @@
+trigger=2026-10-15T18:23:00-03:00
+base=cc831db0-0df3-4a35-99ed-b6f6628136e2
+candidate=17b6f71a-b819-4dbb-b9c0-e56ae186581b
+release=dev-catalog-canonical-excel-20261015-2
