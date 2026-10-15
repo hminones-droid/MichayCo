@@ -1,12 +1,12 @@
 {
   "target": "michayco-dev",
   "production_locked": true,
-  "release": "dev-admin-ui-canonical-20261014-2",
-  "version_id": "cc831db0-0df3-4a35-99ed-b6f6628136e2",
-  "deployment_id": "45f7b80b-e6aa-4994-bba1-96bcb7566c09",
-  "sha256": "b8d022234acbf8c02bfc7c7106c789db82147fff05b5bd825e50bc6a47089985",
-  "bytes": 1948387,
+  "release": "dev-catalog-canonical-excel-20261015-2",
+  "version_id": "17b6f71a-b819-4dbb-b9c0-e56ae186581b",
+  "deployment_id": "github-contingency-external",
+  "sha256": "3edfd4ac5ed708e4633808106935fea401e8f167b4d8f73c6261ae034852331a",
+  "bytes": 1784917,
   "traffic_percentage": 100,
   "captured_at": "2026-10-15",
-  "purpose": "Temporary GitHub contingency baseline. PROD is out of scope."
+  "purpose": "Temporary GitHub contingency baseline after certified 100% DEV promotion. PROD is out of scope."
 }
