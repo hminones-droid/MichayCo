@@ -17,13 +17,13 @@ jobs:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN_DEV }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
       WORKER: michayco-dev
-      BASE_VERSION: cc831db0-0df3-4a35-99ed-b6f6628136e2
-      CANDIDATE_VERSION: 17b6f71a-b819-4dbb-b9c0-e56ae186581b
-      BASE_RELEASE: dev-admin-ui-canonical-20261014-2
-      CANDIDATE_RELEASE: dev-catalog-canonical-excel-20261015-2
+      BASE_VERSION: 17b6f71a-b819-4dbb-b9c0-e56ae186581b
+      CANDIDATE_VERSION: fe231ec6-abd8-4d78-8ad8-92716822e46f
+      BASE_RELEASE: dev-catalog-canonical-excel-20261015-2
+      CANDIDATE_RELEASE: dev-catalog-canonical-grid-20261015-3
       UTIL_SHA: 805dcfc8b1824ddd5c604e25702a4334b816e2210f2351d650811715b93000ba
-      CSS_SHA: 21b9799e9215b6b1ccdaa9c8c26b91cca0a91d645619577b3edf5d3a556ca6bc
-      FIXES_SHA: aef3da90a3ee1423ceaf2c87ab6873dcdb65462af800916321bc5e5da7da71c5
+      CSS_SHA: 649bb6b32b63de344643073c35fac2078583eae20511a94db58f2e699c4fa409
+      FIXES_SHA: f9b9b2af78fa790500a4c8907284a98f448d43d284e105ef0b06cbc7e2de9b3e
     steps:
       - uses: actions/checkout@v4
 
@@ -44,7 +44,7 @@ jobs:
           npx --yes wrangler@4.151.0 versions deploy \
             "$CANDIDATE_VERSION@100" \
             --name "$WORKER" --yes \
-            --message "Deploy canonical catalog controls and Excel import to DEV"
+            --message "Repair canonical catalog grids and compact toolbar in DEV"
 
       - name: Wait for propagation and validate candidate
         shell: bash
@@ -73,8 +73,9 @@ jobs:
           grep -q 'Importar Excel' /tmp/util.js
           grep -q 'Ocultar no disponibles' /tmp/util.js
           grep -q 'openCatalogHome' /tmp/util.js
-          grep -q 'admin-head{display:none' /tmp/catalog.css
-          grep -q 'applyCanonicalHide' /tmp/fixes.js
+          grep -q 'catalog-v2-head,.catalog-v2-row{display:grid' /tmp/catalog.css
+          grep -q 'product-supply-head,.product-supply-row' /tmp/catalog.css
+          grep -q 'ensureCanonicalHeader' /tmp/fixes.js
           test "$(curl -sS -o /dev/null -w '%{http_code}' -I https://dev.michahome.com.ar/admin)" = "200"
           test "$(curl -sS -o /dev/null -w '%{http_code}' https://dev.michahome.com.ar/__catalog_missing__)" = "404"
           test "$(curl -sS -o /dev/null -w '%{http_code}' -X POST https://dev.michahome.com.ar/admin)" = "405"
@@ -87,7 +88,7 @@ jobs:
           npx --yes wrangler@4.151.0 versions deploy \
             "$BASE_VERSION@100" \
             --name "$WORKER" --yes \
-            --message "Emergency rollback after canonical catalog DEV deployment failure"
+            --message "Emergency rollback after canonical grid DEV deployment failure"
 
       - name: Verify rollback if needed
         if: failure()
