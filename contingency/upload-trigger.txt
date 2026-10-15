@@ -1,1 +1,1 @@
-2026-10-15T18:12:00-03:00 - upload dev-catalog-canonical-excel-20261015-1 to michayco-dev only. No traffic change.
+2026-10-15T18:17:00-03:00 - upload dev-catalog-canonical-excel-20261015-2 to michayco-dev only. No traffic change.
