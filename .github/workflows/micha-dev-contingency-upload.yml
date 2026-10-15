@@ -1,0 +1,80 @@
+name: Micha DEV contingency - upload candidate only
+
+on:
+  push:
+    branches: [contingency-dev]
+    paths:
+      - 'contingency/upload-trigger.txt'
+
+permissions:
+  contents: read
+
+jobs:
+  upload-candidate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Hard safety checks
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          w=json.load(open('wrangler.jsonc'))
+          b=json.load(open('contingency/ACTIVE_BASELINE.json'))
+          assert w['name']=='michayco-dev'
+          assert w['main']=='./contingency/worker.js'
+          assert b['target']=='michayco-dev'
+          assert b['production_locked'] is True
+          PY
+          if grep -R --line-number --fixed-strings '"name": "michayco"' wrangler.jsonc contingency/; then
+            echo 'PROD worker name detected; refusing upload.' >&2
+            exit 90
+          fi
+
+      - name: Verify active baseline before build
+        shell: bash
+        run: |
+          set -euo pipefail
+          EXPECTED="$(python3 -c "import json; print(json.load(open('contingency/ACTIVE_BASELINE.json'))['release'])")"
+          CURRENT="$(curl -fsS -A 'Mozilla/5.0' https://dev.michahome.com.ar/health | python3 -c "import json,sys; print(json.load(sys.stdin)['release'])")"
+          test "$CURRENT" = "$EXPECTED" || { echo "DEV active drifted: $CURRENT != $EXPECTED" >&2; exit 91; }
+
+      - name: Build and validate candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 contingency/build_worker.py | tee /tmp/build.json
+          node --check contingency/worker.js
+          grep -q 'production_locked:true' contingency/worker.js
+          grep -q "target:'michayco-dev'" contingency/worker.js
+          sha256sum contingency/worker.js
+
+      - name: Require DEV-only Cloudflare credentials
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN_DEV }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          test -n "$CLOUDFLARE_API_TOKEN"
+          test -n "$CLOUDFLARE_ACCOUNT_ID"
+
+      - name: Upload candidate version - NO TRAFFIC CHANGE
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN_DEV }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          RELEASE="$(cat contingency/RELEASE.txt)"
+          npx --yes wrangler@4.151.0 versions upload contingency/worker.js \
+            --config wrangler.jsonc \
+            --name michayco-dev \
+            --tag "$RELEASE" \
+            --message "Temporary GitHub contingency candidate $RELEASE" \
+            --keep-vars \
+            --strict | tee /tmp/wrangler-upload.log
+          echo 'Candidate uploaded only. This workflow does not deploy or change traffic.'
