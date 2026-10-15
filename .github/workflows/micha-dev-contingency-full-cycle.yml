@@ -12,7 +12,7 @@ permissions:
 jobs:
   full-cycle:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 12
     env:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN_DEV }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
@@ -44,15 +44,35 @@ jobs:
             --name "$WORKER" --yes \
             --message "Temporary DEV contingency full-cycle certification"
 
-      - name: Validate candidate at 100 percent
+      - name: Wait for candidate propagation and validate
         shell: bash
         run: |
           set -euo pipefail
-          sleep 2
-          for i in $(seq 1 12); do
-            curl -fsS -A 'Mozilla/5.0' "https://dev.michahome.com.ar/health?full=$i-$(date +%s%N)" \
-              | python3 -c "import json,sys; j=json.load(sys.stdin); assert j['ok'] is True; assert j['target']=='michayco-dev'; assert j['production_locked'] is True; assert j['release']=='$CANDIDATE_RELEASE'"
-          done
+          python3 - <<'PY'
+          import json, subprocess, time, os
+          want=os.environ['CANDIDATE_RELEASE']
+          consecutive=0
+          deadline=time.time()+120
+          seen={}
+          while time.time()<deadline:
+              try:
+                  out=subprocess.check_output(['curl','-fsS','-A','Mozilla/5.0',f'https://dev.michahome.com.ar/health?full={time.time_ns()}'])
+                  j=json.loads(out)
+                  assert j.get('ok') is True
+                  assert j.get('target')=='michayco-dev'
+                  assert j.get('production_locked') is True
+                  r=j.get('release')
+                  seen[r]=seen.get(r,0)+1
+                  consecutive = consecutive + 1 if r==want else 0
+                  if consecutive>=12:
+                      print(json.dumps({'stable_release':want,'consecutive':consecutive,'seen':seen}))
+                      break
+              except Exception as e:
+                  consecutive=0
+              time.sleep(1)
+          else:
+              raise SystemExit(f'candidate_not_stable seen={seen}')
+          PY
           curl -fsS -A 'Mozilla/5.0' https://dev.michahome.com.ar/admin -o /tmp/admin.html
           echo "$EXPECTED_ADMIN_SHA  /tmp/admin.html" | sha256sum -c -
           test "$(curl -sS -o /dev/null -w '%{http_code}' -I https://dev.michahome.com.ar/admin)" = "200"
@@ -79,13 +99,31 @@ jobs:
             --name "$WORKER" --yes \
             --message "Emergency restore DEV baseline after contingency full-cycle failure"
 
-      - name: Verify baseline restored
+      - name: Wait for baseline propagation and verify restored
         if: always()
         shell: bash
         run: |
           set -euo pipefail
-          sleep 2
-          for i in $(seq 1 12); do
-            curl -fsS -A 'Mozilla/5.0' "https://dev.michahome.com.ar/health?final=$i-$(date +%s%N)" \
-              | python3 -c "import json,sys; j=json.load(sys.stdin); assert j['release']=='$BASE_RELEASE'; assert j['production_locked'] is True"
-          done
+          python3 - <<'PY'
+          import json, subprocess, time, os
+          want=os.environ['BASE_RELEASE']
+          consecutive=0
+          deadline=time.time()+120
+          seen={}
+          while time.time()<deadline:
+              try:
+                  out=subprocess.check_output(['curl','-fsS','-A','Mozilla/5.0',f'https://dev.michahome.com.ar/health?final={time.time_ns()}'])
+                  j=json.loads(out)
+                  assert j.get('production_locked') is True
+                  r=j.get('release')
+                  seen[r]=seen.get(r,0)+1
+                  consecutive = consecutive + 1 if r==want else 0
+                  if consecutive>=12:
+                      print(json.dumps({'stable_release':want,'consecutive':consecutive,'seen':seen}))
+                      break
+              except Exception:
+                  consecutive=0
+              time.sleep(1)
+          else:
+              raise SystemExit(f'baseline_not_stable seen={seen}')
+          PY
