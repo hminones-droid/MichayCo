@@ -1,0 +1,91 @@
+name: Micha DEV contingency - full promotion cycle
+
+on:
+  push:
+    branches: [contingency-dev]
+    paths:
+      - 'contingency/full-cycle-trigger.txt'
+
+permissions:
+  contents: read
+
+jobs:
+  full-cycle:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN_DEV }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      WORKER: michayco-dev
+      BASE_VERSION: cc831db0-0df3-4a35-99ed-b6f6628136e2
+      CANDIDATE_VERSION: 8f5ea4c5-3198-4363-8732-3990e42c8f10
+      BASE_RELEASE: dev-admin-ui-canonical-20261014-2
+      CANDIDATE_RELEASE: dev-github-contingency-20261015-2
+      EXPECTED_ADMIN_SHA: 372cc29e8fecb155990b92b4168d5a7d166a1a7f0fb540613046b1ec62975773
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Preflight safety
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$WORKER" = "michayco-dev"
+          test -n "$CLOUDFLARE_API_TOKEN"
+          test -n "$CLOUDFLARE_ACCOUNT_ID"
+          CURRENT="$(curl -fsS -A 'Mozilla/5.0' https://dev.michahome.com.ar/health | python3 -c "import json,sys; print(json.load(sys.stdin)['release'])")"
+          test "$CURRENT" = "$BASE_RELEASE" || { echo "Unexpected active release: $CURRENT" >&2; exit 90; }
+
+      - name: Promote candidate to 100 percent DEV
+        shell: bash
+        run: |
+          set -euo pipefail
+          npx --yes wrangler@4.151.0 versions deploy \
+            "$CANDIDATE_VERSION@100" \
+            --name "$WORKER" --yes \
+            --message "Temporary DEV contingency full-cycle certification"
+
+      - name: Validate candidate at 100 percent
+        shell: bash
+        run: |
+          set -euo pipefail
+          sleep 2
+          for i in $(seq 1 12); do
+            curl -fsS -A 'Mozilla/5.0' "https://dev.michahome.com.ar/health?full=$i-$(date +%s%N)" \
+              | python3 -c "import json,sys; j=json.load(sys.stdin); assert j['ok'] is True; assert j['target']=='michayco-dev'; assert j['production_locked'] is True; assert j['release']=='$CANDIDATE_RELEASE'"
+          done
+          curl -fsS -A 'Mozilla/5.0' https://dev.michahome.com.ar/admin -o /tmp/admin.html
+          echo "$EXPECTED_ADMIN_SHA  /tmp/admin.html" | sha256sum -c -
+          test "$(curl -sS -o /dev/null -w '%{http_code}' -I https://dev.michahome.com.ar/admin)" = "200"
+          test "$(curl -sS -o /dev/null -w '%{http_code}' https://dev.michahome.com.ar/__contingency_missing__)" = "404"
+          test "$(curl -sS -o /dev/null -w '%{http_code}' -X POST https://dev.michahome.com.ar/admin)" = "405"
+
+      - name: Restore baseline after successful certification
+        if: success()
+        shell: bash
+        run: |
+          set -euo pipefail
+          npx --yes wrangler@4.151.0 versions deploy \
+            "$BASE_VERSION@100" \
+            --name "$WORKER" --yes \
+            --message "Restore DEV baseline after successful contingency full-cycle certification"
+
+      - name: Emergency rollback on failure
+        if: failure()
+        shell: bash
+        run: |
+          set -euo pipefail
+          npx --yes wrangler@4.151.0 versions deploy \
+            "$BASE_VERSION@100" \
+            --name "$WORKER" --yes \
+            --message "Emergency restore DEV baseline after contingency full-cycle failure"
+
+      - name: Verify baseline restored
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          sleep 2
+          for i in $(seq 1 12); do
+            curl -fsS -A 'Mozilla/5.0' "https://dev.michahome.com.ar/health?final=$i-$(date +%s%N)" \
+              | python3 -c "import json,sys; j=json.load(sys.stdin); assert j['release']=='$BASE_RELEASE'; assert j['production_locked'] is True"
+          done
