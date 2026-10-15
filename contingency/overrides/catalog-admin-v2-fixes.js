@@ -58,10 +58,23 @@
     }
   };
 
+  function activeCatalog(){return document.querySelector('[data-admin-nav].active')?.dataset.adminNav||''}
+  function ensureCanonicalHeader(){
+    const root=typeof adminShell==='function'?adminShell():null;if(!root)return;
+    const active=activeCatalog(),list=root.querySelector('.catalog-v2-list');if(!list)return;
+    if(root.querySelector('.catalog-v2-head'))return;
+    let labels=null;
+    if(active==='products')labels=['Producto','Componentes','Precio','Estado','Acciones'];
+    if(active==='fragrances')labels=['Fragancia','Fórmula','Total','Estado','Acciones'];
+    if(!labels)return;
+    const head=document.createElement('div');head.className='catalog-v2-head product-supply-head';head.setAttribute('aria-hidden','true');
+    head.innerHTML=labels.map(x=>'<span>'+x+'</span>').join('');list.before(head);
+  }
+
   function applyCanonicalHide(){
     const root=typeof adminShell==='function'?adminShell():document;
     const hide=root?.querySelector('[data-v2-hide]');if(!hide||!hide.checked)return;
-    const active=document.querySelector('[data-admin-nav].active')?.dataset.adminNav||'';
+    const active=activeCatalog();
     root.querySelectorAll('.catalog-v2-list .catalog-v2-row').forEach(row=>{
       let unavailable=false;
       if(active==='supplies')unavailable=[...row.querySelectorAll('[data-label="Catálogo"]')].some(x=>x.textContent.trim()==='Oculto');
@@ -70,8 +83,11 @@
       row.hidden=unavailable;
     });
   }
-  document.addEventListener('change',e=>{if(e.target?.matches('[data-v2-hide],.admin-row-actions input[type="checkbox"],[data-visible],[data-catvisible]'))queueMicrotask(applyCanonicalHide)});
-  new MutationObserver(()=>{if(document.querySelector('[data-v2-hide]:checked'))queueMicrotask(applyCanonicalHide)}).observe(document.documentElement,{childList:true,subtree:true});
+
+  function reconcileCanonicalList(){ensureCanonicalHeader();if(document.querySelector('[data-v2-hide]:checked'))applyCanonicalHide()}
+  document.addEventListener('change',e=>{if(e.target?.matches('[data-v2-hide],.admin-row-actions input[type="checkbox"],[data-visible],[data-catvisible]'))queueMicrotask(reconcileCanonicalList)});
+  new MutationObserver(()=>queueMicrotask(reconcileCanonicalList)).observe(document.documentElement,{childList:true,subtree:true});
 
   loadV2ReadinessContext().catch(()=>{});
+  queueMicrotask(reconcileCanonicalList);
 })();
