@@ -18,9 +18,9 @@ jobs:
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
       WORKER: michayco-dev
       BASE_VERSION: cc831db0-0df3-4a35-99ed-b6f6628136e2
-      CANDIDATE_VERSION: 8f5ea4c5-3198-4363-8732-3990e42c8f10
+      CANDIDATE_VERSION: 17b6f71a-b819-4dbb-b9c0-e56ae186581b
       BASE_RELEASE: dev-admin-ui-canonical-20261014-2
-      CANDIDATE_RELEASE: dev-github-contingency-20261015-2
+      CANDIDATE_RELEASE: dev-catalog-canonical-excel-20261015-2
     steps:
       - uses: actions/checkout@v4
 
@@ -41,29 +41,25 @@ jobs:
           npx --yes wrangler@4.151.0 versions deploy \
             "$BASE_VERSION@90" "$CANDIDATE_VERSION@10" \
             --name "$WORKER" --yes \
-            --message "Temporary DEV contingency canary 10 percent"
+            --message "Temporary DEV catalog canonical Excel canary 10 percent"
 
       - name: Validate canary traffic
-        id: validate
         shell: bash
         run: |
           set -euo pipefail
           python3 - <<'PY'
-          import json, subprocess, time
-          allowed={'dev-admin-ui-canonical-20261014-2','dev-github-contingency-20261015-2'}
+          import json, subprocess, time, os
+          allowed={os.environ['BASE_RELEASE'],os.environ['CANDIDATE_RELEASE']}
           seen={k:0 for k in allowed}
-          for i in range(80):
+          for i in range(100):
               out=subprocess.check_output(['curl','-fsS','-A','Mozilla/5.0',f'https://dev.michahome.com.ar/health?canary={i}-{time.time_ns()}'])
               j=json.loads(out)
               assert j.get('ok') is True
               assert j.get('target')=='michayco-dev'
               assert j.get('production_locked') is True
-              r=j.get('release')
-              assert r in allowed, r
-              seen[r]+=1
+              r=j.get('release'); assert r in allowed, r; seen[r]+=1
           print(json.dumps(seen))
-          if seen['dev-github-contingency-20261015-2'] == 0:
-              raise SystemExit('candidate_not_observed')
+          if seen[os.environ['CANDIDATE_RELEASE']] == 0: raise SystemExit('candidate_not_observed')
           PY
 
       - name: Restore baseline after successful canary
@@ -74,7 +70,7 @@ jobs:
           npx --yes wrangler@4.151.0 versions deploy \
             "$BASE_VERSION@100" \
             --name "$WORKER" --yes \
-            --message "Restore DEV baseline after successful contingency canary"
+            --message "Restore DEV baseline after catalog canonical Excel canary"
 
       - name: Emergency rollback on failure
         if: failure()
@@ -84,15 +80,24 @@ jobs:
           npx --yes wrangler@4.151.0 versions deploy \
             "$BASE_VERSION@100" \
             --name "$WORKER" --yes \
-            --message "Emergency restore DEV baseline after contingency canary failure"
+            --message "Emergency restore DEV baseline after catalog canonical Excel canary failure"
 
       - name: Verify baseline restored
         if: always()
         shell: bash
         run: |
           set -euo pipefail
-          sleep 2
-          for i in $(seq 1 10); do
-            R="$(curl -fsS -A 'Mozilla/5.0' "https://dev.michahome.com.ar/health?restore=$i-$(date +%s%N)" | python3 -c "import json,sys; print(json.load(sys.stdin)['release'])")"
-            test "$R" = "$BASE_RELEASE" || { echo "Baseline not restored: $R" >&2; exit 95; }
-          done
+          python3 - <<'PY'
+          import json, subprocess, time, os
+          want=os.environ['BASE_RELEASE']; consecutive=0; deadline=time.time()+120; seen={}
+          while time.time()<deadline:
+              try:
+                  out=subprocess.check_output(['curl','-fsS','-A','Mozilla/5.0',f'https://dev.michahome.com.ar/health?restore={time.time_ns()}'])
+                  j=json.loads(out); r=j.get('release'); seen[r]=seen.get(r,0)+1
+                  assert j.get('production_locked') is True
+                  consecutive=consecutive+1 if r==want else 0
+                  if consecutive>=12: print(json.dumps({'stable_release':want,'seen':seen})); break
+              except Exception: consecutive=0
+              time.sleep(1)
+          else: raise SystemExit(f'baseline_not_stable seen={seen}')
+          PY
