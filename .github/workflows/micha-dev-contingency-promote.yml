@@ -1,0 +1,108 @@
+name: Micha DEV contingency - promote validated candidate
+
+on:
+  push:
+    branches: [contingency-dev]
+    paths:
+      - 'contingency/promote-trigger.txt'
+
+permissions:
+  contents: read
+
+jobs:
+  promote:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN_DEV }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      WORKER: michayco-dev
+      BASE_VERSION: cc831db0-0df3-4a35-99ed-b6f6628136e2
+      CANDIDATE_VERSION: 17b6f71a-b819-4dbb-b9c0-e56ae186581b
+      BASE_RELEASE: dev-admin-ui-canonical-20261014-2
+      CANDIDATE_RELEASE: dev-catalog-canonical-excel-20261015-2
+      UTIL_SHA: 805dcfc8b1824ddd5c604e25702a4334b816e2210f2351d650811715b93000ba
+      CSS_SHA: 21b9799e9215b6b1ccdaa9c8c26b91cca0a91d645619577b3edf5d3a556ca6bc
+      FIXES_SHA: aef3da90a3ee1423ceaf2c87ab6873dcdb65462af800916321bc5e5da7da71c5
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Preflight DEV safety
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$WORKER" = "michayco-dev"
+          test -n "$CLOUDFLARE_API_TOKEN"
+          test -n "$CLOUDFLARE_ACCOUNT_ID"
+          CURRENT="$(curl -fsS -A 'Mozilla/5.0' https://dev.michahome.com.ar/health | python3 -c "import json,sys; print(json.load(sys.stdin)['release'])")"
+          test "$CURRENT" = "$BASE_RELEASE" || { echo "Unexpected active release: $CURRENT" >&2; exit 90; }
+
+      - name: Promote candidate to 100 percent DEV
+        shell: bash
+        run: |
+          set -euo pipefail
+          npx --yes wrangler@4.151.0 versions deploy \
+            "$CANDIDATE_VERSION@100" \
+            --name "$WORKER" --yes \
+            --message "Deploy canonical catalog controls and Excel import to DEV"
+
+      - name: Wait for propagation and validate candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json, subprocess, time, os
+          want=os.environ['CANDIDATE_RELEASE']; consecutive=0; deadline=time.time()+120; seen={}
+          while time.time()<deadline:
+              try:
+                  out=subprocess.check_output(['curl','-fsS','-A','Mozilla/5.0',f'https://dev.michahome.com.ar/health?promote={time.time_ns()}'])
+                  j=json.loads(out); r=j.get('release'); seen[r]=seen.get(r,0)+1
+                  assert j.get('ok') is True and j.get('target')=='michayco-dev' and j.get('production_locked') is True
+                  consecutive=consecutive+1 if r==want else 0
+                  if consecutive>=12: print(json.dumps({'stable_release':want,'seen':seen})); break
+              except Exception: consecutive=0
+              time.sleep(1)
+          else: raise SystemExit(f'candidate_not_stable seen={seen}')
+          PY
+          curl -fsS -A 'Mozilla/5.0' 'https://dev.michahome.com.ar/catalog-admin-v2-utilities.js?verify=1' -o /tmp/util.js
+          curl -fsS -A 'Mozilla/5.0' 'https://dev.michahome.com.ar/catalog-admin-v2.css?verify=1' -o /tmp/catalog.css
+          curl -fsS -A 'Mozilla/5.0' 'https://dev.michahome.com.ar/catalog-admin-v2-fixes.js?verify=1' -o /tmp/fixes.js
+          echo "$UTIL_SHA  /tmp/util.js" | sha256sum -c -
+          echo "$CSS_SHA  /tmp/catalog.css" | sha256sum -c -
+          echo "$FIXES_SHA  /tmp/fixes.js" | sha256sum -c -
+          grep -q 'Importar Excel' /tmp/util.js
+          grep -q 'Ocultar no disponibles' /tmp/util.js
+          grep -q 'openCatalogHome' /tmp/util.js
+          grep -q 'admin-head{display:none' /tmp/catalog.css
+          grep -q 'applyCanonicalHide' /tmp/fixes.js
+          test "$(curl -sS -o /dev/null -w '%{http_code}' -I https://dev.michahome.com.ar/admin)" = "200"
+          test "$(curl -sS -o /dev/null -w '%{http_code}' https://dev.michahome.com.ar/__catalog_missing__)" = "404"
+          test "$(curl -sS -o /dev/null -w '%{http_code}' -X POST https://dev.michahome.com.ar/admin)" = "405"
+
+      - name: Emergency rollback on failure
+        if: failure()
+        shell: bash
+        run: |
+          set -euo pipefail
+          npx --yes wrangler@4.151.0 versions deploy \
+            "$BASE_VERSION@100" \
+            --name "$WORKER" --yes \
+            --message "Emergency rollback after canonical catalog DEV deployment failure"
+
+      - name: Verify rollback if needed
+        if: failure()
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json, subprocess, time, os
+          want=os.environ['BASE_RELEASE']; consecutive=0; deadline=time.time()+120
+          while time.time()<deadline:
+              try:
+                  out=subprocess.check_output(['curl','-fsS','-A','Mozilla/5.0',f'https://dev.michahome.com.ar/health?rollback={time.time_ns()}'])
+                  j=json.loads(out); consecutive=consecutive+1 if j.get('release')==want else 0
+                  if consecutive>=12: print('baseline_restored'); break
+              except Exception: consecutive=0
+              time.sleep(1)
+          else: raise SystemExit('baseline_not_restored')
+          PY
