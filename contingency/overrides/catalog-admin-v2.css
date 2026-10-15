@@ -1,0 +1,16 @@
+/* Canonical catalog admin layout — desktop first, compact at 100% zoom */
+.admin-head{display:none!important}
+.catalog-v2-toolbar{align-items:flex-end!important;margin-bottom:.45rem!important}
+.catalog-v2-toolbar>.catalog-v2-actions:empty{display:none!important}
+.catalog-root-link{appearance:none;border:0;background:none;padding:0;color:#596346;font:700 .74rem/1.2 system-ui;letter-spacing:.08em;text-transform:uppercase;cursor:pointer}
+.catalog-root-link:hover{text-decoration:underline}
+.catalog-v2-controls{display:flex!important;align-items:center!important;gap:8px!important;margin:.55rem 0 .75rem!important;min-width:0!important;flex-wrap:nowrap!important}
+.catalog-v2-controls>input[type=search]{flex:1 1 260px!important;min-width:180px!important;max-width:none!important}
+.catalog-v2-controls>select{flex:0 1 190px!important;width:auto!important;min-width:140px!important}
+.catalog-v2-controls input,.catalog-v2-controls select,.catalog-v2-controls .btn,.catalog-v2-controls .file-btn{box-sizing:border-box!important;min-height:36px!important;height:36px!important;font-size:13px!important;line-height:1!important;margin:0!important}
+.catalog-v2-shared-tools{display:flex!important;align-items:center!important;gap:6px!important;flex-wrap:nowrap!important;white-space:nowrap!important;margin-left:auto!important}
+.catalog-v2-shared-tools .btn,.catalog-v2-shared-tools .file-btn{display:inline-flex!important;align-items:center!important;justify-content:center!important;padding:0 11px!important;width:auto!important}
+.catalog-hide-check{display:inline-flex!important;align-items:center!important;gap:5px!important;white-space:nowrap!important;margin:0 4px 0 0!important;font-size:12.5px!important}
+.catalog-import-result{margin:-.25rem 0 .65rem;padding:.55rem .7rem;border:1px solid #dedbd0;border-radius:6px;background:#f8f7f2;font-size:12.5px}.catalog-import-result:empty{display:none}.catalog-import-result details{margin-top:.35rem}.catalog-import-result ul{margin:.35rem 0 0;padding-left:1.2rem;max-height:160px;overflow:auto}
+@media(max-width:1100px){.catalog-v2-controls{flex-wrap:wrap!important}.catalog-v2-controls>input[type=search]{flex:1 1 55%!important}.catalog-v2-shared-tools{margin-left:0!important;flex:1 1 100%!important;justify-content:flex-end!important}}
+@media(max-width:700px){.catalog-v2-controls{align-items:stretch!important}.catalog-v2-controls>*{flex:1 1 100%!important;width:100%!important}.catalog-v2-shared-tools{justify-content:stretch!important;flex-wrap:wrap!important}.catalog-v2-shared-tools>*{flex:1 1 auto!important}.catalog-hide-check{min-height:36px!important}}
