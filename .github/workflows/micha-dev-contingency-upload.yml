@@ -62,7 +62,7 @@ jobs:
           test -n "$CLOUDFLARE_API_TOKEN"
           test -n "$CLOUDFLARE_ACCOUNT_ID"
 
-      - name: Upload candidate version - NO TRAFFIC CHANGE
+      - name: Upload isolated preview candidate - NO TRAFFIC CHANGE
         shell: bash
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN_DEV }}
@@ -74,6 +74,7 @@ jobs:
             --config wrangler.jsonc \
             --name michayco-dev \
             --tag "$RELEASE" \
-            --message "Temporary GitHub contingency candidate $RELEASE" \
+            --preview-alias contingency \
+            --message "Temporary GitHub contingency preview candidate $RELEASE" \
             --keep-vars | tee /tmp/wrangler-upload.log
-          echo 'Candidate uploaded only. This workflow does not deploy or change traffic.'
+          echo 'Preview candidate uploaded only. This workflow does not deploy or change production traffic.'
