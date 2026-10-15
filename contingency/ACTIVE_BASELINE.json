@@ -1,0 +1,12 @@
+{
+  "target": "michayco-dev",
+  "production_locked": true,
+  "release": "dev-admin-ui-canonical-20261014-2",
+  "version_id": "cc831db0-0df3-4a35-99ed-b6f6628136e2",
+  "deployment_id": "45f7b80b-e6aa-4994-bba1-96bcb7566c09",
+  "sha256": "b8d022234acbf8c02bfc7c7106c789db82147fff05b5bd825e50bc6a47089985",
+  "bytes": 1948387,
+  "traffic_percentage": 100,
+  "captured_at": "2026-10-15",
+  "purpose": "Temporary GitHub contingency baseline. PROD is out of scope."
+}
