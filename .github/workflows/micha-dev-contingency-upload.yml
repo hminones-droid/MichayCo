@@ -75,6 +75,5 @@ jobs:
             --name michayco-dev \
             --tag "$RELEASE" \
             --message "Temporary GitHub contingency candidate $RELEASE" \
-            --keep-vars \
-            --strict | tee /tmp/wrangler-upload.log
+            --keep-vars | tee /tmp/wrangler-upload.log
           echo 'Candidate uploaded only. This workflow does not deploy or change traffic.'
