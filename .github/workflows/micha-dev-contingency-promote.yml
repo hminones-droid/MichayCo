@@ -17,10 +17,10 @@ jobs:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN_DEV }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
       WORKER: michayco-dev
-      BASE_VERSION: 83c56e5d-1323-4ed7-88a6-4d5807c4992c
-      CANDIDATE_VERSION: 7ba17dde-3349-4ef2-bf6b-3d0a006f16be
-      BASE_RELEASE: dev-visibility-filter-fix-20261016-7
-      CANDIDATE_RELEASE: dev-stock-aroma-20261016-8
+      BASE_VERSION: 7ba17dde-3349-4ef2-bf6b-3d0a006f16be
+      CANDIDATE_VERSION: ab55e605-2497-4065-bf49-a2fc281b4be3
+      BASE_RELEASE: dev-stock-aroma-20261016-8
+      CANDIDATE_RELEASE: dev-aroma-photos-recovery-20261016-9
     steps:
       - uses: actions/checkout@v4
 
@@ -41,7 +41,7 @@ jobs:
           npx --yes wrangler@4.151.0 versions deploy \
             "$CANDIDATE_VERSION@100" \
             --name "$WORKER" --yes \
-            --message "Deploy stock panel and aroma discovery restoration to DEV"
+            --message "Restore original aroma moment photography in DEV"
 
       - name: Wait for propagation and validate candidate
         shell: bash
@@ -61,28 +61,11 @@ jobs:
               time.sleep(1)
           else: raise SystemExit(f'candidate_not_stable seen={seen}')
           PY
-          python3 - <<'PY'
-          import subprocess, time
-          checks={
-            '/admin':['data-admin-nav="variants">Stock'],
-            '/admin-tools.js':['saveStockGridV2','Ingreso de mercadería','Stock actual'],
-            '/app.js':['discovery remains browsable even when finished stock is zero','Sin presentaciones con stock por ahora'],
-          }
-          for path,markers in checks.items():
-              deadline=time.time()+60; target='/tmp/'+path.rsplit('/',1)[-1].replace('','')
-              while time.time()<deadline:
-                  q=f'{time.time_ns()}'
-                  p=subprocess.run(['curl','-fsS','-A','Mozilla/5.0',f'https://dev.michahome.com.ar{path}?verify={q}','-o',target])
-                  if p.returncode==0:
-                      body=open(target,encoding='utf-8').read()
-                      if all(m in body for m in markers): print(f'candidate_asset_ok {path}'); break
-                  time.sleep(1)
-              else: raise SystemExit(f'candidate_asset_not_stable {path}')
-          PY
-          node --check /tmp/admin-tools.js
-          node --check /tmp/app.js
+          curl -fsS -A 'Mozilla/5.0' https://dev.michahome.com.ar/assets/aroma-moments-minimal.webp -o /tmp/aroma-moments-minimal.webp
+          test "$(sha256sum /tmp/aroma-moments-minimal.webp | awk '{print $1}')" = "8ff7bd58360892aefec5f66c4e5925ef68a8ad4dbd12fff9a0153af3e6209a16"
           test "$(curl -sS -o /dev/null -w '%{http_code}' -I https://dev.michahome.com.ar/admin)" = "200"
-          test "$(curl -sS -o /dev/null -w '%{http_code}' https://dev.michahome.com.ar/__stock_missing__)" = "404"
+          test "$(curl -sS -o /dev/null -w '%{http_code}' -I https://dev.michahome.com.ar/assets/aroma-moments-minimal.webp)" = "200"
+          test "$(curl -sS -o /dev/null -w '%{http_code}' https://dev.michahome.com.ar/__aroma_photo_missing__)" = "404"
           test "$(curl -sS -o /dev/null -w '%{http_code}' -X POST https://dev.michahome.com.ar/admin)" = "405"
 
       - name: Emergency rollback on failure
@@ -93,7 +76,7 @@ jobs:
           npx --yes wrangler@4.151.0 versions deploy \
             "$BASE_VERSION@100" \
             --name "$WORKER" --yes \
-            --message "Emergency rollback after stock/aroma DEV deployment failure"
+            --message "Emergency rollback after aroma photo recovery DEV deployment failure"
 
       - name: Verify rollback if needed
         if: failure()
