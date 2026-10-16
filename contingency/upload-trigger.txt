@@ -1,1 +1,1 @@
-2026-10-16T00:01:00-03:00 - retry upload dev-catalog-filter-sync-20261015-6 after baseline manifest reconciliation. No traffic change.
+2026-10-16T03:12:00-03:00 - upload dev-visibility-filter-fix-20261016-7 to michayco-dev only. No traffic change.
