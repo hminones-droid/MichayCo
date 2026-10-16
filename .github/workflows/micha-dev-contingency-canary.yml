@@ -17,10 +17,10 @@ jobs:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN_DEV }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
       WORKER: michayco-dev
-      BASE_VERSION: 83c56e5d-1323-4ed7-88a6-4d5807c4992c
-      CANDIDATE_VERSION: 7ba17dde-3349-4ef2-bf6b-3d0a006f16be
-      BASE_RELEASE: dev-visibility-filter-fix-20261016-7
-      CANDIDATE_RELEASE: dev-stock-aroma-20261016-8
+      BASE_VERSION: 7ba17dde-3349-4ef2-bf6b-3d0a006f16be
+      CANDIDATE_VERSION: ab55e605-2497-4065-bf49-a2fc281b4be3
+      BASE_RELEASE: dev-stock-aroma-20261016-8
+      CANDIDATE_RELEASE: dev-aroma-photos-recovery-20261016-9
     steps:
       - uses: actions/checkout@v4
 
@@ -41,7 +41,7 @@ jobs:
           npx --yes wrangler@4.151.0 versions deploy \
             "$BASE_VERSION@90" "$CANDIDATE_VERSION@10" \
             --name "$WORKER" --yes \
-            --message "Temporary DEV stock/aroma canary 10 percent"
+            --message "Temporary DEV aroma photos recovery canary 10 percent"
 
       - name: Validate canary traffic
         shell: bash
@@ -70,7 +70,7 @@ jobs:
           npx --yes wrangler@4.151.0 versions deploy \
             "$BASE_VERSION@100" \
             --name "$WORKER" --yes \
-            --message "Restore DEV baseline after stock/aroma canary"
+            --message "Restore DEV baseline after aroma photos recovery canary"
 
       - name: Emergency rollback on failure
         if: failure()
@@ -80,7 +80,7 @@ jobs:
           npx --yes wrangler@4.151.0 versions deploy \
             "$BASE_VERSION@100" \
             --name "$WORKER" --yes \
-            --message "Emergency restore DEV baseline after stock/aroma canary failure"
+            --message "Emergency restore DEV baseline after aroma photos recovery canary failure"
 
       - name: Verify baseline restored
         if: always()
