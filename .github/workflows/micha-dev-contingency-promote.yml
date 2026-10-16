@@ -17,10 +17,10 @@ jobs:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN_DEV }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
       WORKER: michayco-dev
-      BASE_VERSION: 3b9138c6-6026-4d52-acc5-f86f4de3e7e8
-      CANDIDATE_VERSION: 83c56e5d-1323-4ed7-88a6-4d5807c4992c
-      BASE_RELEASE: dev-catalog-filter-sync-20261015-6
-      CANDIDATE_RELEASE: dev-visibility-filter-fix-20261016-7
+      BASE_VERSION: 83c56e5d-1323-4ed7-88a6-4d5807c4992c
+      CANDIDATE_VERSION: 7ba17dde-3349-4ef2-bf6b-3d0a006f16be
+      BASE_RELEASE: dev-visibility-filter-fix-20261016-7
+      CANDIDATE_RELEASE: dev-stock-aroma-20261016-8
     steps:
       - uses: actions/checkout@v4
 
@@ -41,7 +41,7 @@ jobs:
           npx --yes wrangler@4.151.0 versions deploy \
             "$CANDIDATE_VERSION@100" \
             --name "$WORKER" --yes \
-            --message "Deploy visibility toggle and available-only filter fix to DEV"
+            --message "Deploy stock panel and aroma discovery restoration to DEV"
 
       - name: Wait for propagation and validate candidate
         shell: bash
@@ -64,12 +64,12 @@ jobs:
           python3 - <<'PY'
           import subprocess, time
           checks={
-            '/catalog-admin-v2-fixes.js':['handleVisibilityClick','rowUnavailable','style.setProperty(\'display\',\'none\',\'important\')'],
-            '/catalog-admin-v2-products.js':['productCanonicalName'],
-            '/app.js':['productDisplayName'],
+            '/admin':['data-admin-nav="variants">Stock'],
+            '/admin-tools.js':['saveStockGridV2','Ingreso de mercadería','Stock actual'],
+            '/app.js':['discovery remains browsable even when finished stock is zero','Sin presentaciones con stock por ahora'],
           }
           for path,markers in checks.items():
-              deadline=time.time()+60; target='/tmp/'+path.rsplit('/',1)[-1]
+              deadline=time.time()+60; target='/tmp/'+path.rsplit('/',1)[-1].replace('','')
               while time.time()<deadline:
                   q=f'{time.time_ns()}'
                   p=subprocess.run(['curl','-fsS','-A','Mozilla/5.0',f'https://dev.michahome.com.ar{path}?verify={q}','-o',target])
@@ -79,11 +79,10 @@ jobs:
                   time.sleep(1)
               else: raise SystemExit(f'candidate_asset_not_stable {path}')
           PY
-          node --check /tmp/catalog-admin-v2-fixes.js
-          node --check /tmp/catalog-admin-v2-products.js
+          node --check /tmp/admin-tools.js
           node --check /tmp/app.js
           test "$(curl -sS -o /dev/null -w '%{http_code}' -I https://dev.michahome.com.ar/admin)" = "200"
-          test "$(curl -sS -o /dev/null -w '%{http_code}' https://dev.michahome.com.ar/__visibility_missing__)" = "404"
+          test "$(curl -sS -o /dev/null -w '%{http_code}' https://dev.michahome.com.ar/__stock_missing__)" = "404"
           test "$(curl -sS -o /dev/null -w '%{http_code}' -X POST https://dev.michahome.com.ar/admin)" = "405"
 
       - name: Emergency rollback on failure
@@ -94,7 +93,7 @@ jobs:
           npx --yes wrangler@4.151.0 versions deploy \
             "$BASE_VERSION@100" \
             --name "$WORKER" --yes \
-            --message "Emergency rollback after visibility/filter DEV deployment failure"
+            --message "Emergency rollback after stock/aroma DEV deployment failure"
 
       - name: Verify rollback if needed
         if: failure()
