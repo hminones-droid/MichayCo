@@ -1,4 +1,4 @@
-trigger=2026-10-16T11:42:00-03:00
-base=83c56e5d-1323-4ed7-88a6-4d5807c4992c
-candidate=7ba17dde-3349-4ef2-bf6b-3d0a006f16be
-release=dev-stock-aroma-20261016-8
+trigger=2026-10-16T11:47:00-03:00
+base=7ba17dde-3349-4ef2-bf6b-3d0a006f16be
+candidate=ab55e605-2497-4065-bf49-a2fc281b4be3
+release=dev-aroma-photos-recovery-20261016-9
