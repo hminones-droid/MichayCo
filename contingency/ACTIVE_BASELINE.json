@@ -1,11 +1,11 @@
 {
   "target": "michayco-dev",
   "production_locked": true,
-  "release": "dev-recipe-calculation-20261015-5",
-  "version_id": "b18ff18b-9f81-4158-87cd-b5f4c1e0294c",
-  "sha256": "c96124872ba81b12e4e044e8457bd1cdad6d413455c984e81dd1972f5035c177",
-  "bytes": 1797488,
+  "release": "dev-catalog-filter-sync-20261015-6",
+  "version_id": "3b9138c6-6026-4d52-acc5-f86f4de3e7e8",
+  "sha256": "110ce1faf1e3465da6e69598649467dcb0ff11d5f65108e95a2d23c3475f7450",
+  "bytes": 1798907,
   "traffic_percentage": 100,
-  "captured_at": "2026-10-15",
-  "purpose": "GitHub contingency baseline after recipe-calculated product component quantities deployment. PROD is out of scope."
+  "captured_at": "2026-10-16",
+  "purpose": "GitHub contingency baseline after synchronized catalog hide filters deployment. PROD is out of scope."
 }
