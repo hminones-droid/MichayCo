@@ -26,19 +26,19 @@ def override_path(route):
     if route == "/oauth/consent": return OVERRIDES / "oauth-consent.html"
     return OVERRIDES / route.lstrip("/")
 
-def content_for(route, expected):
+def content_for(route, expected, apply_text_patch=True):
     remote = fetch(route)
     got = hashlib.sha256(remote).hexdigest()
     if got != expected:
         raise SystemExit(f"active DEV drifted: {route} {got} != {expected}")
     op = override_path(route)
     raw = op.read_bytes() if op.exists() else remote
-    return apply_inheritance(route, raw)
+    return apply_inheritance(route, raw) if apply_text_patch else raw
 
 text = {}
 admin = store = consent = None
 for route, expected in MANIFEST["text_files"].items():
-    raw = content_for(route, expected)
+    raw = content_for(route, expected, True)
     value = raw.decode("utf-8")
     if route == "/admin": admin = value
     elif route == "/": store = value
@@ -47,7 +47,7 @@ for route, expected in MANIFEST["text_files"].items():
 
 binary = {}
 for route, expected in MANIFEST.get("binary_files", {}).items():
-    raw = content_for(route, expected)
+    raw = content_for(route, expected, False)
     binary[route] = {"data": base64.b64encode(raw).decode(), "binary": True}
 
 if None in (admin, store, consent):
