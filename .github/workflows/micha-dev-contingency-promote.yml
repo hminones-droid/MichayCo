@@ -61,18 +61,31 @@ jobs:
               time.sleep(1)
           else: raise SystemExit(f'candidate_not_stable seen={seen}')
           PY
-          curl -fsS -A 'Mozilla/5.0' 'https://dev.michahome.com.ar/catalog-admin-v2.js?verify=recipe' -o /tmp/catalog.js
-          curl -fsS -A 'Mozilla/5.0' 'https://dev.michahome.com.ar/catalog-admin-v2-products.js?verify=recipe' -o /tmp/products.js
-          curl -fsS -A 'Mozilla/5.0' 'https://dev.michahome.com.ar/app.js?verify=recipe' -o /tmp/app.js
-          node --check /tmp/catalog.js
-          node --check /tmp/products.js
+          python3 - <<'PY'
+          import subprocess, time
+          checks={
+            '/catalog-admin-v2.js':['productSupplyCalculatedLabel',"quantity_rule==='by_recipe'","category.includes('vela')",'capacity_g'],
+            '/catalog-admin-v2-products.js':['productCanonicalName'],
+            '/app.js':['productDisplayName'],
+          }
+          for path,markers in checks.items():
+              deadline=time.time()+60
+              target='/tmp/'+path.rsplit('/',1)[-1]
+              while time.time()<deadline:
+                  q=f'{time.time_ns()}'
+                  p=subprocess.run(['curl','-fsS','-A','Mozilla/5.0',f'https://dev.michahome.com.ar{path}?verify={q}','-o',target])
+                  if p.returncode==0:
+                      body=open(target,encoding='utf-8').read()
+                      if all(m in body for m in markers):
+                          print(f'candidate_asset_ok {path}')
+                          break
+                  time.sleep(1)
+              else:
+                  raise SystemExit(f'candidate_asset_not_stable {path}')
+          PY
+          node --check /tmp/catalog-admin-v2.js
+          node --check /tmp/catalog-admin-v2-products.js
           node --check /tmp/app.js
-          grep -q 'productSupplyCalculatedLabel' /tmp/catalog.js
-          grep -q "quantity_rule==='by_recipe'" /tmp/catalog.js
-          grep -q "category.includes('vela')" /tmp/catalog.js
-          grep -q 'capacity_g' /tmp/catalog.js
-          grep -q 'productCanonicalName' /tmp/products.js
-          grep -q 'productDisplayName' /tmp/app.js
           test "$(curl -sS -o /dev/null -w '%{http_code}' -I https://dev.michahome.com.ar/admin)" = "200"
           test "$(curl -sS -o /dev/null -w '%{http_code}' https://dev.michahome.com.ar/__recipe_missing__)" = "404"
           test "$(curl -sS -o /dev/null -w '%{http_code}' -X POST https://dev.michahome.com.ar/admin)" = "405"
