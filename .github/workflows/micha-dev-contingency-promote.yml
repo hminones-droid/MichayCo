@@ -17,12 +17,15 @@ jobs:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN_DEV }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
       WORKER: michayco-dev
-      BASE_VERSION: 17b6f71a-b819-4dbb-b9c0-e56ae186581b
-      CANDIDATE_VERSION: fe231ec6-abd8-4d78-8ad8-92716822e46f
-      BASE_RELEASE: dev-catalog-canonical-excel-20261015-2
-      CANDIDATE_RELEASE: dev-catalog-canonical-grid-20261015-3
-      UTIL_SHA: 805dcfc8b1824ddd5c604e25702a4334b816e2210f2351d650811715b93000ba
-      CSS_SHA: 649bb6b32b63de344643073c35fac2078583eae20511a94db58f2e699c4fa409
+      BASE_VERSION: fe231ec6-abd8-4d78-8ad8-92716822e46f
+      CANDIDATE_VERSION: e8424175-b848-438d-a834-9c13f3791219
+      BASE_RELEASE: dev-catalog-canonical-grid-20261015-3
+      CANDIDATE_RELEASE: dev-product-primary-inheritance-20261015-4
+      APP_SHA: 04e62d21ef803059e0fac45ce9796474fb96ad2fed109726bf144bf533941fc8
+      PRODUCTS_SHA: 5e063d456d934d7a1e52149fadc70b329b6adffb3531fd699594f335c4be9aa9
+      CATALOG_SHA: 3e76adb74fcd33b9e1881755ccdab207fcd7f04cad428fee86f0bc880c97fab9
+      UTIL_SHA: b1623fa2262a176c79f014e05375677cdbac483772e5e98b9cb415f199c0ae6c
+      CSS_SHA: a33897f402ce319db471b2365acab553ad9699c3ff56e2fabc32df3464fe0d8a
       FIXES_SHA: f9b9b2af78fa790500a4c8907284a98f448d43d284e105ef0b06cbc7e2de9b3e
     steps:
       - uses: actions/checkout@v4
@@ -44,7 +47,7 @@ jobs:
           npx --yes wrangler@4.151.0 versions deploy \
             "$CANDIDATE_VERSION@100" \
             --name "$WORKER" --yes \
-            --message "Repair canonical catalog grids and compact toolbar in DEV"
+            --message "Deploy primary-supply inheritance to DEV"
 
       - name: Wait for propagation and validate candidate
         shell: bash
@@ -64,20 +67,34 @@ jobs:
               time.sleep(1)
           else: raise SystemExit(f'candidate_not_stable seen={seen}')
           PY
+          curl -fsS -A 'Mozilla/5.0' 'https://dev.michahome.com.ar/app.js?verify=1' -o /tmp/app.js
+          curl -fsS -A 'Mozilla/5.0' 'https://dev.michahome.com.ar/catalog-admin-v2-products.js?verify=1' -o /tmp/products.js
+          curl -fsS -A 'Mozilla/5.0' 'https://dev.michahome.com.ar/catalog-admin-v2.js?verify=1' -o /tmp/catalog.js
           curl -fsS -A 'Mozilla/5.0' 'https://dev.michahome.com.ar/catalog-admin-v2-utilities.js?verify=1' -o /tmp/util.js
           curl -fsS -A 'Mozilla/5.0' 'https://dev.michahome.com.ar/catalog-admin-v2.css?verify=1' -o /tmp/catalog.css
           curl -fsS -A 'Mozilla/5.0' 'https://dev.michahome.com.ar/catalog-admin-v2-fixes.js?verify=1' -o /tmp/fixes.js
+          echo "$APP_SHA  /tmp/app.js" | sha256sum -c -
+          echo "$PRODUCTS_SHA  /tmp/products.js" | sha256sum -c -
+          echo "$CATALOG_SHA  /tmp/catalog.js" | sha256sum -c -
           echo "$UTIL_SHA  /tmp/util.js" | sha256sum -c -
           echo "$CSS_SHA  /tmp/catalog.css" | sha256sum -c -
           echo "$FIXES_SHA  /tmp/fixes.js" | sha256sum -c -
-          grep -q 'Importar Excel' /tmp/util.js
-          grep -q 'Ocultar no disponibles' /tmp/util.js
-          grep -q 'openCatalogHome' /tmp/util.js
-          grep -q 'catalog-v2-head,.catalog-v2-row{display:grid' /tmp/catalog.css
-          grep -q 'product-supply-head,.product-supply-row' /tmp/catalog.css
+          node --check /tmp/app.js
+          node --check /tmp/products.js
+          node --check /tmp/catalog.js
+          node --check /tmp/util.js
+          grep -q 'storefront_product_physical' /tmp/app.js
+          grep -q 'productDisplayName' /tmp/app.js
+          grep -q 'productCanonicalName' /tmp/products.js
+          grep -q 'capacity_g' /tmp/products.js
+          grep -q 'supCapacityG' /tmp/catalog.js
+          grep -q "'container','component'" /tmp/catalog.js
+          grep -q 'Capacidad_g' /tmp/util.js
+          grep -q 'Producto_base' /tmp/util.js
+          grep -q 'catalog-v2-inherited' /tmp/catalog.css
           grep -q 'ensureCanonicalHeader' /tmp/fixes.js
           test "$(curl -sS -o /dev/null -w '%{http_code}' -I https://dev.michahome.com.ar/admin)" = "200"
-          test "$(curl -sS -o /dev/null -w '%{http_code}' https://dev.michahome.com.ar/__catalog_missing__)" = "404"
+          test "$(curl -sS -o /dev/null -w '%{http_code}' https://dev.michahome.com.ar/__inheritance_missing__)" = "404"
           test "$(curl -sS -o /dev/null -w '%{http_code}' -X POST https://dev.michahome.com.ar/admin)" = "405"
 
       - name: Emergency rollback on failure
@@ -88,7 +105,7 @@ jobs:
           npx --yes wrangler@4.151.0 versions deploy \
             "$BASE_VERSION@100" \
             --name "$WORKER" --yes \
-            --message "Emergency rollback after canonical grid DEV deployment failure"
+            --message "Emergency rollback after primary-supply inheritance DEV deployment failure"
 
       - name: Verify rollback if needed
         if: failure()
