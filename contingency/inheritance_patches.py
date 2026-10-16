@@ -3,9 +3,11 @@ from pathlib import Path
 
 def replace_once(s, old, new, label):
     n=s.count(old)
-    if n != 1:
-        raise RuntimeError(f'{label}: expected 1 occurrence, found {n}')
-    return s.replace(old,new,1)
+    if n == 1:
+        return s.replace(old,new,1)
+    if n == 0 and new in s:
+        return s
+    raise RuntimeError(f'{label}: expected 1 occurrence, found {n}')
 
 
 def patch_catalog(s):
@@ -18,6 +20,19 @@ def patch_catalog(s):
     s=replace_once(s,"material:container?supMaterial.value.trim()||null:null,color:container?supColor.value.trim()||null:null,capacity_cc:container?num('supCapacity'):null,height_mm:container?num('supHeight'):null,width_mm:container?num('supWidth'):null,depth_mm:container?num('supDepth'):null,diameter_mm:container?num('supDiameter'):null,includes_lid:container?supLid.checked:null","material:physical?supMaterial.value.trim()||null:null,color:physical?supColor.value.trim()||null:null,capacity_cc:physical?num('supCapacity'):null,capacity_g:physical?num('supCapacityG'):null,height_mm:physical?num('supHeight'):null,width_mm:physical?num('supWidth'):null,depth_mm:physical?num('supDepth'):null,diameter_mm:physical?num('supDiameter'):null,includes_lid:physical?supLid.checked:null",'physical save fields')
     s=s.replace("<h2>'+ae(p.name)+'</h2>","<h2>'+ae(window.productCanonicalName?productCanonicalName(p):p.name)+'</h2>")
     s=s.replace("← Componentes de '+ae(product.name)+'","← Componentes de '+ae(window.productCanonicalName?productCanonicalName(product):product.name)+'")
+
+    old_query="sb.from('product_supplies').select('*,supply:supplies!product_supplies_supply_id_fkey(id,code,purchase_name,type,stock_unit),content_container:supplies!product_supplies_content_container_supply_id_fkey(id,code,purchase_name)').eq('product_id',productId).order('display_order')"
+    new_query="sb.from('product_supplies').select('*,supply:supplies!product_supplies_supply_id_fkey(id,code,purchase_name,type,stock_unit,material,color,capacity_cc,capacity_g,height_mm,width_mm,depth_mm,diameter_mm),content_container:supplies!product_supplies_content_container_supply_id_fkey(id,code,purchase_name)').eq('product_id',productId).order('display_order')"
+    s=replace_once(s,old_query,new_query,'product supply physical query')
+
+    helpers="""  function recipeNorm(v){return String(v||'').normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').toLowerCase().replace(/\\s+/g,' ').trim()}\n  function recipeNumber(v){return Number(v).toLocaleString('es-AR',{maximumFractionDigits:3})}\n  function recipeUnit(unit,fallback){return ({ml:'ml',cc:'cc',g:'g',cm:'cm',mm:'mm',unit:'un'}[unit]||fallback||unit||'').trim()}\n  function productSupplyCalculatedLabel(link,links,product){\n    const unit=link.supply?.stock_unit||'';\n    if(link.quantity!=null)return recipeNumber(link.quantity)+' '+recipeUnit(unit,unit);\n    const primary=(links.find(x=>x.role==='primary'&&x.supply)||{}).supply;if(!primary)return 'Calculada';\n    if(link.quantity_rule==='by_length'&&primary.height_mm!=null){const mm=Number(primary.height_mm);if(!Number.isFinite(mm))return 'Calculada';const v=unit==='mm'?mm:mm/10;return recipeNumber(v)+' '+recipeUnit(unit,unit==='mm'?'mm':'cm')}\n    if(link.quantity_rule==='by_capacity'){let v=null;if(unit==='g')v=primary.capacity_g;else if(unit==='ml'||unit==='cc')v=primary.capacity_cc;else v=primary.capacity_g??primary.capacity_cc;if(v!=null&&Number.isFinite(Number(v)))return recipeNumber(Number(v))+' '+recipeUnit(unit,primary.capacity_g!=null?'g':'cc');return 'Calculada'}\n    if(link.quantity_rule!=='by_recipe')return 'Calculada';\n    const category=recipeNorm(product?.category?.name||'');if(!category.includes('vela'))return 'Calculada';\n    const base=Number(primary.capacity_g);if(!Number.isFinite(base)||base<=0)return 'Calculada';\n    const name=recipeNorm((link.supply?.purchase_name||'')+' '+(link.supply?.code||''));\n    if(name.includes('cera'))return recipeNumber(base)+' '+recipeUnit(unit,'g');\n    if(name.includes('estabilizador')||name.includes('catalizador'))return recipeNumber(base*0.025)+' '+recipeUnit(unit,'g');\n    if(name.includes('esencia')||name.includes('fragancia'))return recipeNumber(base*0.05)+' '+recipeUnit(unit,'cc');\n    return 'Calculada';\n  }\n"""
+    marker="  window.openProductSupplies=async function(productId){"
+    if 'function productSupplyCalculatedLabel(' not in s:
+        s=replace_once(s,marker,helpers+marker,'recipe calculation helpers')
+
+    old_qty="<span data-label=\"Cantidad\">'+(l.quantity??'Calculada')+' '+ae(l.supply?.stock_unit||'')+'</span>"
+    new_qty="<span data-label=\"Cantidad\">'+ae(productSupplyCalculatedLabel(l,links,p))+'</span>"
+    s=replace_once(s,old_qty,new_qty,'calculated component quantity display')
     return s
 
 
@@ -39,7 +54,8 @@ def patch_app(s):
     s=replace_once(s,"api('/fragrances?select=id,name,code,short_description,olfactory_family,discovery_moments&published=eq.true&order=display_order.asc')\n  ]);","api('/fragrances?select=id,name,code,short_description,olfactory_family,discovery_moments&published=eq.true&order=display_order.asc'),\n   api('/storefront_product_physical?select=*')\n  ]);",'app physical fetch')
     s=replace_once(s,"products=rows.map(p=>({...p,category:p.category?.name||'Colección'}));","primaryPhysical=Object.fromEntries((physicalRows||[]).map(x=>[String(x.product_id),x]));\n  products=rows.map(p=>({...p,category:p.category?.name||'Colección'}));",'app physical map')
     helpers="""function productPrimary(p){return p?primaryPhysical[String(p.id)]||null:null}\nfunction metaKey(v){return String(v||'').normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').toLowerCase().replace(/\\s+/g,' ').trim()}\nfunction defaultPhysicalColor(v){return ['','transparente','incoloro','clear','cristal'].includes(metaKey(v))}\nfunction productDisplayName(p){if(!p)return'';let base=String(p.name||'').trim(),s=productPrimary(p),suffix='';if(s){let color=String(s.color||'').trim();if(color&&!defaultPhysicalColor(color))suffix=color;else if(!color&&s.purchase_name&&String(s.purchase_name).toLocaleLowerCase('es').startsWith(base.toLocaleLowerCase('es')))suffix=String(s.purchase_name).slice(base.length).replace(/^\\s*[-–—·/]?\\s*/,'').trim()}return suffix&&!metaKey(base).includes(metaKey(suffix))?base+' '+suffix:base}\nfunction physicalDims(s){if(!s)return'';let n=v=>Number(v).toLocaleString('es-AR',{maximumFractionDigits:2});if(s.diameter_mm&&s.height_mm)return 'Ø '+n(s.diameter_mm)+' × '+n(s.height_mm)+' mm';let a=[];if(s.height_mm)a.push('alto '+n(s.height_mm));if(s.width_mm)a.push('ancho '+n(s.width_mm));if(s.depth_mm)a.push('prof. '+n(s.depth_mm));return a.length?a.join(' × ')+' mm':''}\n"""
-    s=replace_once(s,'function sanitizeCart(){',helpers+'function sanitizeCart(){','app helpers')
+    if 'function productPrimary(p)' not in s:
+        s=replace_once(s,'function sanitizeCart(){',helpers+'function sanitizeCart(){','app helpers')
     s=replace_once(s,"function productMeta(p){return [p.color,p.capacity_cc!=null?p.capacity_cc+' cc':null].filter(Boolean).join(' · ')}","function productMeta(p){let s=productPrimary(p),a=[];if(s?.capacity_g!=null)a.push(Number(s.capacity_g).toLocaleString('es-AR',{maximumFractionDigits:2})+' g');if(s?.capacity_cc!=null)a.push(Number(s.capacity_cc).toLocaleString('es-AR',{maximumFractionDigits:2})+' cc');let d=physicalDims(s);if(d)a.push(d);return a.join(' · ')}",'app meta')
     s=s.replace("aromaText(p.name)","aromaText(productDisplayName(p))")
     s=s.replace("alt=\"'+p.name+'\"","alt=\"'+productDisplayName(p)+'\"")
