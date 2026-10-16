@@ -1,5 +1,6 @@
 from pathlib import Path
 import base64, hashlib, json, subprocess
+from inheritance_patches import apply as apply_inheritance
 
 ROOT = Path(__file__).resolve().parent
 BASE = "https://dev.michahome.com.ar"
@@ -28,14 +29,11 @@ def override_path(route):
 def content_for(route, expected):
     remote = fetch(route)
     got = hashlib.sha256(remote).hexdigest()
-    op = override_path(route)
-    if op.exists():
-        if got != expected:
-            raise SystemExit(f"active DEV drifted before applying override: {route} {got} != {expected}")
-        return op.read_bytes()
     if got != expected:
         raise SystemExit(f"active DEV drifted: {route} {got} != {expected}")
-    return remote
+    op = override_path(route)
+    raw = op.read_bytes() if op.exists() else remote
+    return apply_inheritance(route, raw)
 
 text = {}
 admin = store = consent = None
