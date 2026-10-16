@@ -1,11 +1,11 @@
 {
   "target": "michayco-dev",
   "production_locked": true,
-  "release": "dev-visibility-filter-fix-20261016-7",
-  "version_id": "83c56e5d-1323-4ed7-88a6-4d5807c4992c",
-  "sha256": "659f646ec14dc210abb91067d3c5c75011587f66b7dff0b756e56a0c009c3981",
-  "bytes": 1801607,
+  "release": "dev-stock-aroma-20261016-8",
+  "version_id": "7ba17dde-3349-4ef2-bf6b-3d0a006f16be",
+  "sha256": "20f9235037ab101b28708a041bf2f72a58e6891682a62a3b1b64ac51e1d8baa5",
+  "bytes": 1805289,
   "traffic_percentage": 100,
   "captured_at": "2026-10-16",
-  "purpose": "GitHub contingency baseline after product/fragrance visibility toggle and available-only filter repair. PROD is out of scope."
+  "purpose": "GitHub contingency baseline after restoring the Stock panel and keeping aroma discovery browsable independently of finished-stock availability. PROD is out of scope."
 }
