@@ -102,6 +102,8 @@
     if(!writeErrors.length){setTimeout(()=>cfg.refresh(),800)}
   }
 
+  const catalogHideState={products:false,supplies:false,fragrances:false,categories:false};
+
   function addTools(root,kind,{extraSearch=false}={}){
     const cfg=configs[kind];if(!cfg)return;
     let controls=root.querySelector('.catalog-v2-controls');
@@ -110,19 +112,33 @@
     const box=document.createElement('div');box.className='catalog-v2-actions catalog-v2-shared-tools';
     root.querySelectorAll('.catalog-v2-toolbar>.btn,.catalog-v2-toolbar>.catalog-v2-actions>.btn').forEach(b=>box.appendChild(b));
     const hide=document.createElement('label');hide.className='check catalog-hide-check';hide.innerHTML='<input type="checkbox" data-v2-hide> Ocultar no disponibles';box.appendChild(hide);
+    const hideInput=hide.querySelector('input');hideInput.checked=!!catalogHideState[kind];
     const exp=document.createElement('button');exp.type='button';exp.className='btn secondary';exp.textContent='Exportar Excel';box.appendChild(exp);
     const imp=document.createElement('label');imp.className='btn secondary file-btn';imp.innerHTML='Importar Excel<input hidden type="file" accept=".xlsx,.xls">';box.appendChild(imp);
     controls.appendChild(box);
     exp.onclick=async()=>{try{const data=await cfg.load();exportRows(cfg.file,cfg.rows(data))}catch(e){alert(e.message)}};
     imp.querySelector('input').onchange=e=>{const f=e.target.files[0];if(f)importFile(kind,f,root);e.target.value=''};
-    const applyHide=()=>{
-      const on=hide.querySelector('input').checked;
-      const rows=root.querySelectorAll('.catalog-v2-list .catalog-v2-row');
-      rows.forEach(row=>{let unavailable=false;if(kind==='supplies')unavailable=[...row.querySelectorAll('[data-label="Catálogo"]')].some(x=>x.textContent.trim()==='Oculto');else if(kind==='categories'){const cb=row.querySelector('[data-catvisible]');unavailable=cb?!cb.checked:false}else unavailable=[...row.querySelectorAll('[data-label="Tienda"]')].some(x=>/Ocult/i.test(x.textContent));row.hidden=on&&unavailable});
+
+    const isUnavailable=row=>{
+      if(kind==='supplies'){const label=[...row.querySelectorAll('[data-label="Catálogo"]')].find(x=>/Activo|Ocult/i.test(x.textContent));const action=row.querySelector('[data-visible],input[data-active]');return label?/Ocult/i.test(label.textContent):action?!action.checked:false}
+      if(kind==='categories'){const action=row.querySelector('[data-catvisible],[data-visible]');const label=[...row.querySelectorAll('[data-label="Tienda"]')].find(x=>/Mostrar|Visible|Ocult/i.test(x.textContent));return action?!action.checked:label?/Ocult/i.test(label.textContent):false}
+      const label=[...row.querySelectorAll('[data-label="Tienda"]')].find(x=>/Visible|Ocult/i.test(x.textContent));
+      const action=row.querySelector('[data-visible],.admin-row-actions input[type="checkbox"],.visibility-control input[type="checkbox"]');
+      return label?/Ocult/i.test(label.textContent):action?!action.checked:false;
     };
-    hide.querySelector('input').onchange=applyHide;
-    if(extraSearch){const s=controls.querySelector('.catalog-shared-search');s.oninput=()=>{const q=s.value.trim().toLowerCase();root.querySelectorAll('.catalog-v2-list .catalog-v2-row').forEach(r=>r.style.display=!q||r.textContent.toLowerCase().includes(q)?'':'none');applyHide()}}
-    new MutationObserver(applyHide).observe(root.querySelector('.catalog-v2-list')||root,{childList:true,subtree:true});applyHide();
+    const applyFilters=()=>{
+      if(!root.isConnected)return;
+      const on=hideInput.checked;catalogHideState[kind]=on;
+      const search=extraSearch?controls.querySelector('.catalog-shared-search'):null,q=search?.value.trim().toLowerCase()||'';
+      root.querySelectorAll('.catalog-v2-list .catalog-v2-row').forEach(row=>{const searchMiss=!!q&&!row.textContent.toLowerCase().includes(q);row.hidden=searchMiss||(on&&isUnavailable(row))});
+    };
+    hideInput.onchange=applyFilters;
+    if(extraSearch){const s=controls.querySelector('.catalog-shared-search');s.oninput=applyFilters}
+    controls.addEventListener('change',e=>{if(e.target!==hideInput&&e.target.type!=='file')queueMicrotask(applyFilters)});
+    controls.addEventListener('input',e=>{if(e.target!==hideInput&&e.target.type!=='file')queueMicrotask(applyFilters)});
+    root.addEventListener('change',e=>{if(e.target.matches?.('[data-visible],[data-catvisible],.admin-row-actions input[type="checkbox"],.visibility-control input[type="checkbox"]'))queueMicrotask(applyFilters)});
+    new MutationObserver(()=>queueMicrotask(applyFilters)).observe(root.querySelector('.catalog-v2-list')||root,{childList:true,subtree:true});
+    applyFilters();
   }
 
   function enhance(kind,title,extraSearch=false){const root=adminShell();makeCatalogCrumb(root,title);addTools(root,kind,{extraSearch})}
