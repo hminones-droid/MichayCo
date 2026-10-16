@@ -1,12 +1,11 @@
 {
   "target": "michayco-dev",
   "production_locked": true,
-  "release": "dev-catalog-canonical-excel-20261015-2",
-  "version_id": "17b6f71a-b819-4dbb-b9c0-e56ae186581b",
-  "deployment_id": "github-contingency-external",
-  "sha256": "3edfd4ac5ed708e4633808106935fea401e8f167b4d8f73c6261ae034852331a",
-  "bytes": 1784917,
+  "release": "dev-catalog-canonical-grid-20261015-3",
+  "version_id": "fe231ec6-abd8-4d78-8ad8-92716822e46f",
+  "sha256": "965b9db5efb70c678bf0229b7a08ee078959a265ddf4a43bd4b2f3bc610b0816",
+  "bytes": 1789433,
   "traffic_percentage": 100,
   "captured_at": "2026-10-15",
-  "purpose": "Temporary GitHub contingency baseline after certified 100% DEV promotion. PROD is out of scope."
+  "purpose": "Temporary GitHub contingency baseline after canonical grid repair. PROD is out of scope."
 }
