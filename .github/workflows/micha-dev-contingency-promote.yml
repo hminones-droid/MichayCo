@@ -64,7 +64,7 @@ jobs:
           python3 - <<'PY'
           import subprocess, time
           checks={
-            '/catalog-admin-v2.js':['productSupplyCalculatedLabel',"quantity_rule==='by_recipe'","category.includes('vela')",'capacity_g'],
+            '/catalog-admin-v2.js':['productSupplyCalculatedLabel',"quantity_rule!=='by_recipe'","category.includes('vela')",'capacity_g'],
             '/catalog-admin-v2-products.js':['productCanonicalName'],
             '/app.js':['productDisplayName'],
           }
