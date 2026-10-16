@@ -1,4 +1,4 @@
-trigger=2026-10-16T00:06:00-03:00
-base=b18ff18b-9f81-4158-87cd-b5f4c1e0294c
-candidate=3b9138c6-6026-4d52-acc5-f86f4de3e7e8
-release=dev-catalog-filter-sync-20261015-6
+trigger=2026-10-16T03:18:00-03:00
+base=3b9138c6-6026-4d52-acc5-f86f4de3e7e8
+candidate=83c56e5d-1323-4ed7-88a6-4d5807c4992c
+release=dev-visibility-filter-fix-20261016-7
