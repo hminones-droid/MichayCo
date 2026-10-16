@@ -64,6 +64,46 @@ def patch_app(s):
     s=s.replace("<span>${p.name}${productMeta(p)?","<span>${productDisplayName(p)}${productMeta(p)?")
     s=s.replace("aria-label=\"Eliminar ${p.name}\"","aria-label=\"Eliminar ${productDisplayName(p)}\"")
     s=s.replace("'<li>'+p.name+(productMeta(p)?","'<li>'+productDisplayName(p)+(productMeta(p)?")
+    s=s.replace("let available=fragrances.filter(f=>variants.some(v=>Number(v.stock)>0&&String(v.fragrance?.id)===String(f.id)&&storefrontReady(products.find(p=>String(p.id)===String(v.product_id)))));","let available=fragrances.filter(f=>(f.discovery_moments||[]).length); // discovery remains browsable even when finished stock is zero")
+    s=s.replace("let w=aromaWorlds[index],list=fragrances.filter(f=>(f.discovery_moments||[]).includes(w.name)&&availableAromaVariants(f.id).length),box=$('aromaResults');if(!box||!list.length)return;","let w=aromaWorlds[index],list=fragrances.filter(f=>(f.discovery_moments||[]).includes(w.name)),box=$('aromaResults');if(!box||!list.length)return;")
+    s=s.replace("let av=availableAromaVariants(f.id),ps=[...new Map(av.map(v=>{let p=products.find(x=>String(x.id)===String(v.product_id));return [String(p.id),p]})).values()];if(!ps.length)return;","let av=availableAromaVariants(f.id),ps=[...new Map(av.map(v=>{let p=products.find(x=>String(x.id)===String(v.product_id));return [String(p.id),p]})).values()];if(!ps.length){document.querySelectorAll('.aroma-pick').forEach(x=>{let active=x.dataset.aromaFragrance===String(f.id);x.classList.toggle('active',active);x.setAttribute('aria-pressed',String(active))});host.innerHTML='<div class=\"aroma-focus-copy\"><span class=\"eyebrow\">'+aromaText(f.olfactory_family||'FRAGANCIA')+'</span><h4>'+aromaText(f.name)+'</h4><p>'+aromaText(f.short_description||'Una nueva forma de vivir este momento.')+'</p><small>Sin presentaciones con stock por ahora. Podés seguir explorando otros aromas.</small></div>';return;}")
+    return s
+
+
+def patch_admin(s):
+    marker='<button data-admin-nav="fragrances">Fragancias</button><button data-admin-nav="photos">Fotos</button>'
+    repl='<button data-admin-nav="fragrances">Fragancias</button><button data-admin-nav="variants">Stock</button><button data-admin-nav="photos">Fotos</button>'
+    return replace_once(s,marker,repl,'stock nav')
+
+
+def patch_admin_tools(s):
+    s=s.replace('<h2>Precios y stock</h2><p class="admin-help">Precio por SKU genérico. Stock por presentación/color + fragancia.</p>','<h2>Stock</h2><p class="admin-help">Inventario de producto terminado por presentación y fragancia. La visibilidad comercial se administra por separado.</p>')
+    s=s.replace('<div class="sheet-tabs"><button class="active" data-sheet="prices">Precios</button><button data-sheet="stock">Stock por producto</button></div>','<div class="sheet-tabs" hidden><button data-sheet="prices">Precios</button><button class="active" data-sheet="stock">Stock</button></div>')
+    s=s.replace("window.stockMode='prices';renderMaintenanceGrid();","window.stockMode='stock';renderMaintenanceGrid();")
+    s=s.replace("if(vid)r=await sb.from('product_variants').update({stock,published:stock>0,sku}).eq('id',vid);","if(vid)r=await sb.from('product_variants').update({stock,sku}).eq('id',vid);")
+    s=s.replace("gridHead.innerHTML='<tr><th>Fragancia</th><th>Familia</th><th>Stock</th><th>SKU completo</th></tr>';","gridHead.innerHTML='<tr><th>Fragancia</th><th>Familia</th><th>Stock actual</th><th>Cantidad</th><th>SKU completo</th></tr>';")
+    s=s.replace("'<tr data-na-product=\"'+p.id+'\"><td><b>N/A</b><small class=\"cell-sub\">Sin fragancia</small></td><td>—</td><td><input class=\"cell-stock matrix-stock\" type=\"number\" min=\"0\" value=\"'+stock+'\"></td><td><small>'+ae(p.sku+'-NA')+'</small></td></tr>'","'<tr data-na-product=\"'+p.id+'\"><td><b>N/A</b><small class=\"cell-sub\">Sin fragancia</small></td><td>—</td><td><b>'+stock+'</b></td><td><input class=\"cell-stock matrix-stock\" data-current=\"'+stock+'\" type=\"number\" min=\"0\" placeholder=\"0\"></td><td><small>'+ae(p.sku+'-NA')+'</small></td></tr>'")
+    s=s.replace("'<td><input class=\"cell-stock matrix-stock\" type=\"number\" min=\"0\" value=\"'+stock+'\"></td><td><small>'+ae(sku)+'</small></td></tr>'","'<td><b>'+stock+'</b></td><td><input class=\"cell-stock matrix-stock\" data-current=\"'+stock+'\" type=\"number\" min=\"0\" placeholder=\"0\"></td><td><small>'+ae(sku)+'</small></td></tr>'")
+    helper="""async function saveStockGridV2(){
+ let rows=[...stockBody.querySelectorAll('tr[data-na-product],tr[data-matrix-fragrance]')].filter(tr=>tr.querySelector('.matrix-stock')?.value.trim()!=='');
+ if(!rows.length){gridMsg.textContent='Ingresá al menos una cantidad para actualizar.';return}
+ if(rows.some(tr=>!Number.isSafeInteger(Number(tr.querySelector('.matrix-stock').value))||Number(tr.querySelector('.matrix-stock').value)<0)){gridMsg.textContent='Las cantidades deben ser números enteros mayores o iguales a 0.';return}
+ let mode=await importDialog('<div class=\"import-dialog-kicker\">AJUSTE DE STOCK</div><h3>¿Qué representa la cantidad ingresada?</h3><div class=\"import-mode-grid\"><button class=\"import-mode-card\" data-import-result=\"total\"><b>Stock total</b><span>Reemplaza el inventario actual.</span><small>Ej.: actual 7, ingresás 4 → queda 4.</small></button><button class=\"import-mode-card\" data-import-result=\"incremental\"><b>Ingreso de mercadería</b><span>Suma al inventario actual.</span><small>Ej.: actual 7, ingresás 4 → queda 11.</small></button></div><button class=\"import-cancel\" data-import-result=\"cancel\">Cancelar</button>');
+ if(mode==='cancel')return;
+ let preview=rows.map(tr=>{let input=tr.querySelector('.matrix-stock'),current=Number(input.dataset.current||0),entered=Number(input.value),target=mode==='incremental'?current+entered:entered;return {tr,current,entered,target}});
+ let ok=await importDialog('<div class=\"import-dialog-kicker\">CONFIRMAR STOCK</div><h3>Revisá el ajuste</h3><div class=\"import-preview-list\">'+preview.slice(0,30).map(x=>'<div class=\"import-preview-row\"><b>'+ae(x.tr.querySelector('td:first-child')?.innerText||'Stock')+'</b><span>'+x.current+' → '+x.target+'</span><small>'+(mode==='incremental'?'Ingreso +'+x.entered:'Stock total')+'</small></div>').join('')+'</div><div class=\"import-dialog-actions\"><button class=\"btn secondary\" data-import-result=\"cancel\">Volver</button><button class=\"btn\" data-import-result=\"apply\">Aplicar</button></div>');
+ if(ok!=='apply')return;
+ saveGrid.disabled=true;gridMsg.textContent='Actualizando stock…';
+ try{
+  let pid=fltProduct.value,p=adminCache.products.find(x=>x.id===pid);
+  for(const x of preview){let tr=x.tr,r;if(tr.dataset.naProduct){r=await sb.from('products').update({stock:x.target}).eq('id',pid)}else{let fid=tr.dataset.matrixFragrance,f=adminCache.fragrances.find(y=>y.id===fid),vid=tr.dataset.variant,sku=p&&p.sku&&f&&f.code?p.sku+'-'+normCode(f.code,2):null;if(vid)r=await sb.from('product_variants').update({stock:x.target,sku}).eq('id',vid);else if(x.target>0)r=await sb.from('product_variants').insert({product_id:pid,fragrance_id:fid,sku,stock:x.target,published:true});if(!r)continue}if(r.error)throw r.error}
+  gridMsg.textContent='Stock actualizado.';await adminLoad();renderMaintenanceGrid();
+ }catch(e){gridMsg.textContent='No se pudo actualizar el stock: '+(e.message||e)}finally{saveGrid.disabled=false}
+}
+"""
+    if 'async function saveStockGridV2()' not in s:
+        s=s.replace('async function saveMaintenanceGrid(){',helper+'async function saveMaintenanceGrid(){',1)
+    s=s.replace('saveGrid.onclick=saveMaintenanceGrid;downloadSheet.onclick=downloadMaintenanceWorkbook;','saveGrid.onclick=()=>stockMode===\'stock\'?saveStockGridV2():saveMaintenanceGrid();downloadSheet.onclick=downloadMaintenanceWorkbook;')
     return s
 
 
@@ -72,4 +112,6 @@ def apply(route, raw):
     if route=='/catalog-admin-v2.js': s=patch_catalog(s)
     elif route=='/catalog-admin-v2-utilities.js': s=patch_utilities(s)
     elif route=='/app.js': s=patch_app(s)
+    elif route=='/admin': s=patch_admin(s)
+    elif route=='/admin-tools.js': s=patch_admin_tools(s)
     return s.encode('utf-8') if isinstance(raw,(bytes,bytearray)) else s
