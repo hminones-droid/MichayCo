@@ -1,4 +1,4 @@
-trigger=2026-10-15T23:48:00-03:00
+trigger=2026-10-15T23:52:00-03:00
 base=e8424175-b848-438d-a834-9c13f3791219
 candidate=b18ff18b-9f81-4158-87cd-b5f4c1e0294c
 release=dev-recipe-calculation-20261015-5
