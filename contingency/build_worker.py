@@ -8,6 +8,12 @@ MANIFEST = json.loads((ROOT / "ACTIVE_BASELINE_MANIFEST.json").read_text())
 BASELINE = json.loads((ROOT / "ACTIVE_BASELINE.json").read_text())
 RELEASE = (ROOT / "RELEASE.txt").read_text().strip()
 OVERRIDES = ROOT / "overrides"
+RECOVERED_BINARY = {
+    "/assets/aroma-moments-minimal.webp": {
+        "url": "https://raw.githubusercontent.com/hminones-droid/MichayCo/main/public/assets/aroma-moments-minimal.webp",
+        "sha256": "8ff7bd58360892aefec5f66c4e5925ef68a8ad4dbd12fff9a0153af3e6209a16",
+    }
+}
 
 if BASELINE["target"] != "michayco-dev" or BASELINE["production_locked"] is not True:
     raise SystemExit("unsafe baseline")
@@ -18,6 +24,12 @@ def fetch(route):
     p = subprocess.run(["curl", "-fsS", "-A", "Mozilla/5.0", BASE + route], capture_output=True)
     if p.returncode:
         raise SystemExit(f"fetch failed {route}: {p.stderr.decode(errors='ignore')}")
+    return p.stdout
+
+def fetch_url(url):
+    p = subprocess.run(["curl", "-fsSL", "-A", "Mozilla/5.0", url], capture_output=True)
+    if p.returncode:
+        raise SystemExit(f"fetch failed {url}: {p.stderr.decode(errors='ignore')}")
     return p.stdout
 
 def override_path(route):
@@ -48,6 +60,12 @@ for route, expected in MANIFEST["text_files"].items():
 binary = {}
 for route, expected in MANIFEST.get("binary_files", {}).items():
     raw = content_for(route, expected, False)
+    binary[route] = {"data": base64.b64encode(raw).decode(), "binary": True}
+for route, spec in RECOVERED_BINARY.items():
+    raw = fetch_url(spec["url"])
+    got = hashlib.sha256(raw).hexdigest()
+    if got != spec["sha256"]:
+        raise SystemExit(f"recovered asset drifted: {route} {got} != {spec['sha256']}")
     binary[route] = {"data": base64.b64encode(raw).decode(), "binary": True}
 
 if None in (admin, store, consent):
