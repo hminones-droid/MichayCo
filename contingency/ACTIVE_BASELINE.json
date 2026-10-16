@@ -1,11 +1,11 @@
 {
   "target": "michayco-dev",
   "production_locked": true,
-  "release": "dev-stock-aroma-20261016-8",
-  "version_id": "7ba17dde-3349-4ef2-bf6b-3d0a006f16be",
-  "sha256": "20f9235037ab101b28708a041bf2f72a58e6891682a62a3b1b64ac51e1d8baa5",
-  "bytes": 1805289,
+  "release": "dev-aroma-photos-recovery-20261016-9",
+  "version_id": "ab55e605-2497-4065-bf49-a2fc281b4be3",
+  "sha256": "7c476acf5495bdbb6079bbf31fe27954f64a725e90c859866235d50a84124f12",
+  "bytes": 1962392,
   "traffic_percentage": 100,
   "captured_at": "2026-10-16",
-  "purpose": "GitHub contingency baseline after restoring the Stock panel and keeping aroma discovery browsable independently of finished-stock availability. PROD is out of scope."
+  "purpose": "GitHub contingency baseline after recovering the original aroma moment photography sprite in DEV. PROD is out of scope."
 }
