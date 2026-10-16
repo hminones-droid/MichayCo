@@ -1,11 +1,11 @@
 {
   "target": "michayco-dev",
   "production_locked": true,
-  "release": "dev-catalog-filter-sync-20261015-6",
-  "version_id": "3b9138c6-6026-4d52-acc5-f86f4de3e7e8",
-  "sha256": "110ce1faf1e3465da6e69598649467dcb0ff11d5f65108e95a2d23c3475f7450",
-  "bytes": 1798907,
+  "release": "dev-visibility-filter-fix-20261016-7",
+  "version_id": "83c56e5d-1323-4ed7-88a6-4d5807c4992c",
+  "sha256": "659f646ec14dc210abb91067d3c5c75011587f66b7dff0b756e56a0c009c3981",
+  "bytes": 1801607,
   "traffic_percentage": 100,
   "captured_at": "2026-10-16",
-  "purpose": "GitHub contingency baseline after synchronized catalog hide filters deployment. PROD is out of scope."
+  "purpose": "GitHub contingency baseline after product/fragrance visibility toggle and available-only filter repair. PROD is out of scope."
 }
