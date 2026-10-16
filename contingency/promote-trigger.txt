@@ -1,4 +1,4 @@
-trigger=2026-10-16T03:18:00-03:00
-base=3b9138c6-6026-4d52-acc5-f86f4de3e7e8
-candidate=83c56e5d-1323-4ed7-88a6-4d5807c4992c
-release=dev-visibility-filter-fix-20261016-7
+trigger=2026-10-16T11:42:00-03:00
+base=83c56e5d-1323-4ed7-88a6-4d5807c4992c
+candidate=7ba17dde-3349-4ef2-bf6b-3d0a006f16be
+release=dev-stock-aroma-20261016-8
