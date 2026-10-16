@@ -1,11 +1,11 @@
 {
   "target": "michayco-dev",
   "production_locked": true,
-  "release": "dev-catalog-canonical-grid-20261015-3",
-  "version_id": "fe231ec6-abd8-4d78-8ad8-92716822e46f",
+  "release": "dev-product-primary-inheritance-20261015-4",
+  "version_id": "e8424175-b848-438d-a834-9c13f3791219",
   "sha256": "965b9db5efb70c678bf0229b7a08ee078959a265ddf4a43bd4b2f3bc610b0816",
   "bytes": 1789433,
   "traffic_percentage": 100,
   "captured_at": "2026-10-15",
-  "purpose": "Temporary GitHub contingency baseline after canonical grid repair. PROD is out of scope."
+  "purpose": "Temporary GitHub contingency baseline after primary-supply inheritance deployment. PROD is out of scope."
 }
