@@ -17,10 +17,10 @@ jobs:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN_DEV }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
       WORKER: michayco-dev
-      BASE_VERSION: e8424175-b848-438d-a834-9c13f3791219
-      CANDIDATE_VERSION: b18ff18b-9f81-4158-87cd-b5f4c1e0294c
-      BASE_RELEASE: dev-product-primary-inheritance-20261015-4
-      CANDIDATE_RELEASE: dev-recipe-calculation-20261015-5
+      BASE_VERSION: b18ff18b-9f81-4158-87cd-b5f4c1e0294c
+      CANDIDATE_VERSION: 3b9138c6-6026-4d52-acc5-f86f4de3e7e8
+      BASE_RELEASE: dev-recipe-calculation-20261015-5
+      CANDIDATE_RELEASE: dev-catalog-filter-sync-20261015-6
     steps:
       - uses: actions/checkout@v4
 
@@ -41,7 +41,7 @@ jobs:
           npx --yes wrangler@4.151.0 versions deploy \
             "$CANDIDATE_VERSION@100" \
             --name "$WORKER" --yes \
-            --message "Deploy recipe-calculated component quantities to DEV"
+            --message "Deploy catalog filter synchronization to DEV"
 
       - name: Wait for propagation and validate candidate
         shell: bash
@@ -98,7 +98,7 @@ jobs:
           npx --yes wrangler@4.151.0 versions deploy \
             "$BASE_VERSION@100" \
             --name "$WORKER" --yes \
-            --message "Emergency rollback after recipe calculation DEV deployment failure"
+            --message "Emergency rollback after catalog filter synchronization DEV deployment failure"
 
       - name: Verify rollback if needed
         if: failure()
