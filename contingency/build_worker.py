@@ -57,6 +57,10 @@ for route, expected in MANIFEST["text_files"].items():
     elif route == "/oauth/consent": consent = value
     else: text[route] = {"data": value, "binary": False}
 
+extra_supply_fix = OVERRIDES / "supply-form-fixes.js"
+if extra_supply_fix.exists():
+    text["/supply-form-fixes.js"] = {"data": extra_supply_fix.read_text(), "binary": False}
+
 binary = {}
 for route, expected in MANIFEST.get("binary_files", {}).items():
     raw = content_for(route, expected, False)
@@ -70,6 +74,8 @@ for route, spec in RECOVERED_BINARY.items():
 
 if None in (admin, store, consent):
     raise SystemExit("missing required HTML route")
+if extra_supply_fix.exists() and "/supply-form-fixes.js" not in admin:
+    admin = admin.replace("</body>", '<script src="/supply-form-fixes.js"></script></body>')
 files = {**text, **binary}
 
 parts = [
