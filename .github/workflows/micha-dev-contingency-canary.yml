@@ -17,10 +17,10 @@ jobs:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN_DEV }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
       WORKER: michayco-dev
-      BASE_VERSION: 8c38adae-f1ab-4339-9b33-f421f968886f
-      CANDIDATE_VERSION: 2da4244f-f757-4b27-8e62-82cece3c3736
-      BASE_RELEASE: dev-supply-active-unified-20261017-12
-      CANDIDATE_RELEASE: dev-product-duplicate-components-20261017-13
+      BASE_VERSION: 2da4244f-f757-4b27-8e62-82cece3c3736
+      CANDIDATE_VERSION: 9641e736-9cc1-429c-92af-109520b3787f
+      BASE_RELEASE: dev-product-duplicate-components-20261017-13
+      CANDIDATE_RELEASE: dev-product-duplicate-easy-edit-20261017-14
     steps:
       - uses: actions/checkout@v4
 
@@ -41,7 +41,7 @@ jobs:
           npx --yes wrangler@4.151.0 versions deploy \
             "$BASE_VERSION@90" "$CANDIDATE_VERSION@10" \
             --name "$WORKER" --yes \
-            --message "Temporary DEV product component duplication canary 10 percent"
+            --message "Temporary DEV easier product duplicate editing canary 10 percent"
 
       - name: Validate canary traffic
         shell: bash
@@ -70,7 +70,7 @@ jobs:
           npx --yes wrangler@4.151.0 versions deploy \
             "$BASE_VERSION@100" \
             --name "$WORKER" --yes \
-            --message "Restore DEV baseline after product duplication canary"
+            --message "Restore DEV baseline after easier duplicate editing canary"
 
       - name: Emergency rollback on failure
         if: failure()
@@ -80,7 +80,7 @@ jobs:
           npx --yes wrangler@4.151.0 versions deploy \
             "$BASE_VERSION@100" \
             --name "$WORKER" --yes \
-            --message "Emergency restore DEV baseline after product duplication canary failure"
+            --message "Emergency restore DEV baseline after easier duplicate editing canary failure"
 
       - name: Verify baseline restored
         if: always()
