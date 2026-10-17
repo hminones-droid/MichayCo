@@ -17,10 +17,10 @@ jobs:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN_DEV }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
       WORKER: michayco-dev
-      BASE_VERSION: 7ba17dde-3349-4ef2-bf6b-3d0a006f16be
-      CANDIDATE_VERSION: ab55e605-2497-4065-bf49-a2fc281b4be3
-      BASE_RELEASE: dev-stock-aroma-20261016-8
-      CANDIDATE_RELEASE: dev-aroma-photos-recovery-20261016-9
+      BASE_VERSION: ab55e605-2497-4065-bf49-a2fc281b4be3
+      CANDIDATE_VERSION: 7b26f135-498e-4373-8f09-1061c371f83b
+      BASE_RELEASE: dev-aroma-photos-recovery-20261016-9
+      CANDIDATE_RELEASE: dev-supply-actions-20261017-10
     steps:
       - uses: actions/checkout@v4
 
@@ -41,7 +41,7 @@ jobs:
           npx --yes wrangler@4.151.0 versions deploy \
             "$CANDIDATE_VERSION@100" \
             --name "$WORKER" --yes \
-            --message "Restore original aroma moment photography in DEV"
+            --message "Deploy canonical supply actions and duplication to DEV"
 
       - name: Wait for propagation and validate candidate
         shell: bash
@@ -61,11 +61,13 @@ jobs:
               time.sleep(1)
           else: raise SystemExit(f'candidate_not_stable seen={seen}')
           PY
-          curl -fsS -A 'Mozilla/5.0' https://dev.michahome.com.ar/assets/aroma-moments-minimal.webp -o /tmp/aroma-moments-minimal.webp
-          test "$(sha256sum /tmp/aroma-moments-minimal.webp | awk '{print $1}')" = "8ff7bd58360892aefec5f66c4e5925ef68a8ad4dbd12fff9a0153af3e6209a16"
+          curl -fsS -A 'Mozilla/5.0' 'https://dev.michahome.com.ar/catalog-admin-v2-fixes.js?verify=1' -o /tmp/catalog-admin-v2-fixes.js
+          grep -q 'data-supply-duplicate' /tmp/catalog-admin-v2-fixes.js
+          grep -q 'data-supply-active' /tmp/catalog-admin-v2-fixes.js
+          grep -q 'No se puede borrar' /tmp/catalog-admin-v2-fixes.js
+          node --check /tmp/catalog-admin-v2-fixes.js
           test "$(curl -sS -o /dev/null -w '%{http_code}' -I https://dev.michahome.com.ar/admin)" = "200"
-          test "$(curl -sS -o /dev/null -w '%{http_code}' -I https://dev.michahome.com.ar/assets/aroma-moments-minimal.webp)" = "200"
-          test "$(curl -sS -o /dev/null -w '%{http_code}' https://dev.michahome.com.ar/__aroma_photo_missing__)" = "404"
+          test "$(curl -sS -o /dev/null -w '%{http_code}' https://dev.michahome.com.ar/__supply_actions_missing__)" = "404"
           test "$(curl -sS -o /dev/null -w '%{http_code}' -X POST https://dev.michahome.com.ar/admin)" = "405"
 
       - name: Emergency rollback on failure
@@ -76,7 +78,7 @@ jobs:
           npx --yes wrangler@4.151.0 versions deploy \
             "$BASE_VERSION@100" \
             --name "$WORKER" --yes \
-            --message "Emergency rollback after aroma photo recovery DEV deployment failure"
+            --message "Emergency rollback after supply actions DEV deployment failure"
 
       - name: Verify rollback if needed
         if: failure()
