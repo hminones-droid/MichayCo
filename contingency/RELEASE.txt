@@ -1,1 +1,1 @@
-dev-admin-safe-mode-20261017-23
+dev-admin-canonical-safe-20261017-24
