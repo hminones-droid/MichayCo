@@ -1,11 +1,11 @@
 {
   "target": "michayco-dev",
   "production_locked": true,
-  "release": "dev-aroma-photos-recovery-20261016-9",
-  "version_id": "ab55e605-2497-4065-bf49-a2fc281b4be3",
-  "sha256": "7c476acf5495bdbb6079bbf31fe27954f64a725e90c859866235d50a84124f12",
-  "bytes": 1962392,
+  "release": "dev-supply-actions-20261017-10",
+  "version_id": "7b26f135-498e-4373-8f09-1061c371f83b",
+  "sha256": "5531df08c4d8834e9f64f42beeb69d563696985941c3453de621d4743e7bd4b8",
+  "bytes": 1969297,
   "traffic_percentage": 100,
-  "captured_at": "2026-10-16",
-  "purpose": "GitHub contingency baseline after recovering the original aroma moment photography sprite in DEV. PROD is out of scope."
+  "captured_at": "2026-10-17",
+  "purpose": "GitHub contingency baseline after canonical Insumos actions, active/hidden semantics, safe delete, and physical-supply duplication support in DEV. PROD is out of scope."
 }
