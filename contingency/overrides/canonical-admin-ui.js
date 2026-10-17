@@ -2,12 +2,17 @@
 (function(){
   const svgTrash=()=>typeof window.trashIcon==='function'?window.trashIcon():'🗑';
   function iconize(btn,kind,title){
-    if(!btn||btn.dataset.canonicalIcon===kind)return;
-    btn.dataset.canonicalIcon=kind;btn.classList.add('canonical-icon-btn');btn.title=title;btn.setAttribute('aria-label',title);
-    if(kind==='edit')btn.textContent='✎';
-    else if(kind==='duplicate')btn.textContent='⧉';
-    else if(kind==='trash'){btn.classList.add('is-trash');btn.innerHTML=svgTrash()}
-    else if(kind==='clear')btn.textContent='×';
+    if(!btn)return;
+    if(btn.dataset.canonicalIcon!==kind){
+      btn.dataset.canonicalIcon=kind;
+      btn.classList.add('canonical-icon-btn');
+      if(kind==='edit')btn.textContent='✎';
+      else if(kind==='duplicate')btn.textContent='⧉';
+      else if(kind==='trash'){btn.classList.add('is-trash');btn.innerHTML=svgTrash()}
+      else if(kind==='clear')btn.textContent='×';
+    }
+    if(btn.title!==title)btn.title=title;
+    if(btn.getAttribute('aria-label')!==title)btn.setAttribute('aria-label',title);
   }
   function canonicalizeComponentRows(root){
     root.querySelectorAll('.product-supply-row').forEach(row=>{
@@ -15,8 +20,8 @@
       if(!replace&&!remove)return;
       let actions=row.querySelector('.canonical-row-actions');
       if(!actions){actions=document.createElement('div');actions.className='canonical-row-actions';row.appendChild(actions)}
-      if(replace){actions.appendChild(replace);iconize(replace,'edit','Cambiar componente')}
-      if(remove){actions.appendChild(remove);iconize(remove,'trash','Quitar componente')}
+      if(replace){if(replace.parentElement!==actions)actions.appendChild(replace);iconize(replace,'edit','Cambiar componente')}
+      if(remove){if(remove.parentElement!==actions)actions.appendChild(remove);iconize(remove,'trash','Quitar componente')}
     });
   }
   function canonicalizeKnownActions(root){
@@ -33,9 +38,18 @@
       else if(txt==='eliminar'||txt==='borrar'||title.startsWith('eliminar'))iconize(b,'trash','Eliminar');
       else if(txt==='quitar')iconize(b,'trash','Quitar');
     });
-    root.querySelectorAll('.visibility-control').forEach(l=>{l.title='Visible / habilitado';l.setAttribute('aria-label','Visible / habilitado')});
+    root.querySelectorAll('.visibility-control').forEach(l=>{
+      if(l.title!=='Visible / habilitado')l.title='Visible / habilitado';
+      if(l.getAttribute('aria-label')!=='Visible / habilitado')l.setAttribute('aria-label','Visible / habilitado');
+    });
   }
-  function run(){const root=typeof window.adminShell==='function'?window.adminShell():document;canonicalizeComponentRows(root);canonicalizeKnownActions(root)}
-  new MutationObserver(()=>queueMicrotask(run)).observe(document.documentElement,{subtree:true,childList:true});
-  document.addEventListener('DOMContentLoaded',run);queueMicrotask(run);
+  let scheduled=false;
+  function run(){
+    scheduled=false;
+    const root=typeof window.adminShell==='function'?window.adminShell():document;
+    canonicalizeComponentRows(root);canonicalizeKnownActions(root);
+  }
+  function schedule(){if(scheduled)return;scheduled=true;queueMicrotask(run)}
+  new MutationObserver(schedule).observe(document.documentElement,{subtree:true,childList:true});
+  document.addEventListener('DOMContentLoaded',schedule);schedule();
 })();
