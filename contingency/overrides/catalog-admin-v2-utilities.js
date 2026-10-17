@@ -113,14 +113,14 @@
     root.querySelectorAll('.catalog-v2-toolbar>.btn,.catalog-v2-toolbar>.catalog-v2-actions>.btn').forEach(b=>box.appendChild(b));
     const hide=document.createElement('label');hide.className='check catalog-hide-check';hide.innerHTML='<input type="checkbox" data-v2-hide> Ocultar no disponibles';box.appendChild(hide);
     const hideInput=hide.querySelector('input');hideInput.checked=!!catalogHideState[kind];
-    const exp=document.createElement('button');exp.type='button';exp.className='btn secondary';exp.textContent='Exportar Excel';box.appendChild(exp);
-    const imp=document.createElement('label');imp.className='btn secondary file-btn';imp.innerHTML='Importar Excel<input hidden type="file" accept=".xlsx,.xls">';box.appendChild(imp);
+    const exp=document.createElement('button');exp.type='button';exp.className='btn secondary';exp.innerHTML='<span aria-hidden="true">▦↓</span><span class="excel-label">XLSX</span>';exp.title='Exportar Excel';exp.setAttribute('aria-label','Exportar Excel');box.appendChild(exp);
+    const imp=document.createElement('label');imp.className='btn secondary file-btn';imp.innerHTML='<span aria-hidden="true">▦↑</span><span class="excel-label">XLSX</span><input hidden type="file" accept=".xlsx,.xls">';imp.title='Importar Excel';imp.setAttribute('aria-label','Importar Excel');box.appendChild(imp);
     controls.appendChild(box);
     exp.onclick=async()=>{try{const data=await cfg.load();exportRows(cfg.file,cfg.rows(data))}catch(e){alert(e.message)}};
     imp.querySelector('input').onchange=e=>{const f=e.target.files[0];if(f)importFile(kind,f,root);e.target.value=''};
 
     const isUnavailable=row=>{
-      if(kind==='supplies'){const label=[...row.querySelectorAll('[data-label="Catálogo"]')].find(x=>/Activo|Ocult/i.test(x.textContent));const action=row.querySelector('[data-visible],input[data-active]');return label?/Ocult/i.test(label.textContent):action?!action.checked:false}
+      if(kind==='supplies'){if(row?.dataset?.active!=null)return row.dataset.active!=='1';const label=[...row.querySelectorAll('[data-label="Catálogo"]')].find(x=>/Activo|Ocult/i.test(x.textContent));const action=row.querySelector('[data-supply-active],[data-visible],input[data-active]');return label?/Ocult/i.test(label.textContent):action?!action.classList.contains('is-active'):false}
       if(kind==='categories'){const action=row.querySelector('[data-catvisible],[data-visible]');const label=[...row.querySelectorAll('[data-label="Tienda"]')].find(x=>/Mostrar|Visible|Ocult/i.test(x.textContent));return action?!action.checked:label?/Ocult/i.test(label.textContent):false}
       const label=[...row.querySelectorAll('[data-label="Tienda"]')].find(x=>/Visible|Ocult/i.test(x.textContent));
       const action=row.querySelector('[data-visible],.admin-row-actions input[type="checkbox"],.visibility-control input[type="checkbox"]');
