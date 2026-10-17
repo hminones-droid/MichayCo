@@ -1,5 +1,5 @@
-trigger=2026-10-17T20:22:00-03:00
+trigger=2026-10-17T20:25:00-03:00
 base=e54e795f-cd42-4a66-834f-66727bd0b636
 candidate=80c0e68f-18b1-481a-827c-c852b7d5e1b5
 release=dev-admin-canonical-density-20261017-21
-reason=navigation-freeze-regression
+reason=navigation-freeze-regression-validation-corrected
