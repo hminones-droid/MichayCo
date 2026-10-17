@@ -37,6 +37,14 @@
     const refresh=()=>loadNameSuggestions(type.value,datalist);
     type.addEventListener('change',refresh);
     await refresh();
+
+    // La vigencia no se edita como un campo independiente: la controla
+    // exclusivamente la tilde de la grilla de Insumos. Conservamos el input
+    // internamente porque el formulario legado lo usa al guardar, pero no se
+    // muestra al usuario ni crea una segunda fuente de verdad.
+    const active=document.getElementById('supActive');
+    const activeLabel=active?.closest('label');
+    if(activeLabel)activeLabel.style.display='none';
   };
 
   function suggestedDuplicateName(x,newColor){
