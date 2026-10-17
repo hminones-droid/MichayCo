@@ -71,14 +71,15 @@
     }
     if(root.querySelector('.catalog-v2-head'))return;
     let labels=null;
-    if(active==='products')labels=['Producto','Componentes','Precio','Estado','Acciones'];
-    if(active==='fragrances')labels=['Fragancia','Fórmula','Total','Estado','Acciones'];
+    if(active==='products')labels=['Producto','Precio','Stock','Visible','Completitud','Acciones'];
+    if(active==='fragrances')labels=['Fragancia','Composición','Completitud','Acciones'];
     if(!labels)return;
     const head=document.createElement('div');head.className='catalog-v2-head product-supply-head';head.setAttribute('aria-hidden','true');
     head.innerHTML=labels.map(x=>'<span>'+x+'</span>').join('');list.before(head);
   }
 
   function supplyRowActive(row){
+    if(row?.dataset?.active!=null)return row.dataset.active==='1';
     const label=row?.querySelector('[data-label="Catálogo"]');
     return !label||!/Ocult/i.test(label.textContent||'');
   }
@@ -86,7 +87,7 @@
   function ensureSupplyActionStyles(){
     if(document.getElementById('v2SupplyActionStyles'))return;
     const style=document.createElement('style');style.id='v2SupplyActionStyles';
-    style.textContent='.supply-v2-head,.supply-v2-row{grid-template-columns:minmax(250px,1.7fr) .65fr .75fr .75fr .7fr .65fr auto!important}.supply-v2-actions{display:flex;gap:7px;justify-content:flex-end;align-items:center}.supply-v2-actions button{width:41px;height:41px;display:grid;place-items:center;padding:0;font-size:18px;border:1px solid #d0c7b8;background:#fffdf8;color:#39402e;border-radius:5px;cursor:pointer}.supply-v2-actions button[data-supply-active].is-active{background:#596044;color:#fff;border-color:#596044}.supply-v2-actions button:hover{border-color:#6a7051}.supply-v2-actions button[data-supply-delete]{color:#873e38}@media(max-width:900px){.supply-v2-head{display:none!important}.supply-v2-row{grid-template-columns:1fr!important}.supply-v2-actions{justify-content:flex-start}}';
+    style.textContent='.supply-v2-head,.supply-v2-row{grid-template-columns:minmax(250px,1.7fr) .65fr .75fr .75fr .7fr auto!important}.supply-v2-actions{display:flex;gap:7px;justify-content:flex-end;align-items:center}.supply-v2-actions button{width:41px;height:41px;display:grid;place-items:center;padding:0;font-size:18px;border:1px solid #d0c7b8;background:#fffdf8;color:#39402e;border-radius:5px;cursor:pointer}.supply-v2-actions button[data-supply-active].is-active{background:#596044;color:#fff;border-color:#596044}.supply-v2-actions button:hover{border-color:#6a7051}.supply-v2-actions button[data-supply-delete]{color:#873e38}@media(max-width:900px){.supply-v2-head{display:none!important}.supply-v2-row{grid-template-columns:1fr!important}.supply-v2-actions{justify-content:flex-start}}';
     document.head.appendChild(style);
   }
 
@@ -116,6 +117,7 @@
       if(item)return item.published===false;
     }
     if(active==='supplies'){
+      if(row?.dataset?.active!=null)return row.dataset.active!=='1';
       const label=[...row.querySelectorAll('[data-label="Catálogo"]')].find(x=>/Activo|Ocult/i.test(x.textContent));
       const action=row.querySelector('[data-supply-active],[data-visible],input[data-active]');
       return label?/Ocult/i.test(label.textContent):action?!action.classList.contains('is-active'):false;
@@ -182,7 +184,7 @@
     try{
       const r=await sb.from('supplies').update({active:next}).eq('id',id);if(r.error)throw r.error;
       const label=row.querySelector('[data-label="Catálogo"]');if(label)label.textContent=next?'Activo':'Oculto';
-      activeBtn.classList.toggle('is-active',next);activeBtn.title=next?'Inhabilitar / ocultar':'Habilitar / mostrar';
+      row.dataset.active=next?'1':'0';activeBtn.classList.toggle('is-active',next);activeBtn.title=next?'Inhabilitar / ocultar':'Habilitar / mostrar';
       queueMicrotask(applyCanonicalHide);
     }catch(err){alert('No se pudo cambiar la vigencia: '+(err?.message||err))}finally{activeBtn.disabled=false}
   }
