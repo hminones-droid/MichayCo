@@ -1,11 +1,11 @@
 {
   "target": "michayco-dev",
   "production_locked": true,
-  "release": "dev-product-duplicate-components-20261017-13",
-  "version_id": "2da4244f-f757-4b27-8e62-82cece3c3736",
-  "sha256": "d76fffb549b568e1b04c64b05c4d35d0bdd0837985d8e577de2ff514f9c55d84",
-  "bytes": 1979765,
+  "release": "dev-product-duplicate-easy-edit-20261017-14",
+  "version_id": "9641e736-9cc1-429c-92af-109520b3787f",
+  "sha256": "b4bcd0d1c889f3bb2edf8e007eba39fac8f9e3d7b72b6deee4ae1c709e4a9d06",
+  "bytes": 1984930,
   "traffic_percentage": 100,
   "captured_at": "2026-10-17",
-  "purpose": "GitHub contingency baseline after making product duplication preserve the complete product_supplies composition so inherited physical properties and recipe components carry forward by default. Stock, photos and publication are intentionally not copied. DEV only; PROD is out of scope."
+  "purpose": "GitHub contingency baseline after making product duplication preserve composition, open the copied components for review, and allow one-click replacement of a component while keeping its role and quantity rule. Existing Linea Terra L Latte and Blanco Jaspeado compositions were repaired from the Blanco base with their own principal envases. DEV only; PROD is out of scope."
 }
