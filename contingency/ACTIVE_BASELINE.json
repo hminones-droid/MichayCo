@@ -1,11 +1,11 @@
 {
   "target": "michayco-dev",
   "production_locked": true,
-  "release": "dev-canonical-admin-ui-20261017-17",
-  "version_id": "db837aa3-ccf6-490b-ad8a-90dc0b95e801",
-  "sha256": "b964772da59266c3bd603cbee8ae2020d232c1a7ca98cac79db90704afdad7b4",
-  "bytes": 1991425,
+  "release": "dev-admin-responsive-foundation-20261017-18",
+  "version_id": "fa94d8df-4a45-4498-a1ce-661548d02f42",
+  "sha256": "a1a1922aec35bd7410dd4eaaac07b2af26116519c8466aa02811cb170e16ff59",
+  "bytes": 2010678,
   "traffic_percentage": 100,
   "captured_at": "2026-10-17",
-  "purpose": "GitHub contingency baseline after fixing the canonical admin MutationObserver loop in DEV. Component rows are now idempotent: existing action buttons are not re-appended on every observer pass, preventing the Components view from freezing. PROD is out of scope."
+  "purpose": "Canonical Micha admin responsive foundation in DEV: repaired Catalog central card grid, reduced operational heading/form density, sized product/supply/category/fragrance/component fields by expected content, compacted canonical actions and controls, grouped forms semantically, and added progressive tablet/mobile reflow without changing business logic. PROD is out of scope."
 }
