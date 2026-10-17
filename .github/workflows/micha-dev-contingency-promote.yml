@@ -17,10 +17,10 @@ jobs:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN_DEV }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
       WORKER: michayco-dev
-      BASE_VERSION: e54e795f-cd42-4a66-834f-66727bd0b636
-      CANDIDATE_VERSION: 80c0e68f-18b1-481a-827c-c852b7d5e1b5
-      BASE_RELEASE: dev-admin-frozen-grid-stock-20261017-22
-      CANDIDATE_RELEASE: dev-admin-canonical-density-20261017-21
+      BASE_VERSION: 80c0e68f-18b1-481a-827c-c852b7d5e1b5
+      CANDIDATE_VERSION: 9641e736-9cc1-429c-92af-109520b3787f
+      BASE_RELEASE: dev-admin-canonical-density-20261017-21
+      CANDIDATE_RELEASE: dev-product-duplicate-easy-edit-20261017-14
     steps:
       - uses: actions/checkout@v4
       - name: Preflight DEV safety
@@ -32,11 +32,11 @@ jobs:
           test -n "$CLOUDFLARE_ACCOUNT_ID"
           CURRENT="$(curl -fsS -A 'Mozilla/5.0' https://dev.michahome.com.ar/health | python3 -c "import json,sys; print(json.load(sys.stdin)['release'])")"
           test "$CURRENT" = "$BASE_RELEASE" || { echo "Unexpected active release: $CURRENT" >&2; exit 90; }
-      - name: Restore previous stable DEV release
+      - name: Restore pre-canonical stable DEV release
         shell: bash
         run: |
           set -euo pipefail
-          npx --yes wrangler@4.151.0 versions deploy "$CANDIDATE_VERSION@100" --name "$WORKER" --yes --message "Rollback DEV after navigation freeze regression"
+          npx --yes wrangler@4.151.0 versions deploy "$CANDIDATE_VERSION@100" --name "$WORKER" --yes --message "Rollback DEV to pre-canonical release after generalized browser freeze"
       - name: Wait for propagation and validate restored release
         shell: bash
         run: |
@@ -50,17 +50,20 @@ jobs:
                   j=json.loads(out); r=j.get('release'); seen[r]=seen.get(r,0)+1
                   assert j.get('ok') is True and j.get('target')=='michayco-dev' and j.get('production_locked') is True
                   consecutive=consecutive+1 if r==want else 0
-                  if consecutive>=12: print(json.dumps({'stable_release':want,'seen':seen})); break
-              except Exception: consecutive=0
+                  if consecutive>=12:
+                      print(json.dumps({'stable_release':want,'seen':seen}))
+                      break
+              except Exception:
+                  consecutive=0
               time.sleep(1)
-          else: raise SystemExit(f'restored_release_not_stable seen={seen}')
+          else:
+              raise SystemExit(f'restored_release_not_stable seen={seen}')
           PY
           test "$(curl -sS -o /dev/null -w '%{http_code}' -I https://dev.michahome.com.ar/admin)" = "200"
-          test "$(curl -sS -o /dev/null -w '%{http_code}' https://dev.michahome.com.ar/canonical-admin-ui.js)" = "200"
-          test "$(curl -sS -o /dev/null -w '%{http_code}' https://dev.michahome.com.ar/canonical-admin-ui.css)" = "200"
+          test "$(curl -sS -o /dev/null -w '%{http_code}' -I https://dev.michahome.com.ar/)" = "200"
       - name: Emergency return to current release on rollback failure
         if: failure()
         shell: bash
         run: |
           set -euo pipefail
-          npx --yes wrangler@4.151.0 versions deploy "$BASE_VERSION@100" --name "$WORKER" --yes --message "Emergency restore after failed DEV rollback"
+          npx --yes wrangler@4.151.0 versions deploy "$BASE_VERSION@100" --name "$WORKER" --yes --message "Emergency restore after failed pre-canonical rollback"
