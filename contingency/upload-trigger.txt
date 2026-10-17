@@ -1,1 +1,1 @@
-2026-10-17T18:23:00-03:00 - retry upload dev-admin-dashboard-realdata-20261017-20 after manifest reconciliation. No traffic change.
+2026-10-17T19:43:00-03:00 - upload dev-admin-canonical-density-20261017-21. No traffic change.
