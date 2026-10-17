@@ -1,4 +1,4 @@
-trigger=2026-10-17T20:12:00-03:00
-base=80c0e68f-18b1-481a-827c-c852b7d5e1b5
-candidate=e54e795f-cd42-4a66-834f-66727bd0b636
-release=dev-admin-frozen-grid-stock-20261017-22
+trigger=2026-10-17T20:47:00-03:00
+base=9641e736-9cc1-429c-92af-109520b3787f
+candidate=22db3a26-cc08-4386-a151-d0b91ea47c18
+release=dev-admin-canonical-safe-20261017-24
