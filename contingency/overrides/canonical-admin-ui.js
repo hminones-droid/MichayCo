@@ -48,7 +48,6 @@
   function injectCanonicalViewportCss(){
     if(document.getElementById('canonicalViewportCss'))return;
     const s=document.createElement('style');s.id='canonicalViewportCss';s.textContent=`
-      /* Canonical admin viewport contract: page header stays; data scrolls. */
       .admin-head{display:none!important}
       .admin-main{padding-top:18px!important;padding-bottom:30px!important}
       .admin-work{margin-top:0!important}
@@ -64,8 +63,6 @@
       .sheet-wrap table thead th,.stock-sheet thead th{position:sticky!important;top:0!important;z-index:3!important;background:#fbf9f4!important;box-shadow:0 1px 0 #d8d0c4}
       .canonical-data-screen .order-pager{flex:0 0 auto!important;margin-top:7px!important}
       .canonical-data-screen #orderListInfo{flex:0 0 auto!important;margin:2px 0 6px!important}
-
-      /* Home is an operational dashboard, not a duplicate menu. */
       .admin-kpis{display:none!important}
       .canonical-home{display:grid!important;grid-template-rows:auto auto minmax(0,1fr)!important;gap:12px!important;height:calc(100vh - 58px)!important;overflow:hidden!important;padding:20px!important}
       .canonical-home-header{display:flex!important;align-items:flex-end!important;justify-content:space-between!important;gap:18px!important;padding-bottom:11px!important;border-bottom:1px solid #ddd5c9!important}
@@ -93,7 +90,6 @@
       .health-line:first-of-type{margin-top:4px!important}.health-caption{display:flex!important;justify-content:space-between!important;gap:10px!important;font-size:11px!important}.health-caption b{font-weight:600!important}
       .health-track{height:7px!important;background:#ece7dd!important;overflow:hidden!important}.health-track span{display:block!important;height:100%!important;background:#62694f!important}
       .home-note{border-top:1px solid #e2dcd1!important;padding-top:11px!important;font-size:11px!important;line-height:1.45!important;color:#6d6b63!important}
-
       @media(max-width:1000px){.canonical-home{height:auto!important;overflow:visible!important}.home-grid{grid-template-columns:1fr!important}.canonical-data-screen{height:calc(100vh - 48px)!important}.home-metrics{grid-template-columns:repeat(2,1fr)!important}}
       @media(max-width:680px){.admin-main{padding-top:10px!important}.canonical-home{padding:14px!important}.canonical-home-header{align-items:flex-start!important;flex-direction:column!important}.home-metrics{grid-template-columns:1fr 1fr!important}.home-metric{padding:9px 10px!important}.canonical-data-screen{height:auto!important;min-height:calc(100vh - 70px)!important;overflow:visible!important}.canonical-scroll-region{max-height:62vh!important}.sheet-wrap.canonical-scroll-region{max-height:58vh!important}}
       @media(max-width:440px){.home-metrics{grid-template-columns:1fr!important}.home-grid{gap:9px!important}.home-panel{padding:12px!important}}
@@ -166,7 +162,6 @@
   document.addEventListener('DOMContentLoaded',schedule);schedule();
 })();
 
-/* 2026-10-17 canonical dense/alignment pass. */
 (function(){
   function wrapRowActions(){
     document.querySelectorAll('#v2ProductList .catalog-v2-row,#v2FragList .catalog-v2-row').forEach(row=>{
@@ -195,8 +190,7 @@
   new MutationObserver(queue).observe(document.documentElement,{subtree:true,childList:true});
   document.addEventListener('DOMContentLoaded',queue);queue();
 })();
-/* 2026-10-17 frozen table / Stock recovery hotfix. */
-(function(){
+(function(){const st=document.createElement('style');st.textContent='@media(min-width:901px){main.admin-main:has(>.canonical-data-screen),main.admin-main:has(>.canonical-photo-page){height:100vh!important;overflow:hidden!important;box-sizing:border-box!important}.canonical-data-screen{height:calc(100vh - 24px)!important;min-height:0!important;overflow:hidden!important;display:flex!important;flex-direction:column!important}}.canonical-table-frame{flex:1 1 auto!important;min-height:0!important;overflow:auto!important;position:relative!important;width:100%!important;margin-top:2px!important;scrollbar-gutter:stable}.canonical-table-frame>.catalog-v2-head{position:sticky!important;top:0!important;z-index:20!important;background:#fbf9f4!important;box-shadow:0 1px 0 #d8d0c4!important;margin:0!important;height:30px!important;min-height:30px!important;max-height:30px!important;padding:0 10px!important;box-sizing:border-box!important;align-items:center!important}.canonical-table-frame>.catalog-v2-head>span{height:30px!important;min-height:30px!important;display:flex!important;align-items:center!important;margin:0!important;padding:0!important;line-height:1!important;overflow:hidden!important}.canonical-table-frame>.catalog-v2-list{width:100%!important;min-height:0!important;overflow:visible!important;flex:none!important;margin:0!important;padding:0!important}.canonical-table-frame .catalog-v2-row{position:relative!important;z-index:1!important;margin:0!important}.canonical-table-frame .catalog-v2-row[hidden]{display:none!important}.canonical-photo-page{height:calc(100vh - 24px)!important;min-height:0!important;padding-top:0!important;overflow:hidden!important}.canonical-photo-page>.back-link{position:static!important;inset:auto!important;transform:none!important;display:inline-flex!important;align-self:flex-start!important;margin:0 0 4px!important;line-height:1.2!important}.canonical-photo-page>.eyebrow{position:static!important;display:block!important;margin:2px 0 3px!important;line-height:1.15!important}.canonical-photo-page>h2{position:static!important;display:block!important;font-size:30px!important;line-height:1.05!important;margin:0 0 4px!important;padding:0!important;height:auto!important}.canonical-photo-page>.admin-help{position:static!important;display:block!important;clear:both!important;font-size:12px!important;line-height:1.3!important;margin:0 0 7px!important;padding:0!important;height:auto!important;max-width:980px!important}.canonical-photo-page>details{margin:0!important;border-top:1px solid #ddd5c9!important}.canonical-photo-page>details>summary{min-height:30px!important;padding:7px 0!important;box-sizing:border-box!important;line-height:1.15!important}.canonical-photo-page>.article-photo-filters{margin:4px 0 0!important;padding:6px 0!important;min-height:42px!important;box-sizing:border-box!important}.canonical-photo-page>.photo-admin-grid{flex:1 1 auto!important;min-height:0!important;overflow:auto!important;margin:0!important;padding-top:5px!important}';document.head.append(st);
 function frame(){const r=window.adminShell?.()||document.querySelector('#catalogWorkspace'),l=r?.querySelector(':scope>.catalog-v2-list');if(!l)return;let h=l.previousElementSibling;if(!h?.classList?.contains('catalog-v2-head'))h=r.querySelector(':scope>.catalog-v2-head');if(!h)return;let f=l.closest('.canonical-table-frame');if(!f){f=document.createElement('div');f.className='canonical-table-frame canonical-scroll-region';h.before(f);f.append(h,l)}else if(h.parentElement!==f)f.prepend(h);l.classList.remove('canonical-scroll-region');r.classList.add('canonical-data-screen')}
 const stock=window.openVariants;['stockOverview','gridFilters','gridHead','stockBody','gridMsg','fltText','fltCat','fltMin','fltMax','clearFilters','fltProduct','fltPositive','saveGrid','downloadSheet','uploadSheet'].forEach(id=>{try{Object.defineProperty(window,id,{configurable:true,get:()=>document.getElementById(id)})}catch(_){}});if(typeof stock==='function')window.openVariants=async function(){try{return await stock()}catch(e){console.error(e);const w=window.adminShell?.();if(w)w.innerHTML='<div class="admin-title"><div><span class="eyebrow">MANTENIMIENTO</span><h2>Stock</h2><p class="admin-help">No se pudo abrir la hoja de stock: '+String(e?.message||e)+'</p></div></div>'}};
 document.addEventListener('click',e=>{const b=e.target.closest?.('[data-admin-nav="variants"]');if(!b)return;e.preventDefault();e.stopImmediatePropagation();document.getElementById('passwordPanel')?.setAttribute('hidden','');document.querySelector('.admin-kpis')?.setAttribute('hidden','');window.openVariants?.()},true);let q=0;function run(){q=0;frame()}function ask(){if(q)return;q=1;queueMicrotask(run)}new MutationObserver(ask).observe(document.documentElement,{subtree:true,childList:true});document.addEventListener('DOMContentLoaded',ask);ask()})();
