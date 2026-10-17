@@ -17,13 +17,12 @@ jobs:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN_DEV }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
       WORKER: michayco-dev
-      BASE_VERSION: 2da4244f-f757-4b27-8e62-82cece3c3736
-      CANDIDATE_VERSION: 9641e736-9cc1-429c-92af-109520b3787f
-      BASE_RELEASE: dev-product-duplicate-components-20261017-13
-      CANDIDATE_RELEASE: dev-product-duplicate-easy-edit-20261017-14
+      BASE_VERSION: 9641e736-9cc1-429c-92af-109520b3787f
+      CANDIDATE_VERSION: 1aa7f525-0654-4a36-99f7-8aa877352434
+      BASE_RELEASE: dev-product-duplicate-easy-edit-20261017-14
+      CANDIDATE_RELEASE: dev-canonical-admin-ui-20261017-15
     steps:
       - uses: actions/checkout@v4
-
       - name: Safety checks
         shell: bash
         run: |
@@ -33,55 +32,37 @@ jobs:
           test -n "$CLOUDFLARE_ACCOUNT_ID"
           CURRENT="$(curl -fsS -A 'Mozilla/5.0' https://dev.michahome.com.ar/health | python3 -c "import json,sys; print(json.load(sys.stdin)['release'])")"
           test "$CURRENT" = "$BASE_RELEASE" || { echo "Unexpected active release: $CURRENT" >&2; exit 90; }
-
       - name: Deploy 10 percent canary
         shell: bash
         run: |
           set -euo pipefail
-          npx --yes wrangler@4.151.0 versions deploy \
-            "$BASE_VERSION@90" "$CANDIDATE_VERSION@10" \
-            --name "$WORKER" --yes \
-            --message "Temporary DEV easier product duplicate editing canary 10 percent"
-
+          npx --yes wrangler@4.151.0 versions deploy "$BASE_VERSION@90" "$CANDIDATE_VERSION@10" --name "$WORKER" --yes --message "Temporary DEV canonical admin UI canary 10 percent"
       - name: Validate canary traffic
         shell: bash
         run: |
           set -euo pipefail
           python3 - <<'PY'
           import json, subprocess, time, os
-          allowed={os.environ['BASE_RELEASE'],os.environ['CANDIDATE_RELEASE']}
-          seen={k:0 for k in allowed}
+          allowed={os.environ['BASE_RELEASE'],os.environ['CANDIDATE_RELEASE']}; seen={k:0 for k in allowed}
           for i in range(100):
               out=subprocess.check_output(['curl','-fsS','-A','Mozilla/5.0',f'https://dev.michahome.com.ar/health?canary={i}-{time.time_ns()}'])
-              j=json.loads(out)
-              assert j.get('ok') is True
-              assert j.get('target')=='michayco-dev'
-              assert j.get('production_locked') is True
+              j=json.loads(out); assert j.get('ok') is True and j.get('target')=='michayco-dev' and j.get('production_locked') is True
               r=j.get('release'); assert r in allowed, r; seen[r]+=1
           print(json.dumps(seen))
-          if seen[os.environ['CANDIDATE_RELEASE']] == 0: raise SystemExit('candidate_not_observed')
+          if seen[os.environ['CANDIDATE_RELEASE']]==0: raise SystemExit('candidate_not_observed')
           PY
-
       - name: Restore baseline after successful canary
         if: success()
         shell: bash
         run: |
           set -euo pipefail
-          npx --yes wrangler@4.151.0 versions deploy \
-            "$BASE_VERSION@100" \
-            --name "$WORKER" --yes \
-            --message "Restore DEV baseline after easier duplicate editing canary"
-
+          npx --yes wrangler@4.151.0 versions deploy "$BASE_VERSION@100" --name "$WORKER" --yes --message "Restore DEV baseline after canonical admin UI canary"
       - name: Emergency rollback on failure
         if: failure()
         shell: bash
         run: |
           set -euo pipefail
-          npx --yes wrangler@4.151.0 versions deploy \
-            "$BASE_VERSION@100" \
-            --name "$WORKER" --yes \
-            --message "Emergency restore DEV baseline after easier duplicate editing canary failure"
-
+          npx --yes wrangler@4.151.0 versions deploy "$BASE_VERSION@100" --name "$WORKER" --yes --message "Emergency restore DEV baseline after canonical admin UI canary failure"
       - name: Verify baseline restored
         if: always()
         shell: bash
