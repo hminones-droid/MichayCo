@@ -1,4 +1,4 @@
-trigger=2026-10-17T17:31:00-03:00
-base=db837aa3-ccf6-490b-ad8a-90dc0b95e801
-candidate=fa94d8df-4a45-4498-a1ce-661548d02f42
-release=dev-admin-responsive-foundation-20261017-18
+trigger=2026-10-17T17:45:00-03:00
+base=fa94d8df-4a45-4498-a1ce-661548d02f42
+candidate=eb68d577-27df-4e5b-84c1-1c2038631a80
+release=dev-admin-operational-home-20261017-19
