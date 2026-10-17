@@ -6,7 +6,7 @@
     "/admin-gallery.css": "3302c6f71c06b848c92a2576b09830f3a357e343d24cb549d3695a565df157d9",
     "/admin-gallery.js": "d6bd69157f532442878a3557ee7ee1b623107b5e1d55dcbfa89ef38e15f98977",
     "/admin-tools.js": "a846d3cdaf28f7a08b31a45ef49264b5c708e2d9c3a1567dd5e7972a6afd4eb5",
-    "/app.js": "ad6eb760afc78ee166c2bb07c1da4d91cb358f9268769d89890a21c0d15e7e46",
+    "/app.js": "6b28e81508ad228c688a40b275170521ece8476e33e12417a1aadf0a0697a10d",
     "/catalog-admin-v2-fixes.js": "d07e5f095c4a2e7d0e81140117131bef8ad505736c8abe4c7050956cb0eedaa7",
     "/catalog-admin-v2-fragrances.js": "fb1e876d0199a6740ef85f020067611d2db3827c02d119b0c38889339bc16c17",
     "/catalog-admin-v2-products.js": "27d294de6902f3db8168b452c201e86951dd7e4a1828a119a394372bfa062cdb",
@@ -27,7 +27,7 @@
     "/vendor/xlsx.js": "c9506197caf809a075b6dee1da0d36fb19da7158ffe8a88e7b0c96c5d8623c99",
     "/supply-form-fixes.js": "3dfe93cdb57dedcf82c981be89abb92be1374dfbe264493e88a68c4c66a66f81",
     "/product-duplicate-fixes.js": "60b00ae07c5829bd52b67486f856bd0a5861ebc91c1b3417a035ab5bfb4edb08",
-    "/canonical-admin-ui.js": "6e990bc031d4ca628c3e4e268900ffc264dfccdc29dfda5f32f59c9f5adefbee",
+    "/canonical-admin-ui.js": "e1f3d0ec461759b572bb357170bc21d7110f19b70d16c00a40841bec7fe69a50",
     "/dashboard-data-fix.js": "7590966e3b47e1550b0e07f448af59b4a845937500909caed464bb69dc48d8c1",
     "/canonical-admin-ui.css": "fded1e9a89bca7ad381e351725f0074ed3d746b810002cb93e288aa03fb825af"
   },
