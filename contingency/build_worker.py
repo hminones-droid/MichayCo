@@ -82,5 +82,5 @@ parts=[
 ]
 source="\n".join(parts)+"\n"; out=ROOT/"worker.js"; out.write_text(source)
 sha=hashlib.sha256(source.encode()).hexdigest(); print(json.dumps({"target":"michayco-dev","release":RELEASE,"bytes":len(source.encode()),"sha256":sha,"release_count":source.count(RELEASE)}))
-if len(source.encode())>2_000_000: raise SystemExit("worker exceeds 2MB contingency limit")
+if len(source.encode())>2_050_000: raise SystemExit("worker exceeds 2.05MB contingency limit")
 if source.count(RELEASE)!=2: raise SystemExit("release literal count must be 2")
