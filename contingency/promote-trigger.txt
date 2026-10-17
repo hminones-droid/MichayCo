@@ -1,5 +1,5 @@
-trigger=2026-10-17T20:25:00-03:00
-base=e54e795f-cd42-4a66-834f-66727bd0b636
-candidate=80c0e68f-18b1-481a-827c-c852b7d5e1b5
-release=dev-admin-canonical-density-20261017-21
-reason=navigation-freeze-regression-validation-corrected
+trigger=2026-10-17T20:38:00-03:00
+base=80c0e68f-18b1-481a-827c-c852b7d5e1b5
+candidate=9641e736-9cc1-429c-92af-109520b3787f
+release=dev-product-duplicate-easy-edit-20261017-14
+reason=generalized-browser-freeze
