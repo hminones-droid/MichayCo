@@ -1,11 +1,11 @@
 {
   "target": "michayco-dev",
   "production_locked": true,
-  "release": "dev-canonical-admin-ui-20261017-16",
-  "version_id": "c2a81607-d2bf-4d62-84ca-f50e4d631836",
-  "sha256": "8565c0db41490a16f16800dfd6e229604de808a2e6548f6992a328664c764373",
-  "bytes": 1990916,
+  "release": "dev-canonical-admin-ui-20261017-17",
+  "version_id": "db837aa3-ccf6-490b-ad8a-90dc0b95e801",
+  "sha256": "b964772da59266c3bd603cbee8ae2020d232c1a7ca98cac79db90704afdad7b4",
+  "bytes": 1991425,
   "traffic_percentage": 100,
   "captured_at": "2026-10-17",
-  "purpose": "GitHub contingency baseline after completing canonical Micha admin interaction rules in DEV: compact entity/component rows, icon-first edit/change/duplicate/remove/delete actions, visibility controlled by the tick, and text actions converted to canonical icons where semantically clear. PROD is out of scope."
+  "purpose": "GitHub contingency baseline after fixing the canonical admin MutationObserver loop in DEV. Component rows are now idempotent: existing action buttons are not re-appended on every observer pass, preventing the Components view from freezing. PROD is out of scope."
 }
