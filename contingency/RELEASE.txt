@@ -1,1 +1,1 @@
-dev-canonical-admin-ui-20261017-17
+dev-admin-responsive-foundation-20261017-18
