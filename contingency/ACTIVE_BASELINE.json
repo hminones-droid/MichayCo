@@ -1,11 +1,11 @@
 {
   "target": "michayco-dev",
   "production_locked": true,
-  "release": "dev-supply-form-fix-20261017-11",
-  "version_id": "97064ada-b03e-4d94-a649-c69929dd098c",
-  "sha256": "e626cdb97aa016e3386cc15b7875fa40970a3f38f61780f7971e0e34a0759d46",
-  "bytes": 1974181,
+  "release": "dev-supply-active-unified-20261017-12",
+  "version_id": "8c38adae-f1ab-4339-9b33-f421f968886f",
+  "sha256": "d74f5ea0bef3c0ebc870e389b5bf02ee20fad98ef28d683c3b989e877414b19e",
+  "bytes": 1974741,
   "traffic_percentage": 100,
   "captured_at": "2026-10-17",
-  "purpose": "GitHub contingency baseline after fixing Insumos duplication, safe storefront refresh, and type-aware editable name suggestions in DEV. PROD is out of scope."
+  "purpose": "GitHub contingency baseline after making the Insumos grid tick the single source of truth for active/hidden state and removing the redundant Active field from the supply form in DEV. PROD is out of scope."
 }
