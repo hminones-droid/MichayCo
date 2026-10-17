@@ -1,4 +1,4 @@
-trigger=2026-10-17T14:02:00-03:00
-base=2da4244f-f757-4b27-8e62-82cece3c3736
-candidate=9641e736-9cc1-429c-92af-109520b3787f
-release=dev-product-duplicate-easy-edit-20261017-14
+trigger=2026-10-17T15:08:00-03:00
+base=9641e736-9cc1-429c-92af-109520b3787f
+candidate=1aa7f525-0654-4a36-99f7-8aa877352434
+release=dev-canonical-admin-ui-20261017-15
