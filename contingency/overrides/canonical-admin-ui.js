@@ -1,11 +1,12 @@
-/* Micha & Co — canonical admin interaction + layout language. */
+/* Micha & Co — canonical admin interaction + viewport language. */
 (function(){
   const svgTrash=()=>typeof window.trashIcon==='function'?window.trashIcon():'🗑';
+  const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#39;'}[m]));
+
   function iconize(btn,kind,title){
     if(!btn)return;
     if(btn.dataset.canonicalIcon!==kind){
-      btn.dataset.canonicalIcon=kind;
-      btn.classList.add('canonical-icon-btn');
+      btn.dataset.canonicalIcon=kind;btn.classList.add('canonical-icon-btn');
       if(kind==='edit')btn.textContent='✎';
       else if(kind==='duplicate')btn.textContent='⧉';
       else if(kind==='trash'){btn.classList.add('is-trash');btn.innerHTML=svgTrash()}
@@ -14,80 +15,152 @@
     if(btn.title!==title)btn.title=title;
     if(btn.getAttribute('aria-label')!==title)btn.setAttribute('aria-label',title);
   }
-  function fieldClass(root,id,cls){
-    const input=root.querySelector('#'+id);if(!input)return null;
-    const label=input.closest('label');if(label)label.classList.add(cls);
-    return label;
-  }
+  function fieldClass(root,id,cls){const input=root.querySelector('#'+id);if(!input)return null;const label=input.closest('label');if(label)label.classList.add(cls);return label}
   function moveChecksIntoBand(form,ids){
-    const labels=ids.map(id=>form.querySelector('#'+id)?.closest('label')).filter(Boolean);
-    if(!labels.length)return;
+    const labels=ids.map(id=>form.querySelector('#'+id)?.closest('label')).filter(Boolean);if(!labels.length)return;
     let band=form.querySelector(':scope > .canonical-checks');
     if(!band){band=document.createElement('div');band.className='canonical-checks';const first=labels[0];first.parentNode.insertBefore(band,first)}
     labels.forEach(label=>{if(label.parentElement!==band)band.appendChild(label)});
   }
   function canonicalizeForms(root){
     const product=root.querySelector('#v2pName');
-    if(product){
-      const form=product.closest('.admin-form');if(form){form.classList.add('canonical-admin-form','canonical-product-form');
-        fieldClass(form,'v2pName','f-name');fieldClass(form,'v2pCategory','f-category');fieldClass(form,'v2pPrice','f-price');fieldClass(form,'v2pFinishedStock','f-stock');fieldClass(form,'v2pOrder','f-order');fieldClass(form,'v2pShort','f-short');fieldClass(form,'v2pDesc','f-description');
-        moveChecksIntoBand(form,['v2pFeatured','v2pFragrance','v2pPublished']);
-      }
-    }
+    if(product){const form=product.closest('.admin-form');if(form){form.classList.add('canonical-admin-form','canonical-product-form');fieldClass(form,'v2pName','f-name');fieldClass(form,'v2pCategory','f-category');fieldClass(form,'v2pPrice','f-price');fieldClass(form,'v2pFinishedStock','f-stock');fieldClass(form,'v2pOrder','f-order');fieldClass(form,'v2pShort','f-short');fieldClass(form,'v2pDesc','f-description');moveChecksIntoBand(form,['v2pFeatured','v2pFragrance','v2pPublished'])}}
     const supply=root.querySelector('#supName');
-    if(supply){
-      const form=supply.closest('.admin-form');if(form){form.classList.add('canonical-admin-form','canonical-supply-form');
-        const grids=[...form.querySelectorAll('.catalog-v2-form-grid')];if(grids[0])grids[0].classList.add('supply-commercial-grid');if(grids[1])grids[1].classList.add('supply-physical-grid');
-        const map={supType:'f-type',supName:'f-supply-name',supUnit:'f-unit',supStock:'f-current-stock',supMin:'f-min-stock',supTarget:'f-target-stock',supPresentation:'f-presentation',supQty:'f-presentation-qty',supCost:'f-last-cost',supSupplier:'f-supplier',supMaterial:'f-material',supColor:'f-color',supCapacity:'f-capacity',supCapacityG:'f-capacity-g',supHeight:'f-height',supWidth:'f-width',supDepth:'f-depth',supDiameter:'f-diameter',supLid:'f-lid',supDesc:'f-description',supNotes:'f-notes'};
-        Object.entries(map).forEach(([id,cls])=>fieldClass(form,id,cls));
-      }
-    }
-    const category=root.querySelector('#catName');
-    if(category){const form=category.closest('.admin-form');if(form){form.classList.add('canonical-admin-form','canonical-category-form');fieldClass(form,'catName','f-category-name');fieldClass(form,'catOrder','f-category-order')}}
-    const fragrance=root.querySelector('#v2fName');
-    if(fragrance){const form=fragrance.closest('.admin-form');if(form){form.classList.add('canonical-admin-form','canonical-fragrance-form');fieldClass(form,'v2fName','f-frag-name');fieldClass(form,'v2fCode','f-frag-code');fieldClass(form,'v2fFamily','f-frag-family');fieldClass(form,'v2fOrder','f-frag-order');fieldClass(form,'v2fDesc','f-frag-desc')}}
-    const component=root.querySelector('#psSupply');
-    if(component){const form=component.closest('.admin-form');if(form){form.classList.add('canonical-admin-form','canonical-component-form');fieldClass(form,'psSupply','f-component-supply');fieldClass(form,'psRole','f-component-role');fieldClass(form,'psRule','f-component-rule');fieldClass(form,'psQty','f-component-qty');fieldClass(form,'psContainer','f-component-container');fieldClass(form,'psNotes','f-component-notes')}}
-    const content=root.querySelector('#contentTagline');
-    if(content){const form=content.closest('.admin-form');if(form)form.classList.add('canonical-admin-form','canonical-content-form')}
-    const typography=root.querySelector('#fontHeading');
-    if(typography){const form=typography.closest('.admin-form');if(form)form.classList.add('canonical-admin-form','canonical-typography-form')}
+    if(supply){const form=supply.closest('.admin-form');if(form){form.classList.add('canonical-admin-form','canonical-supply-form');const grids=[...form.querySelectorAll('.catalog-v2-form-grid')];if(grids[0])grids[0].classList.add('supply-commercial-grid');if(grids[1])grids[1].classList.add('supply-physical-grid');const map={supType:'f-type',supName:'f-supply-name',supUnit:'f-unit',supStock:'f-current-stock',supMin:'f-min-stock',supTarget:'f-target-stock',supPresentation:'f-presentation',supQty:'f-presentation-qty',supCost:'f-last-cost',supSupplier:'f-supplier',supMaterial:'f-material',supColor:'f-color',supCapacity:'f-capacity',supCapacityG:'f-capacity-g',supHeight:'f-height',supWidth:'f-width',supDepth:'f-depth',supDiameter:'f-diameter',supLid:'f-lid',supDesc:'f-description',supNotes:'f-notes'};Object.entries(map).forEach(([id,cls])=>fieldClass(form,id,cls))}}
+    const category=root.querySelector('#catName');if(category){const form=category.closest('.admin-form');if(form){form.classList.add('canonical-admin-form','canonical-category-form');fieldClass(form,'catName','f-category-name');fieldClass(form,'catOrder','f-category-order')}}
+    const fragrance=root.querySelector('#v2fName');if(fragrance){const form=fragrance.closest('.admin-form');if(form){form.classList.add('canonical-admin-form','canonical-fragrance-form');fieldClass(form,'v2fName','f-frag-name');fieldClass(form,'v2fCode','f-frag-code');fieldClass(form,'v2fFamily','f-frag-family');fieldClass(form,'v2fOrder','f-frag-order');fieldClass(form,'v2fDesc','f-frag-desc')}}
+    const component=root.querySelector('#psSupply');if(component){const form=component.closest('.admin-form');if(form){form.classList.add('canonical-admin-form','canonical-component-form');fieldClass(form,'psSupply','f-component-supply');fieldClass(form,'psRole','f-component-role');fieldClass(form,'psRule','f-component-rule');fieldClass(form,'psQty','f-component-qty');fieldClass(form,'psContainer','f-component-container');fieldClass(form,'psNotes','f-component-notes')}}
+    const content=root.querySelector('#contentTagline');if(content){const form=content.closest('.admin-form');if(form)form.classList.add('canonical-admin-form','canonical-content-form')}
+    const typography=root.querySelector('#fontHeading');if(typography){const form=typography.closest('.admin-form');if(form)form.classList.add('canonical-admin-form','canonical-typography-form')}
   }
   function canonicalizeComponentRows(root){
-    root.querySelectorAll('.product-supply-row').forEach(row=>{
-      const replace=row.querySelector('[data-replace-supply]'),remove=row.querySelector('[data-remove]');
-      if(!replace&&!remove)return;
-      let actions=row.querySelector('.canonical-row-actions');
-      if(!actions){actions=document.createElement('div');actions.className='canonical-row-actions';row.appendChild(actions)}
-      if(replace){if(replace.parentElement!==actions)actions.appendChild(replace);iconize(replace,'edit','Cambiar componente')}
-      if(remove){if(remove.parentElement!==actions)actions.appendChild(remove);iconize(remove,'trash','Quitar componente')}
-    });
+    root.querySelectorAll('.product-supply-row').forEach(row=>{const replace=row.querySelector('[data-replace-supply]'),remove=row.querySelector('[data-remove]');if(!replace&&!remove)return;let actions=row.querySelector('.canonical-row-actions');if(!actions){actions=document.createElement('div');actions.className='canonical-row-actions';row.appendChild(actions)}if(replace){if(replace.parentElement!==actions)actions.appendChild(replace);iconize(replace,'edit','Cambiar componente')}if(remove){if(remove.parentElement!==actions)actions.appendChild(remove);iconize(remove,'trash','Quitar componente')}});
   }
   function canonicalizeKnownActions(root){
     root.querySelectorAll('[data-product-duplicate],[data-supply-duplicate],[data-clone]').forEach(b=>iconize(b,'duplicate','Duplicar'));
     root.querySelectorAll('.v2Remove').forEach(b=>iconize(b,'trash','Quitar'));
     root.querySelectorAll('button[data-remove]').forEach(b=>{if(!b.closest('.product-supply-row'))iconize(b,'trash','Quitar')});
     root.querySelectorAll('button.filter-clear').forEach(b=>iconize(b,'clear','Limpiar filtros'));
-    root.querySelectorAll('button').forEach(b=>{
-      const txt=(b.textContent||'').trim().toLowerCase(),title=(b.title||'').toLowerCase();
-      const inRow=!!b.closest('.catalog-v2-row,.admin-row,.product-monitor-actions,.catalog-v2-row-actions,.catalog-actions');
-      if(!inRow)return;
-      if(txt==='editar'||title==='editar')iconize(b,'edit','Editar');
-      else if(txt==='crear similar'||txt==='duplicar'||title.includes('similar')||title.includes('duplicar'))iconize(b,'duplicate','Duplicar');
-      else if(txt==='eliminar'||txt==='borrar'||title.startsWith('eliminar'))iconize(b,'trash','Eliminar');
-      else if(txt==='quitar')iconize(b,'trash','Quitar');
-    });
-    root.querySelectorAll('.visibility-control').forEach(l=>{
-      if(l.title!=='Visible / habilitado')l.title='Visible / habilitado';
-      if(l.getAttribute('aria-label')!=='Visible / habilitado')l.setAttribute('aria-label','Visible / habilitado');
-    });
+    root.querySelectorAll('button').forEach(b=>{const txt=(b.textContent||'').trim().toLowerCase(),title=(b.title||'').toLowerCase();const inRow=!!b.closest('.catalog-v2-row,.admin-row,.product-monitor-actions,.catalog-v2-row-actions,.catalog-actions');if(!inRow)return;if(txt==='editar'||title==='editar')iconize(b,'edit','Editar');else if(txt==='crear similar'||txt==='duplicar'||title.includes('similar')||title.includes('duplicar'))iconize(b,'duplicate','Duplicar');else if(txt==='eliminar'||txt==='borrar'||title.startsWith('eliminar'))iconize(b,'trash','Eliminar');else if(txt==='quitar')iconize(b,'trash','Quitar')});
+    root.querySelectorAll('.visibility-control').forEach(l=>{if(l.title!=='Visible / habilitado')l.title='Visible / habilitado';if(l.getAttribute('aria-label')!=='Visible / habilitado')l.setAttribute('aria-label','Visible / habilitado')});
   }
+
+  function injectCanonicalViewportCss(){
+    if(document.getElementById('canonicalViewportCss'))return;
+    const s=document.createElement('style');s.id='canonicalViewportCss';s.textContent=`
+      /* Canonical admin viewport contract: page header stays; data scrolls. */
+      .admin-head{display:none!important}
+      .admin-main{padding-top:18px!important;padding-bottom:30px!important}
+      .admin-work{margin-top:0!important}
+      .canonical-page-header{flex:0 0 auto!important;position:relative;z-index:4;background:#fbf9f4}
+      .canonical-page-header h2{margin-bottom:5px!important}
+      .canonical-page-header .admin-help{margin-top:0!important;margin-bottom:0!important}
+      .canonical-data-screen{display:flex!important;flex-direction:column!important;min-height:0!important;overflow:hidden!important;height:calc(100vh - 58px)!important}
+      .canonical-data-screen>.canonical-page-header{padding-bottom:9px!important;border-bottom:1px solid #ddd5c9!important;margin-bottom:8px!important}
+      .canonical-scroll-region{flex:1 1 auto!important;min-height:0!important;overflow:auto!important;overscroll-behavior:contain;scrollbar-gutter:stable}
+      .canonical-data-screen>.catalog-v2-head{flex:0 0 auto!important}
+      .canonical-data-screen>.catalog-v2-controls,.canonical-data-screen>.product-monitor-filters,.canonical-data-screen>.catalog-health,.canonical-data-screen>.order-filters,.canonical-data-screen>.sheet-filters,.canonical-data-screen>.sheet-tabs,.canonical-data-screen>.article-photo-filters{flex:0 0 auto!important}
+      .sheet-wrap.canonical-scroll-region{overflow:auto!important}
+      .sheet-wrap table thead th,.stock-sheet thead th{position:sticky!important;top:0!important;z-index:3!important;background:#fbf9f4!important;box-shadow:0 1px 0 #d8d0c4}
+      .canonical-data-screen .order-pager{flex:0 0 auto!important;margin-top:7px!important}
+      .canonical-data-screen #orderListInfo{flex:0 0 auto!important;margin:2px 0 6px!important}
+
+      /* Home is an operational dashboard, not a duplicate menu. */
+      .admin-kpis{display:none!important}
+      .canonical-home{display:grid!important;grid-template-rows:auto auto minmax(0,1fr)!important;gap:12px!important;height:calc(100vh - 58px)!important;overflow:hidden!important;padding:20px!important}
+      .canonical-home-header{display:flex!important;align-items:flex-end!important;justify-content:space-between!important;gap:18px!important;padding-bottom:11px!important;border-bottom:1px solid #ddd5c9!important}
+      .canonical-home-header .eyebrow{font-size:9px!important;letter-spacing:2px!important}
+      .canonical-home-header h2{font:32px/1.02 var(--font-heading)!important;margin:4px 0 3px!important;letter-spacing:-.5px!important}
+      .canonical-home-header p{margin:0!important;font-size:13px!important;color:#66645d!important}
+      .canonical-home-status{font-size:11px!important;color:#67685f!important;white-space:nowrap}
+      .home-metrics{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;border:1px solid #ddd5c9!important;background:#ddd5c9!important;gap:1px!important}
+      .home-metric{background:#fbf9f4!important;padding:11px 14px!important;min-width:0!important;display:flex!important;align-items:baseline!important;justify-content:space-between!important;gap:10px!important}
+      .home-metric span{font-size:10px!important;letter-spacing:1px!important;text-transform:uppercase!important;color:#6f6c64!important}
+      .home-metric b{font:26px/1 var(--font-heading)!important;font-weight:400!important}
+      .home-grid{display:grid!important;grid-template-columns:minmax(0,1.35fr) minmax(280px,.65fr)!important;gap:12px!important;min-height:0!important}
+      .home-panel{border:1px solid #ddd5c9!important;background:#fffdf8!important;padding:15px 16px!important;min-width:0!important;min-height:0!important;overflow:auto!important}
+      .home-panel-head{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:12px!important;margin-bottom:9px!important}
+      .home-panel h3{font:21px/1.1 var(--font-heading)!important;font-weight:400!important;margin:0!important}
+      .home-panel-head small{font-size:10px!important;color:#777!important}
+      .attention-list{display:grid!important;gap:0!important;border-top:1px solid #e2dcd1!important}
+      .attention-row{width:100%!important;border:0!important;border-bottom:1px solid #e2dcd1!important;background:transparent!important;padding:10px 2px!important;display:grid!important;grid-template-columns:34px minmax(0,1fr) auto!important;align-items:center!important;gap:10px!important;text-align:left!important;cursor:pointer!important;color:inherit!important}
+      .attention-row:hover{background:#f6f1e8!important}
+      .attention-count{width:30px!important;height:30px!important;display:grid!important;place-items:center!important;border-radius:50%!important;background:#ebe4d8!important;font:15px var(--font-heading)!important}
+      .attention-row.is-ok .attention-count{background:#e4eadf!important}
+      .attention-copy{min-width:0!important}.attention-copy b{display:block!important;font-size:13px!important}.attention-copy small{display:block!important;margin-top:2px!important;font-size:11px!important;color:#777!important;white-space:normal!important}
+      .attention-go{font-size:16px!important;color:#6b6c61!important}
+      .health-line{display:grid!important;gap:6px!important;margin:12px 0 16px!important}
+      .health-line:first-of-type{margin-top:4px!important}.health-caption{display:flex!important;justify-content:space-between!important;gap:10px!important;font-size:11px!important}.health-caption b{font-weight:600!important}
+      .health-track{height:7px!important;background:#ece7dd!important;overflow:hidden!important}.health-track span{display:block!important;height:100%!important;background:#62694f!important}
+      .home-note{border-top:1px solid #e2dcd1!important;padding-top:11px!important;font-size:11px!important;line-height:1.45!important;color:#6d6b63!important}
+
+      @media(max-width:1000px){.canonical-home{height:auto!important;overflow:visible!important}.home-grid{grid-template-columns:1fr!important}.canonical-data-screen{height:calc(100vh - 48px)!important}.home-metrics{grid-template-columns:repeat(2,1fr)!important}}
+      @media(max-width:680px){.admin-main{padding-top:10px!important}.canonical-home{padding:14px!important}.canonical-home-header{align-items:flex-start!important;flex-direction:column!important}.home-metrics{grid-template-columns:1fr 1fr!important}.home-metric{padding:9px 10px!important}.canonical-data-screen{height:auto!important;min-height:calc(100vh - 70px)!important;overflow:visible!important}.canonical-scroll-region{max-height:62vh!important}.sheet-wrap.canonical-scroll-region{max-height:58vh!important}}
+      @media(max-width:440px){.home-metrics{grid-template-columns:1fr!important}.home-grid{gap:9px!important}.home-panel{padding:12px!important}}
+    `;document.head.appendChild(s);
+  }
+
+  function canonicalizePageShell(root){
+    if(!root)return;
+    root.classList.add('canonical-screen');
+    const header=root.querySelector(':scope > .admin-toolbar, :scope > .admin-title');
+    if(header)header.classList.add('canonical-page-header');
+    const candidates=['#toolList','.catalog-v2-list','.product-monitor-list','#orderTools','.sheet-wrap','.photo-admin-grid','.stock-overview-list'];
+    let scroll=null;for(const sel of candidates){scroll=root.querySelector(':scope > '+sel)||root.querySelector(sel);if(scroll&&scroll.offsetParent!==null)break}
+    if(scroll){root.classList.add('canonical-data-screen');scroll.classList.add('canonical-scroll-region')}
+    else root.classList.remove('canonical-data-screen');
+  }
+
+  function afterOpen(fn,filterSelector,value){
+    if(typeof fn!=='function')return;fn();
+    let tries=0;const t=setInterval(()=>{const el=document.querySelector(filterSelector);if(el){clearInterval(t);if(el.tagName==='SELECT'){el.value=value;el.dispatchEvent(new Event('change',{bubbles:true}))}else el.click()}else if(++tries>30)clearInterval(t)},40);
+  }
+  async function buildOperationalHome(){
+    const w=document.getElementById('catalogWorkspace');if(!w||w.dataset.canonicalHome)return;
+    const h=w.querySelector('h2');if(!h||!(/catálogo central/i.test(h.textContent||'')))return;
+    w.dataset.canonicalHome='loading';w.classList.add('canonical-home');
+    try{
+      if(typeof window.adminLoad==='function')await window.adminLoad();
+      const products=window.adminCache?.products||[],fragrances=window.adminCache?.fragrances||[],variants=window.adminCache?.variants||[],images=window.adminCache?.images||[];
+      const [supR,ordR]=await Promise.all([
+        window.sb?.from?window.sb.from('supplies').select('id,stock,min_stock,active'):Promise.resolve({data:[]}),
+        window.sb?.from?window.sb.from('orders').select('id,status'):Promise.resolve({data:[]})
+      ]);
+      const supplies=supR?.data||[],orders=ordR?.data||[];
+      const readiness=products.map(p=>typeof window.productReadiness==='function'?window.productReadiness(p):{missing:[],stock:Number(p.stock||0),salesReady:p.published!==false&&Number(p.stock||0)>0});
+      const incomplete=readiness.filter(r=>r.missing?.length).length;
+      const noPhoto=products.filter(p=>!images.some(i=>String(i.product_id)===String(p.id))).length;
+      const noPrice=products.filter(p=>p.price==null).length;
+      const noStock=readiness.filter(r=>Number(r.stock||0)<=0).length;
+      const ready=readiness.filter(r=>r.salesReady).length;
+      const lowSup=supplies.filter(x=>x.active!==false&&x.min_stock!=null&&Number(x.stock||0)<Number(x.min_stock)).length;
+      const emptySup=supplies.filter(x=>x.active!==false&&Number(x.stock||0)<=0).length;
+      const activeOrders=orders.filter(o=>!['Entregado','Cancelado'].includes(o.status)).length;
+      const pendingOrders=orders.filter(o=>['Pendiente de pago','Pago informado','Pago confirmado','En preparación','Listo para entregar'].includes(o.status)).length;
+      const catalogPct=products.length?Math.round(ready/products.length*100):100;
+      const supplyPct=supplies.length?Math.round((supplies.length-lowSup)/supplies.length*100):100;
+      const attentionTotal=incomplete+noStock+lowSup+pendingOrders;
+      w.innerHTML=`<header class="canonical-home-header"><div><span class="eyebrow">INICIO</span><h2>Resumen operativo</h2><p>Lo que requiere atención para mantener la tienda lista para vender y entregar.</p></div><div class="canonical-home-status">${attentionTotal?attentionTotal+' alertas operativas':'Sin alertas críticas'}</div></header>
+      <section class="home-metrics" aria-label="Resumen del catálogo"><div class="home-metric"><span>Productos</span><b>${products.length}</b></div><div class="home-metric"><span>Insumos</span><b>${supplies.length}</b></div><div class="home-metric"><span>Fragancias</span><b>${fragrances.length}</b></div><div class="home-metric"><span>Pedidos activos</span><b>${activeOrders}</b></div></section>
+      <div class="home-grid"><section class="home-panel"><div class="home-panel-head"><h3>Requiere atención</h3><small>Accesos contextuales, no navegación duplicada</small></div><div class="attention-list">
+        <button class="attention-row ${incomplete?'':'is-ok'}" data-home-action="incomplete"><span class="attention-count">${incomplete}</span><span class="attention-copy"><b>Productos para revisar</b><small>${incomplete?'Tienen datos o configuración pendientes.':'No hay productos incompletos.'}</small></span><span class="attention-go">›</span></button>
+        <button class="attention-row ${noStock?'':'is-ok'}" data-home-action="stock"><span class="attention-count">${noStock}</span><span class="attention-copy"><b>Productos sin stock</b><small>${noStock?'No pueden venderse hasta reponer existencias.':'Todos los productos configurados tienen stock.'}</small></span><span class="attention-go">›</span></button>
+        <button class="attention-row ${noPhoto?'':'is-ok'}" data-home-action="photo"><span class="attention-count">${noPhoto}</span><span class="attention-copy"><b>Productos sin foto</b><small>${noPhoto?'Necesitan fotografía antes de estar completos.':'Cobertura fotográfica completa.'}</small></span><span class="attention-go">›</span></button>
+        <button class="attention-row ${noPrice?'':'is-ok'}" data-home-action="price"><span class="attention-count">${noPrice}</span><span class="attention-copy"><b>Productos sin precio</b><small>${noPrice?'Requieren precio comercial.':'Todos los productos tienen precio.'}</small></span><span class="attention-go">›</span></button>
+        <button class="attention-row ${lowSup?'':'is-ok'}" data-home-action="low-supply"><span class="attention-count">${lowSup}</span><span class="attention-copy"><b>Insumos bajo mínimo</b><small>${emptySup?emptySup+' están además sin stock.':'Control de reposición de materias primas.'}</small></span><span class="attention-go">›</span></button>
+        <button class="attention-row ${pendingOrders?'':'is-ok'}" data-home-action="orders"><span class="attention-count">${pendingOrders}</span><span class="attention-copy"><b>Pedidos en circuito</b><small>${pendingOrders?'Tienen pago, preparación o entrega pendientes.':'No hay pedidos pendientes de gestión.'}</small></span><span class="attention-go">›</span></button>
+      </div></section><aside class="home-panel"><div class="home-panel-head"><h3>Salud operativa</h3><small>estado actual</small></div>
+        <div class="health-line"><div class="health-caption"><span>Catálogo listo para vender</span><b>${catalogPct}%</b></div><div class="health-track"><span style="width:${catalogPct}%"></span></div></div>
+        <div class="health-line"><div class="health-caption"><span>Insumos sobre mínimo</span><b>${supplyPct}%</b></div><div class="health-track"><span style="width:${supplyPct}%"></span></div></div>
+        <div class="home-note"><b>Criterio del tablero</b><br>Inicio muestra estado y excepciones. La navegación completa permanece únicamente en el menú lateral.</div>
+      </aside></div>`;
+      w.dataset.canonicalHome='ready';
+      w.addEventListener('click',e=>{const b=e.target.closest('[data-home-action]');if(!b)return;const a=b.dataset.homeAction;if(a==='incomplete')afterOpen(window.openProducts,'[data-pfilter="incomplete"]');else if(a==='stock')afterOpen(window.openProducts,'[data-pfilter="stock"]');else if(a==='photo')afterOpen(window.openProducts,'[data-pfilter="photo"]');else if(a==='price')afterOpen(window.openProducts,'[data-pfilter="price"]');else if(a==='low-supply')afterOpen(window.openSupplies,'#supplyType','low');else if(a==='orders'&&typeof window.openOrders==='function')window.openOrders()});
+    }catch(err){console.error('canonical home',err);w.dataset.canonicalHome='error'}
+  }
+
   let scheduled=false;
-  function run(){
-    scheduled=false;
-    const root=typeof window.adminShell==='function'?window.adminShell():document;
-    canonicalizeForms(root);canonicalizeComponentRows(root);canonicalizeKnownActions(root);
-  }
+  function run(){scheduled=false;injectCanonicalViewportCss();const root=typeof window.adminShell==='function'?window.adminShell():document;canonicalizeForms(root);canonicalizeComponentRows(root);canonicalizeKnownActions(root);canonicalizePageShell(root);buildOperationalHome()}
   function schedule(){if(scheduled)return;scheduled=true;queueMicrotask(run)}
   new MutationObserver(schedule).observe(document.documentElement,{subtree:true,childList:true});
   document.addEventListener('DOMContentLoaded',schedule);schedule();
