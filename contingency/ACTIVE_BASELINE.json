@@ -1,11 +1,11 @@
 {
   "target": "michayco-dev",
   "production_locked": true,
-  "release": "dev-admin-canonical-density-20261017-21",
-  "version_id": "80c0e68f-18b1-481a-827c-c852b7d5e1b5",
-  "sha256": "65f22e86d390f2c0aee8720914a716b8c2196e78ab3ee502890332943214db6e",
-  "bytes": 2042099,
+  "release": "dev-admin-frozen-grid-stock-20261017-22",
+  "version_id": "e54e795f-cd42-4a66-834f-66727bd0b636",
+  "sha256": "1d8d20315f79eed5ccf1405cbab12b41fa7e04eb8a3e9e82632b7126f9d0209e",
+  "bytes": 2047979,
   "traffic_percentage": 100,
   "captured_at": "2026-10-17",
-  "purpose": "Canonical DEV admin density and alignment pass: desktop at 100% browser zoom is compact like the former ~80% view; product/category/supply/fragrance operational columns were simplified and aligned; finished-product stock is used in catalog views; completion is shown as compact percentage badges; Excel controls are iconized; stock and photo workspaces are compact with frozen working headers and internal scroll. PROD is out of scope."
+  "purpose": "DEV hotfix for canonical frozen catalog tables and Stock navigation: catalog column headers and rows share one scrolling frame with a compact sticky header; hiding unavailable rows no longer distorts the table; Photos heading/help use explicit non-overlapping vertical rhythm; legacy Stock globals and navigation are recovered defensively. PROD is out of scope."
 }
