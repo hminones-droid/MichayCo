@@ -17,10 +17,10 @@ jobs:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN_DEV }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
       WORKER: michayco-dev
-      BASE_VERSION: 1aa7f525-0654-4a36-99f7-8aa877352434
-      CANDIDATE_VERSION: c2a81607-d2bf-4d62-84ca-f50e4d631836
-      BASE_RELEASE: dev-canonical-admin-ui-20261017-15
-      CANDIDATE_RELEASE: dev-canonical-admin-ui-20261017-16
+      BASE_VERSION: c2a81607-d2bf-4d62-84ca-f50e4d631836
+      CANDIDATE_VERSION: db837aa3-ccf6-490b-ad8a-90dc0b95e801
+      BASE_RELEASE: dev-canonical-admin-ui-20261017-16
+      CANDIDATE_RELEASE: dev-canonical-admin-ui-20261017-17
     steps:
       - uses: actions/checkout@v4
       - name: Safety checks
@@ -36,7 +36,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          npx --yes wrangler@4.151.0 versions deploy "$BASE_VERSION@90" "$CANDIDATE_VERSION@10" --name "$WORKER" --yes --message "Temporary DEV canonical admin UI completion canary 10 percent"
+          npx --yes wrangler@4.151.0 versions deploy "$BASE_VERSION@90" "$CANDIDATE_VERSION@10" --name "$WORKER" --yes --message "Temporary DEV canonical UI mutation-loop fix canary 10 percent"
       - name: Validate canary traffic
         shell: bash
         run: |
@@ -56,13 +56,13 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          npx --yes wrangler@4.151.0 versions deploy "$BASE_VERSION@100" --name "$WORKER" --yes --message "Restore DEV baseline after canonical admin UI completion canary"
+          npx --yes wrangler@4.151.0 versions deploy "$BASE_VERSION@100" --name "$WORKER" --yes --message "Restore DEV baseline after canonical UI mutation-loop fix canary"
       - name: Emergency rollback on failure
         if: failure()
         shell: bash
         run: |
           set -euo pipefail
-          npx --yes wrangler@4.151.0 versions deploy "$BASE_VERSION@100" --name "$WORKER" --yes --message "Emergency restore DEV baseline after canonical admin UI completion canary failure"
+          npx --yes wrangler@4.151.0 versions deploy "$BASE_VERSION@100" --name "$WORKER" --yes --message "Emergency restore DEV baseline after canonical UI mutation-loop fix canary failure"
       - name: Verify baseline restored
         if: always()
         shell: bash
