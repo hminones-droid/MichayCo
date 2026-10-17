@@ -1,11 +1,11 @@
 {
   "target": "michayco-dev",
   "production_locked": true,
-  "release": "dev-product-duplicate-easy-edit-20261017-14",
-  "version_id": "9641e736-9cc1-429c-92af-109520b3787f",
-  "sha256": null,
-  "bytes": null,
+  "release": "dev-admin-canonical-safe-20261017-24",
+  "version_id": "22db3a26-cc08-4386-a151-d0b91ea47c18",
+  "sha256": "d45dee7f609ab52ef4d430c4e8cae2520ad52dcd8c5be4910170ea6a89560e15",
+  "bytes": 2026381,
   "traffic_percentage": 100,
   "captured_at": "2026-10-17",
-  "purpose": "Emergency stable DEV baseline after generalized browser freeze. This release predates the global canonical-admin DOM observer/reparenting layer. Product/supply duplication improvements remain available. PROD is out of scope."
+  "purpose": "DEV admin restoration based on stable pre-canonical release, reintroducing approved visual and functional improvements without MutationObserver, global navigation interception, or continuous DOM reparenting. PROD is out of scope."
 }
