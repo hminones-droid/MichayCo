@@ -1,12 +1,12 @@
 {
   "text_files": {
     "/admin": "33ce51cc1ab6eb7ccfd2fe09f070a50315ff2e0a4772931f667f55b641724d6d",
-    "/": "eff86b94a684cddea9c3ae9ba83f3e87bfb73b2ed98982e75fb43db2ee865444",
-    "/oauth/consent": "8b769ae8f6040d07766bdb58ffde28263d839a20b8e7d774e260a10ccf24b74e",
+    "/": "26e9ab7041b812dfead365c6e9b8b618a743a19c9b682f5fbd1910dc18829d8d",
+    "/oauth/consent": "3ec2fc196e6a32a97792156b4d38fc087498d1f7451f59a11e7da8f5727e9eb9",
     "/admin-gallery.css": "3302c6f71c06b848c92a2576b09830f3a357e343d24cb549d3695a565df157d9",
     "/admin-gallery.js": "d6bd69157f532442878a3557ee7ee1b623107b5e1d55dcbfa89ef38e15f98977",
     "/admin-tools.js": "a846d3cdaf28f7a08b31a45ef49264b5c708e2d9c3a1567dd5e7972a6afd4eb5",
-    "/app.js": "1729f07f780be599e6bcd03b5a42abd6d8b827be753aa139d3e4dde1c341c1dc",
+    "/app.js": "23cec621628e714038fc004e1cb06552c42949f4c540dc5202382c636bcce300",
     "/catalog-admin-v2-fixes.js": "2543950ade47590f5f418076d4d5360df269b730ec4b326ba47e9dce33d7a0aa",
     "/catalog-admin-v2-fragrances.js": "a8116d92f4bd6c5f48312c0327eedf690fd152fbe6df4e519a933c265e42dda2",
     "/catalog-admin-v2-products.js": "5e063d456d934d7a1e52149fadc70b329b6adffb3531fd699594f335c4be9aa9",
@@ -27,7 +27,7 @@
     "/vendor/xlsx.js": "c9506197caf809a075b6dee1da0d36fb19da7158ffe8a88e7b0c96c5d8623c99",
     "/supply-form-fixes.js": "3dfe93cdb57dedcf82c981be89abb92be1374dfbe264493e88a68c4c66a66f81",
     "/product-duplicate-fixes.js": "60b00ae07c5829bd52b67486f856bd0a5861ebc91c1b3417a035ab5bfb4edb08",
-    "/canonical-admin-ui.js": "393eb105ede698cc33ecf2720bb15baa4eeb7bbf6b1ceff7d73173faa053d1a4",
+    "/canonical-admin-ui.js": "e3266de90b8ead4778a65645d422a0f1aabb8c692c26c86b3f66481cc02942e7",
     "/canonical-admin-ui.css": "2df4ef8404e728c3d0d51fdc434fc7c456157b60fa065c9771c2e2e4ddcff1c3"
   },
   "binary_files": {
