@@ -62,6 +62,13 @@
   function ensureCanonicalHeader(){
     const root=typeof adminShell==='function'?adminShell():null;if(!root)return;
     const active=activeCatalog(),list=root.querySelector('.catalog-v2-list');if(!list)return;
+    if(active==='supplies'){
+      const head=root.querySelector('.supply-v2-head');
+      if(head&&!head.querySelector('[data-v2-supply-actions-head]')){
+        const span=document.createElement('span');span.dataset.v2SupplyActionsHead='1';span.textContent='Acciones';head.appendChild(span);
+      }
+      return;
+    }
     if(root.querySelector('.catalog-v2-head'))return;
     let labels=null;
     if(active==='products')labels=['Producto','Componentes','Precio','Estado','Acciones'];
@@ -69,6 +76,32 @@
     if(!labels)return;
     const head=document.createElement('div');head.className='catalog-v2-head product-supply-head';head.setAttribute('aria-hidden','true');
     head.innerHTML=labels.map(x=>'<span>'+x+'</span>').join('');list.before(head);
+  }
+
+  function supplyRowActive(row){
+    const label=row?.querySelector('[data-label="Catálogo"]');
+    return !label||!/Ocult/i.test(label.textContent||'');
+  }
+
+  function ensureSupplyActionStyles(){
+    if(document.getElementById('v2SupplyActionStyles'))return;
+    const style=document.createElement('style');style.id='v2SupplyActionStyles';
+    style.textContent='.supply-v2-head,.supply-v2-row{grid-template-columns:minmax(250px,1.7fr) .65fr .75fr .75fr .7fr .65fr auto!important}.supply-v2-actions{display:flex;gap:7px;justify-content:flex-end;align-items:center}.supply-v2-actions button{width:41px;height:41px;display:grid;place-items:center;padding:0;font-size:18px;border:1px solid #d0c7b8;background:#fffdf8;color:#39402e;border-radius:5px;cursor:pointer}.supply-v2-actions button[data-supply-active].is-active{background:#596044;color:#fff;border-color:#596044}.supply-v2-actions button:hover{border-color:#6a7051}.supply-v2-actions button[data-supply-delete]{color:#873e38}@media(max-width:900px){.supply-v2-head{display:none!important}.supply-v2-row{grid-template-columns:1fr!important}.supply-v2-actions{justify-content:flex-start}}';
+    document.head.appendChild(style);
+  }
+
+  function decorateSupplyRows(){
+    const root=typeof adminShell==='function'?adminShell():document;if(activeCatalog()!=='supplies'||!root)return;
+    ensureSupplyActionStyles();
+    const head=root.querySelector('.supply-v2-head');
+    if(head&&!head.querySelector('[data-v2-supply-actions-head]')){const s=document.createElement('span');s.dataset.v2SupplyActionsHead='1';s.textContent='Acciones';head.appendChild(s)}
+    root.querySelectorAll('.supply-v2-row').forEach(row=>{
+      if(row.querySelector('.supply-v2-actions'))return;
+      const id=row.querySelector('[data-supply]')?.dataset.supply;if(!id)return;
+      const actions=document.createElement('span');actions.className='supply-v2-actions';actions.dataset.label='Acciones';
+      actions.innerHTML='<button type="button" data-supply-active="'+id+'" class="'+(supplyRowActive(row)?'is-active':'')+'" title="'+(supplyRowActive(row)?'Inhabilitar / ocultar':'Habilitar / mostrar')+'" aria-label="Cambiar vigencia">✓</button><button type="button" data-supply-edit="'+id+'" title="Editar" aria-label="Editar">✎</button><button type="button" data-supply-duplicate="'+id+'" title="Duplicar" aria-label="Duplicar">⧉</button><button type="button" data-supply-delete="'+id+'" title="Borrar" aria-label="Borrar">♲</button>';
+      row.appendChild(actions);
+    });
   }
 
   function rowUnavailable(row,active){
@@ -84,8 +117,8 @@
     }
     if(active==='supplies'){
       const label=[...row.querySelectorAll('[data-label="Catálogo"]')].find(x=>/Activo|Ocult/i.test(x.textContent));
-      const action=row.querySelector('[data-visible],input[data-active]');
-      return label?/Ocult/i.test(label.textContent):action?!action.checked:false;
+      const action=row.querySelector('[data-supply-active],[data-visible],input[data-active]');
+      return label?/Ocult/i.test(label.textContent):action?!action.classList.contains('is-active'):false;
     }
     if(active==='categories'){
       const cb=row.querySelector('[data-catvisible],[data-visible]');
@@ -106,6 +139,52 @@
       if(shouldHide)row.style.setProperty('display','none','important');
       else row.style.removeProperty('display');
     });
+  }
+
+  async function duplicateSupply(id){
+    const r=await sb.from('supplies').select('*').eq('id',id).single();
+    if(r.error||!r.data){alert('No se pudo leer el insumo para duplicarlo: '+(r.error?.message||'registro inexistente'));return}
+    const x=r.data;
+    const newColor=prompt('Nuevo color para el duplicado:',x.color||'');if(newColor===null)return;
+    let base=String(x.purchase_name||'').trim();
+    if(x.color){const esc=String(x.color).replace(/[.*+?^${}()|[\]\\]/g,'\\$&');base=base.replace(new RegExp('\\s+'+esc+'$','i'),'').trim()}
+    const suggested=(newColor.trim()?base+' '+newColor.trim():base+' copia').trim();
+    const newName=prompt('Nombre del nuevo insumo:',suggested);if(newName===null||!newName.trim())return;
+    const cr=await sb.rpc('next_supply_code',{p_type:x.type});if(cr.error){alert('No se pudo generar el código: '+cr.error.message);return}
+    const d={code:cr.data,type:x.type,purchase_name:newName.trim(),description:x.description||null,stock_unit:x.stock_unit,stock:0,min_stock:x.min_stock,target_stock:x.target_stock,purchase_presentation:x.purchase_presentation||null,purchase_quantity:x.purchase_quantity,last_purchase_cost:x.last_purchase_cost,supplier:x.supplier||null,material:x.material||null,color:newColor.trim()||null,capacity_cc:x.capacity_cc,capacity_g:x.capacity_g,height_mm:x.height_mm,width_mm:x.width_mm,depth_mm:x.depth_mm,diameter_mm:x.diameter_mm,includes_lid:x.includes_lid,notes:x.notes||null,active:true};
+    const ins=await sb.from('supplies').insert(d).select('id').single();
+    if(ins.error){alert('No se pudo duplicar el insumo: '+ins.error.message);return}
+    await window.supplyForm(ins.data.id);
+  }
+
+  async function deleteSupply(id){
+    const use=await sb.from('product_supplies').select('product_id',{count:'exact',head:true}).eq('supply_id',id);
+    if(use.error){alert('No se pudo validar el uso del insumo: '+use.error.message);return}
+    if((use.count||0)>0){alert('Este insumo está usado en '+use.count+' producto(s). No se puede borrar. Podés destildarlo para inhabilitarlo sin perder relaciones.');return}
+    if(!confirm('¿Borrar definitivamente este insumo? Esta acción no se puede deshacer.'))return;
+    const r=await sb.from('supplies').delete().eq('id',id);if(r.error){alert('No se pudo borrar: '+r.error.message);return}
+    if(typeof openSupplies==='function')openSupplies();
+  }
+
+  async function handleSupplyActions(e){
+    if(activeCatalog()!=='supplies')return;
+    const activeBtn=e.target.closest?.('[data-supply-active]');
+    const editBtn=e.target.closest?.('[data-supply-edit]');
+    const dupBtn=e.target.closest?.('[data-supply-duplicate]');
+    const delBtn=e.target.closest?.('[data-supply-delete]');
+    const control=activeBtn||editBtn||dupBtn||delBtn;if(!control)return;
+    e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();
+    if(editBtn){window.supplyForm(editBtn.dataset.supplyEdit);return}
+    if(dupBtn){duplicateSupply(dupBtn.dataset.supplyDuplicate);return}
+    if(delBtn){deleteSupply(delBtn.dataset.supplyDelete);return}
+    const id=activeBtn.dataset.supplyActive,row=activeBtn.closest('.supply-v2-row'),current=supplyRowActive(row),next=!current;
+    activeBtn.disabled=true;
+    try{
+      const r=await sb.from('supplies').update({active:next}).eq('id',id);if(r.error)throw r.error;
+      const label=row.querySelector('[data-label="Catálogo"]');if(label)label.textContent=next?'Activo':'Oculto';
+      activeBtn.classList.toggle('is-active',next);activeBtn.title=next?'Inhabilitar / ocultar':'Habilitar / mostrar';
+      queueMicrotask(applyCanonicalHide);
+    }catch(err){alert('No se pudo cambiar la vigencia: '+(err?.message||err))}finally{activeBtn.disabled=false}
   }
 
   async function handleVisibilityClick(e){
@@ -140,7 +219,8 @@
     }
   }
 
-  function reconcileCanonicalList(){ensureCanonicalHeader();applyCanonicalHide()}
+  function reconcileCanonicalList(){ensureCanonicalHeader();decorateSupplyRows();applyCanonicalHide()}
+  document.addEventListener('click',handleSupplyActions,true);
   document.addEventListener('click',handleVisibilityClick,true);
   document.addEventListener('change',e=>{if(e.target?.matches('[data-v2-hide],[data-visible],[data-catvisible],.admin-row-actions input[type="checkbox"]'))queueMicrotask(reconcileCanonicalList)});
   new MutationObserver(()=>queueMicrotask(reconcileCanonicalList)).observe(document.documentElement,{childList:true,subtree:true});
