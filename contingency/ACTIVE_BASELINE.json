@@ -1,11 +1,11 @@
 {
   "target": "michayco-dev",
   "production_locked": true,
-  "release": "dev-admin-responsive-foundation-20261017-18",
-  "version_id": "fa94d8df-4a45-4498-a1ce-661548d02f42",
-  "sha256": "a1a1922aec35bd7410dd4eaaac07b2af26116519c8466aa02811cb170e16ff59",
-  "bytes": 2010678,
+  "release": "dev-admin-operational-home-20261017-19",
+  "version_id": "eb68d577-27df-4e5b-84c1-1c2038631a80",
+  "sha256": "3d87fb2c6291e568532d6e0c1d9ba10a252fd874d74a128a0c0ebb048a0a1072",
+  "bytes": 2025724,
   "traffic_percentage": 100,
   "captured_at": "2026-10-17",
-  "purpose": "Canonical Micha admin responsive foundation in DEV: repaired Catalog central card grid, reduced operational heading/form density, sized product/supply/category/fragrance/component fields by expected content, compacted canonical actions and controls, grouped forms semantically, and added progressive tablet/mobile reflow without changing business logic. PROD is out of scope."
+  "purpose": "Canonical DEV admin home and viewport contract: Inicio is an operational dashboard instead of duplicated navigation; page headers/filters remain in the working viewport; list/table data use internal scroll regions; table headers remain frozen; forms remain compact and may scroll only when content makes a single-view layout impossible. PROD is out of scope."
 }
