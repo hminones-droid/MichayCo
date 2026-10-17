@@ -1,1 +1,1 @@
-2026-10-17T17:23:00-03:00 - retry dev-admin-responsive-foundation-20261017-18 after baseline manifest reconciliation. No traffic change.
+2026-10-17T17:26:00-03:00 - upload dev-admin-responsive-foundation-20261017-18 with strict known admin representations. No traffic change.
