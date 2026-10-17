@@ -99,7 +99,7 @@
       if(row.querySelector('.supply-v2-actions'))return;
       const id=row.querySelector('[data-supply]')?.dataset.supply;if(!id)return;
       const actions=document.createElement('span');actions.className='supply-v2-actions';actions.dataset.label='Acciones';
-      actions.innerHTML='<button type="button" data-supply-active="'+id+'" class="'+(supplyRowActive(row)?'is-active':'')+'" title="'+(supplyRowActive(row)?'Inhabilitar / ocultar':'Habilitar / mostrar')+'" aria-label="Cambiar vigencia">✓</button><button type="button" data-supply-edit="'+id+'" title="Editar" aria-label="Editar">✎</button><button type="button" data-supply-duplicate="'+id+'" title="Duplicar" aria-label="Duplicar">⧉</button><button type="button" data-supply-delete="'+id+'" title="Borrar" aria-label="Borrar">♲</button>';
+      actions.innerHTML='<button type="button" data-supply-active="'+id+'" class="'+(supplyRowActive(row)?'is-active':'')+'" title="'+(supplyRowActive(row)?'Inhabilitar / ocultar':'Habilitar / mostrar')+'" aria-label="Cambiar vigencia">✓</button><button type="button" data-supply-edit="'+id+'" title="Editar" aria-label="Editar">✎</button><button type="button" data-supply-duplicate="'+id+'" title="Duplicar" aria-label="Duplicar">⧉</button><button type="button" data-supply-delete="'+id+'" title="Borrar" aria-label="Borrar">🗑</button>';
       row.appendChild(actions);
     });
   }
