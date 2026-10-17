@@ -1,4 +1,4 @@
-trigger=2026-10-17T18:24:00-03:00
-base=eb68d577-27df-4e5b-84c1-1c2038631a80
-candidate=585b2311-f683-4eba-bebe-e70635bbddc6
-release=dev-admin-dashboard-realdata-20261017-20
+trigger=2026-10-17T19:45:00-03:00
+base=585b2311-f683-4eba-bebe-e70635bbddc6
+candidate=80c0e68f-18b1-481a-827c-c852b7d5e1b5
+release=dev-admin-canonical-density-20261017-21
