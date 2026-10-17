@@ -17,10 +17,10 @@ jobs:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN_DEV }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
       WORKER: michayco-dev
-      BASE_VERSION: db837aa3-ccf6-490b-ad8a-90dc0b95e801
-      CANDIDATE_VERSION: fa94d8df-4a45-4498-a1ce-661548d02f42
-      BASE_RELEASE: dev-canonical-admin-ui-20261017-17
-      CANDIDATE_RELEASE: dev-admin-responsive-foundation-20261017-18
+      BASE_VERSION: fa94d8df-4a45-4498-a1ce-661548d02f42
+      CANDIDATE_VERSION: eb68d577-27df-4e5b-84c1-1c2038631a80
+      BASE_RELEASE: dev-admin-responsive-foundation-20261017-18
+      CANDIDATE_RELEASE: dev-admin-operational-home-20261017-19
     steps:
       - uses: actions/checkout@v4
       - name: Preflight DEV safety
@@ -36,7 +36,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          npx --yes wrangler@4.151.0 versions deploy "$CANDIDATE_VERSION@100" --name "$WORKER" --yes --message "Apply canonical dense responsive admin foundation in DEV"
+          npx --yes wrangler@4.151.0 versions deploy "$CANDIDATE_VERSION@100" --name "$WORKER" --yes --message "Apply operational home and frozen data viewport contract in DEV"
       - name: Wait for propagation and validate candidate
         shell: bash
         run: |
@@ -56,15 +56,13 @@ jobs:
           else: raise SystemExit(f'candidate_not_stable seen={seen}')
           PY
           curl -fsS -A 'Mozilla/5.0' 'https://dev.michahome.com.ar/canonical-admin-ui.js?verify=1' -o /tmp/canonical-admin-ui.js
-          curl -fsS -A 'Mozilla/5.0' 'https://dev.michahome.com.ar/canonical-admin-ui.css?verify=1' -o /tmp/canonical-admin-ui.css
-          grep -q "canonicalizeForms" /tmp/canonical-admin-ui.js
-          grep -q "replace.parentElement!==actions" /tmp/canonical-admin-ui.js
-          grep -q "canonical-product-form" /tmp/canonical-admin-ui.css
-          grep -q "grid-template-columns:repeat(3,minmax(0,1fr))" /tmp/canonical-admin-ui.css
+          grep -q "Resumen operativo" /tmp/canonical-admin-ui.js
+          grep -q "canonical-data-screen" /tmp/canonical-admin-ui.js
+          grep -q "sheet-wrap table thead th" /tmp/canonical-admin-ui.js
+          grep -q "Requiere atención" /tmp/canonical-admin-ui.js
           node --check /tmp/canonical-admin-ui.js
           curl -fsS -A 'Mozilla/5.0' 'https://dev.michahome.com.ar/admin?verify=1' -o /tmp/admin.html
           grep -q '/canonical-admin-ui.js' /tmp/admin.html
-          grep -q '/canonical-admin-ui.css' /tmp/admin.html
           test "$(curl -sS -o /dev/null -w '%{http_code}' -I https://dev.michahome.com.ar/admin)" = "200"
           test "$(curl -sS -o /dev/null -w '%{http_code}' https://dev.michahome.com.ar/__canonical_ui_missing__)" = "404"
           test "$(curl -sS -o /dev/null -w '%{http_code}' -X POST https://dev.michahome.com.ar/admin)" = "405"
@@ -73,7 +71,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          npx --yes wrangler@4.151.0 versions deploy "$BASE_VERSION@100" --name "$WORKER" --yes --message "Emergency rollback after responsive admin DEV deployment failure"
+          npx --yes wrangler@4.151.0 versions deploy "$BASE_VERSION@100" --name "$WORKER" --yes --message "Emergency rollback after operational home DEV deployment failure"
       - name: Verify rollback if needed
         if: failure()
         shell: bash
