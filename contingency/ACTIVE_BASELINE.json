@@ -1,11 +1,11 @@
 {
   "target": "michayco-dev",
   "production_locked": true,
-  "release": "dev-canonical-admin-ui-20261017-15",
-  "version_id": "1aa7f525-0654-4a36-99f7-8aa877352434",
-  "sha256": "f8e0f7ed0a01a44fb912021dd02140a8999f76cbc4847e341f3496efe4de6cc2",
-  "bytes": 1990500,
+  "release": "dev-canonical-admin-ui-20261017-16",
+  "version_id": "c2a81607-d2bf-4d62-84ca-f50e4d631836",
+  "sha256": "8565c0db41490a16f16800dfd6e229604de808a2e6548f6992a328664c764373",
+  "bytes": 1990916,
   "traffic_percentage": 100,
   "captured_at": "2026-10-17",
-  "purpose": "GitHub contingency baseline after applying the canonical Micha admin visual language in DEV: one compact row per entity/component, icon-first edit/duplicate/delete actions, compact visibility control, and canonical component action alignment. PROD is out of scope."
+  "purpose": "GitHub contingency baseline after completing canonical Micha admin interaction rules in DEV: compact entity/component rows, icon-first edit/change/duplicate/remove/delete actions, visibility controlled by the tick, and text actions converted to canonical icons where semantically clear. PROD is out of scope."
 }
