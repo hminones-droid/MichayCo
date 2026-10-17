@@ -1,4 +1,4 @@
-trigger=2026-10-17T02:33:00-03:00
-base=ab55e605-2497-4065-bf49-a2fc281b4be3
-candidate=7b26f135-498e-4373-8f09-1061c371f83b
-release=dev-supply-actions-20261017-10
+trigger=2026-10-17T02:42:00-03:00
+base=7b26f135-498e-4373-8f09-1061c371f83b
+candidate=97064ada-b03e-4d94-a649-c69929dd098c
+release=dev-supply-form-fix-20261017-11
