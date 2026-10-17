@@ -1,11 +1,11 @@
 {
   "target": "michayco-dev",
   "production_locked": true,
-  "release": "dev-supply-active-unified-20261017-12",
-  "version_id": "8c38adae-f1ab-4339-9b33-f421f968886f",
-  "sha256": "d74f5ea0bef3c0ebc870e389b5bf02ee20fad98ef28d683c3b989e877414b19e",
-  "bytes": 1974741,
+  "release": "dev-product-duplicate-components-20261017-13",
+  "version_id": "2da4244f-f757-4b27-8e62-82cece3c3736",
+  "sha256": "d76fffb549b568e1b04c64b05c4d35d0bdd0837985d8e577de2ff514f9c55d84",
+  "bytes": 1979765,
   "traffic_percentage": 100,
   "captured_at": "2026-10-17",
-  "purpose": "GitHub contingency baseline after making the Insumos grid tick the single source of truth for active/hidden state and removing the redundant Active field from the supply form in DEV. PROD is out of scope."
+  "purpose": "GitHub contingency baseline after making product duplication preserve the complete product_supplies composition so inherited physical properties and recipe components carry forward by default. Stock, photos and publication are intentionally not copied. DEV only; PROD is out of scope."
 }
