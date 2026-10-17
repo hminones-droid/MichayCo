@@ -1,11 +1,11 @@
 {
   "target": "michayco-dev",
   "production_locked": true,
-  "release": "dev-supply-actions-20261017-10",
-  "version_id": "7b26f135-498e-4373-8f09-1061c371f83b",
-  "sha256": "5531df08c4d8834e9f64f42beeb69d563696985941c3453de621d4743e7bd4b8",
-  "bytes": 1969297,
+  "release": "dev-supply-form-fix-20261017-11",
+  "version_id": "97064ada-b03e-4d94-a649-c69929dd098c",
+  "sha256": "e626cdb97aa016e3386cc15b7875fa40970a3f38f61780f7971e0e34a0759d46",
+  "bytes": 1974181,
   "traffic_percentage": 100,
   "captured_at": "2026-10-17",
-  "purpose": "GitHub contingency baseline after canonical Insumos actions, active/hidden semantics, safe delete, and physical-supply duplication support in DEV. PROD is out of scope."
+  "purpose": "GitHub contingency baseline after fixing Insumos duplication, safe storefront refresh, and type-aware editable name suggestions in DEV. PROD is out of scope."
 }
