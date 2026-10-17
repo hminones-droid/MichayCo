@@ -1,4 +1,4 @@
-trigger=2026-10-17T19:47:00-03:00
-base=585b2311-f683-4eba-bebe-e70635bbddc6
-candidate=80c0e68f-18b1-481a-827c-c852b7d5e1b5
-release=dev-admin-canonical-density-20261017-21
+trigger=2026-10-17T20:14:00-03:00
+base=80c0e68f-18b1-481a-827c-c852b7d5e1b5
+candidate=e54e795f-cd42-4a66-834f-66727bd0b636
+release=dev-admin-frozen-grid-stock-20261017-22
