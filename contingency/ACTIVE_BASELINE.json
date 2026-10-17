@@ -1,11 +1,11 @@
 {
   "target": "michayco-dev",
   "production_locked": true,
-  "release": "dev-admin-operational-home-20261017-19",
-  "version_id": "eb68d577-27df-4e5b-84c1-1c2038631a80",
-  "sha256": "3d87fb2c6291e568532d6e0c1d9ba10a252fd874d74a128a0c0ebb048a0a1072",
-  "bytes": 2025724,
+  "release": "dev-admin-dashboard-realdata-20261017-20",
+  "version_id": "585b2311-f683-4eba-bebe-e70635bbddc6",
+  "sha256": "17dd40ae8ba353a50dd8cc46723c7ea173b0594cbb995e755422b0bb7aca3323",
+  "bytes": 2031355,
   "traffic_percentage": 100,
   "captured_at": "2026-10-17",
-  "purpose": "Canonical DEV admin home and viewport contract: Inicio is an operational dashboard instead of duplicated navigation; page headers/filters remain in the working viewport; list/table data use internal scroll regions; table headers remain frozen; forms remain compact and may scroll only when content makes a single-view layout impossible. PROD is out of scope."
+  "purpose": "DEV operational dashboard now refreshes from real Supabase data for products, variants, photos, supplies and orders instead of relying on lexical globals through window. Counts and health indicators therefore reflect the actual database. PROD is out of scope."
 }
