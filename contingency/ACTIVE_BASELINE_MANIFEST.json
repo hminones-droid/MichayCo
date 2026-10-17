@@ -7,12 +7,12 @@
     "/admin-gallery.js": "d6bd69157f532442878a3557ee7ee1b623107b5e1d55dcbfa89ef38e15f98977",
     "/admin-tools.js": "a846d3cdaf28f7a08b31a45ef49264b5c708e2d9c3a1567dd5e7972a6afd4eb5",
     "/app.js": "c4f22f35fec74bb866e48656cb9d86966d566e1e4757224a98cf5ad8bd199532",
-    "/catalog-admin-v2-fixes.js": "2543950ade47590f5f418076d4d5360df269b730ec4b326ba47e9dce33d7a0aa",
-    "/catalog-admin-v2-fragrances.js": "a8116d92f4bd6c5f48312c0327eedf690fd152fbe6df4e519a933c265e42dda2",
-    "/catalog-admin-v2-products.js": "5e063d456d934d7a1e52149fadc70b329b6adffb3531fd699594f335c4be9aa9",
-    "/catalog-admin-v2-utilities.js": "f83b662d8c02db5aa4573722ed3d06e87cbca1a9b56badb7dba1f1eab576a9be",
+    "/catalog-admin-v2-fixes.js": "d07e5f095c4a2e7d0e81140117131bef8ad505736c8abe4c7050956cb0eedaa7",
+    "/catalog-admin-v2-fragrances.js": "fb1e876d0199a6740ef85f020067611d2db3827c02d119b0c38889339bc16c17",
+    "/catalog-admin-v2-products.js": "27d294de6902f3db8168b452c201e86951dd7e4a1828a119a394372bfa062cdb",
+    "/catalog-admin-v2-utilities.js": "72d4772010f1f2d58b2a21d116d96eeddf5e32133423c2c4606e4bdaee0f056e",
     "/catalog-admin-v2.css": "a33897f402ce319db471b2365acab553ad9699c3ff56e2fabc32df3464fe0d8a",
-    "/catalog-admin-v2.js": "de772c37fe9b4bebff4e572a49fccab900dfadc54c072437ebbeb1718526fe93",
+    "/catalog-admin-v2.js": "8074cb41e06e38944bded4de8b09c4fa121366758b9ea126df8af94a3b06c1a0",
     "/catalog-layout.css": "1c9e648d7caba6d0cd4b29e7cfca7a3b01bf86c5076c25ca55137a33ad175175",
     "/catalog-layout.js": "7bcd1f82a17056cb3965d8882fc44c5c1b3c446be72c8beb5f61568bbaa27f4b",
     "/catalog-ux.css": "3003f0949a9e50fadbcd64c2aed2a683f131db4a7a2d7e513a0ff782143eb6f1",
@@ -27,12 +27,12 @@
     "/vendor/xlsx.js": "c9506197caf809a075b6dee1da0d36fb19da7158ffe8a88e7b0c96c5d8623c99",
     "/supply-form-fixes.js": "3dfe93cdb57dedcf82c981be89abb92be1374dfbe264493e88a68c4c66a66f81",
     "/product-duplicate-fixes.js": "60b00ae07c5829bd52b67486f856bd0a5861ebc91c1b3417a035ab5bfb4edb08",
-    "/canonical-admin-ui.js": "e3266de90b8ead4778a65645d422a0f1aabb8c692c26c86b3f66481cc02942e7",
+    "/canonical-admin-ui.js": "6e990bc031d4ca628c3e4e268900ffc264dfccdc29dfda5f32f59c9f5adefbee",
     "/dashboard-data-fix.js": "7590966e3b47e1550b0e07f448af59b4a845937500909caed464bb69dc48d8c1",
-    "/canonical-admin-ui.css": "2df4ef8404e728c3d0d51fdc434fc7c456157b60fa065c9771c2e2e4ddcff1c3"
+    "/canonical-admin-ui.css": "fded1e9a89bca7ad381e351725f0074ed3d746b810002cb93e288aa03fb825af"
   },
   "binary_files": {
-    "/assets/MichaCo_Hero_HD.webp": "44e1c4c8bc4c4d0d0baa4c4090dd159b920d7664fe6f21f057a94fe6294c4481",
+    "/assets/MichaCo_Hero_HD.webp": "44e1c4c8bc4c0d0baa4c4090dd159b920d7664fe6f21f057a94fe6294c4481",
     "/assets/aroma-moments-minimal.webp": "8ff7bd58360892aefec5f66c4e5925ef68a8ad4dbd12fff9a0153af3e6209a16"
   }
 }
