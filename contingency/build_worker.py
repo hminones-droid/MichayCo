@@ -60,6 +60,9 @@ for route, expected in MANIFEST["text_files"].items():
 extra_supply_fix = OVERRIDES / "supply-form-fixes.js"
 if extra_supply_fix.exists():
     text["/supply-form-fixes.js"] = {"data": extra_supply_fix.read_text(), "binary": False}
+extra_product_fix = OVERRIDES / "product-duplicate-fixes.js"
+if extra_product_fix.exists():
+    text["/product-duplicate-fixes.js"] = {"data": extra_product_fix.read_text(), "binary": False}
 
 binary = {}
 for route, expected in MANIFEST.get("binary_files", {}).items():
@@ -76,6 +79,8 @@ if None in (admin, store, consent):
     raise SystemExit("missing required HTML route")
 if extra_supply_fix.exists() and "/supply-form-fixes.js" not in admin:
     admin = admin.replace("</body>", '<script src="/supply-form-fixes.js"></script></body>')
+if extra_product_fix.exists() and "/product-duplicate-fixes.js" not in admin:
+    admin = admin.replace("</body>", '<script src="/product-duplicate-fixes.js"></script></body>')
 files = {**text, **binary}
 
 parts = [
