@@ -1,1 +1,1 @@
-2026-10-17T20:36:00-03:00 - upload dev-admin-safe-mode-20261017-23. No traffic change.
+2026-10-17T20:41:00-03:00 - upload dev-admin-canonical-safe-20261017-24. No traffic change.
