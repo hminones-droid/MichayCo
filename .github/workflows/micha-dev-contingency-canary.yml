@@ -17,10 +17,10 @@ jobs:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN_DEV }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
       WORKER: michayco-dev
-      BASE_VERSION: 7b26f135-498e-4373-8f09-1061c371f83b
-      CANDIDATE_VERSION: 97064ada-b03e-4d94-a649-c69929dd098c
-      BASE_RELEASE: dev-supply-actions-20261017-10
-      CANDIDATE_RELEASE: dev-supply-form-fix-20261017-11
+      BASE_VERSION: 97064ada-b03e-4d94-a649-c69929dd098c
+      CANDIDATE_VERSION: 8c38adae-f1ab-4339-9b33-f421f968886f
+      BASE_RELEASE: dev-supply-form-fix-20261017-11
+      CANDIDATE_RELEASE: dev-supply-active-unified-20261017-12
     steps:
       - uses: actions/checkout@v4
 
@@ -41,7 +41,7 @@ jobs:
           npx --yes wrangler@4.151.0 versions deploy \
             "$BASE_VERSION@90" "$CANDIDATE_VERSION@10" \
             --name "$WORKER" --yes \
-            --message "Temporary DEV supply form fix canary 10 percent"
+            --message "Temporary DEV unified supply active state canary 10 percent"
 
       - name: Validate canary traffic
         shell: bash
@@ -70,7 +70,7 @@ jobs:
           npx --yes wrangler@4.151.0 versions deploy \
             "$BASE_VERSION@100" \
             --name "$WORKER" --yes \
-            --message "Restore DEV baseline after supply form fix canary"
+            --message "Restore DEV baseline after unified supply active state canary"
 
       - name: Emergency rollback on failure
         if: failure()
@@ -80,7 +80,7 @@ jobs:
           npx --yes wrangler@4.151.0 versions deploy \
             "$BASE_VERSION@100" \
             --name "$WORKER" --yes \
-            --message "Emergency restore DEV baseline after supply form fix canary failure"
+            --message "Emergency restore DEV baseline after unified supply active state canary failure"
 
       - name: Verify baseline restored
         if: always()
