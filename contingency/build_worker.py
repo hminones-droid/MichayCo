@@ -51,7 +51,7 @@ for route,expected in MANIFEST["text_files"].items():
     elif route=="/oauth/consent": consent=value
     else: text[route]={"data":value,"binary":False}
 
-extra_files=["supply-form-fixes.js","product-duplicate-fixes.js","canonical-admin-ui.js","canonical-admin-ui.css"]
+extra_files=["supply-form-fixes.js","product-duplicate-fixes.js","canonical-admin-ui.js","dashboard-data-fix.js","canonical-admin-ui.css"]
 for name in extra_files:
     p=OVERRIDES/name
     if p.exists(): text["/"+name]={"data":p.read_text(),"binary":False}
@@ -65,7 +65,7 @@ for route,spec in RECOVERED_BINARY.items():
     binary[route]={"data":base64.b64encode(raw).decode(),"binary":True}
 
 if None in (admin,store,consent): raise SystemExit("missing required HTML route")
-for name in ["supply-form-fixes.js","product-duplicate-fixes.js","canonical-admin-ui.js"]:
+for name in ["supply-form-fixes.js","product-duplicate-fixes.js","canonical-admin-ui.js","dashboard-data-fix.js"]:
     if (OVERRIDES/name).exists() and ("/"+name) not in admin: admin=admin.replace("</body>",f'<script src="/{name}"></script></body>')
 if (OVERRIDES/"canonical-admin-ui.css").exists() and "/canonical-admin-ui.css" not in admin: admin=admin.replace("</head>",'<link rel="stylesheet" href="/canonical-admin-ui.css"></head>')
 files={**text,**binary}
