@@ -1,12 +1,12 @@
 {
   "text_files": {
-    "/admin": "4cacc3580c9e12dae3ef58ea712de35d5bd5d7934714e204d9877f2c09d4d48d",
+    "/admin": "9d4f2ff20fe9a70caf90e603ca07bcef2f3e7680485016def94a3aef435c8eaf",
     "/": "eff86b94a684cddea9c3ae9ba83f3e87bfb73b2ed98982e75fb43db2ee865444",
     "/oauth/consent": "8b769ae8f6040d07766bdb58ffde28263d839a20b8e7d774e260a10ccf24b74e",
     "/admin-gallery.css": "3302c6f71c06b848c92a2576b09830f3a357e343d24cb549d3695a565df157d9",
     "/admin-gallery.js": "d6bd69157f532442878a3557ee7ee1b623107b5e1d55dcbfa89ef38e15f98977",
     "/admin-tools.js": "a846d3cdaf28f7a08b31a45ef49264b5c708e2d9c3a1567dd5e7972a6afd4eb5",
-    "/app.js": "3f2982155cf7beaaddacf88e8913b9f7bde32d7d3487e06c86ffe98d25e30121",
+    "/app.js": "f6774ba52c60e89eb5d2d8c5dcbd316902d38291438af6acdef419d1c1c488f6",
     "/catalog-admin-v2-fixes.js": "2543950ade47590f5f418076d4d5360df269b730ec4b326ba47e9dce33d7a0aa",
     "/catalog-admin-v2-fragrances.js": "a8116d92f4bd6c5f48312c0327eedf690fd152fbe6df4e519a933c265e42dda2",
     "/catalog-admin-v2-products.js": "5e063d456d934d7a1e52149fadc70b329b6adffb3531fd699594f335c4be9aa9",
@@ -24,7 +24,8 @@
     "/products.json": "cddf74b3ae8dcb7d5ff2023708c805a4faaa3ca5179c1af39343c20ccd4012df",
     "/styles.css": "3130948052da98b3cf1420b1007e32ac400902dcadda10888ce948c559b89423",
     "/vendor/supabase.js": "36d1ad9948fdbba9c3d696e27050f70aafce88981938b6a814a6ad8abdf171ba",
-    "/vendor/xlsx.js": "c9506197caf809a075b6dee1da0d36fb19da7158ffe8a88e7b0c96c5d8623c99"
+    "/vendor/xlsx.js": "c9506197caf809a075b6dee1da0d36fb19da7158ffe8a88e7b0c96c5d8623c99",
+    "/supply-form-fixes.js": "5bd4dbe1bec840c268ba562c5c22cff168c86bbeecde52b37a513584e7932d12"
   },
   "binary_files": {
     "/assets/MichaCo_Hero_HD.webp": "44e1c4c8bc4c4d0d0baa4c4090dd159b920d7664fe6f21f057a94fe6294c4481",
