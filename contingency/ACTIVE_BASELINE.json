@@ -1,11 +1,11 @@
 {
   "target": "michayco-dev",
   "production_locked": true,
-  "release": "dev-admin-dashboard-realdata-20261017-20",
-  "version_id": "585b2311-f683-4eba-bebe-e70635bbddc6",
-  "sha256": "17dd40ae8ba353a50dd8cc46723c7ea173b0594cbb995e755422b0bb7aca3323",
-  "bytes": 2031355,
+  "release": "dev-admin-canonical-density-20261017-21",
+  "version_id": "80c0e68f-18b1-481a-827c-c852b7d5e1b5",
+  "sha256": "65f22e86d390f2c0aee8720914a716b8c2196e78ab3ee502890332943214db6e",
+  "bytes": 2042099,
   "traffic_percentage": 100,
   "captured_at": "2026-10-17",
-  "purpose": "DEV operational dashboard now refreshes from real Supabase data for products, variants, photos, supplies and orders instead of relying on lexical globals through window. Counts and health indicators therefore reflect the actual database. PROD is out of scope."
+  "purpose": "Canonical DEV admin density and alignment pass: desktop at 100% browser zoom is compact like the former ~80% view; product/category/supply/fragrance operational columns were simplified and aligned; finished-product stock is used in catalog views; completion is shown as compact percentage badges; Excel controls are iconized; stock and photo workspaces are compact with frozen working headers and internal scroll. PROD is out of scope."
 }
