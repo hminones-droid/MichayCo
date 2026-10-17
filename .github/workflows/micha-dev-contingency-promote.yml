@@ -17,10 +17,10 @@ jobs:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN_DEV }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
       WORKER: michayco-dev
-      BASE_VERSION: 97064ada-b03e-4d94-a649-c69929dd098c
-      CANDIDATE_VERSION: 8c38adae-f1ab-4339-9b33-f421f968886f
-      BASE_RELEASE: dev-supply-form-fix-20261017-11
-      CANDIDATE_RELEASE: dev-supply-active-unified-20261017-12
+      BASE_VERSION: 8c38adae-f1ab-4339-9b33-f421f968886f
+      CANDIDATE_VERSION: 2da4244f-f757-4b27-8e62-82cece3c3736
+      BASE_RELEASE: dev-supply-active-unified-20261017-12
+      CANDIDATE_RELEASE: dev-product-duplicate-components-20261017-13
     steps:
       - uses: actions/checkout@v4
 
@@ -41,7 +41,7 @@ jobs:
           npx --yes wrangler@4.151.0 versions deploy \
             "$CANDIDATE_VERSION@100" \
             --name "$WORKER" --yes \
-            --message "Use the Insumos grid tick as the single active state control in DEV"
+            --message "Duplicate products with their complete component configuration in DEV"
 
       - name: Wait for propagation and validate candidate
         shell: bash
@@ -61,13 +61,16 @@ jobs:
               time.sleep(1)
           else: raise SystemExit(f'candidate_not_stable seen={seen}')
           PY
-          curl -fsS -A 'Mozilla/5.0' 'https://dev.michahome.com.ar/supply-form-fixes.js?verify=1' -o /tmp/supply-form-fixes.js
-          grep -q "activeLabel.style.display='none'" /tmp/supply-form-fixes.js
-          grep -q 'supplyNameSuggestions' /tmp/supply-form-fixes.js
-          grep -q 'duplicateSupplyFixed' /tmp/supply-form-fixes.js
-          node --check /tmp/supply-form-fixes.js
+          curl -fsS -A 'Mozilla/5.0' 'https://dev.michahome.com.ar/product-duplicate-fixes.js?verify=1' -o /tmp/product-duplicate-fixes.js
+          grep -q 'duplicateProductCanonical' /tmp/product-duplicate-fixes.js
+          grep -q "sb.from('product_supplies').insert(rows)" /tmp/product-duplicate-fixes.js
+          grep -q 'stock:0' /tmp/product-duplicate-fixes.js
+          grep -q 'published:false' /tmp/product-duplicate-fixes.js
+          node --check /tmp/product-duplicate-fixes.js
+          curl -fsS -A 'Mozilla/5.0' 'https://dev.michahome.com.ar/admin?verify=1' -o /tmp/admin.html
+          grep -q '/product-duplicate-fixes.js' /tmp/admin.html
           test "$(curl -sS -o /dev/null -w '%{http_code}' -I https://dev.michahome.com.ar/admin)" = "200"
-          test "$(curl -sS -o /dev/null -w '%{http_code}' https://dev.michahome.com.ar/__supply_active_missing__)" = "404"
+          test "$(curl -sS -o /dev/null -w '%{http_code}' https://dev.michahome.com.ar/__product_duplicate_missing__)" = "404"
           test "$(curl -sS -o /dev/null -w '%{http_code}' -X POST https://dev.michahome.com.ar/admin)" = "405"
 
       - name: Emergency rollback on failure
@@ -78,7 +81,7 @@ jobs:
           npx --yes wrangler@4.151.0 versions deploy \
             "$BASE_VERSION@100" \
             --name "$WORKER" --yes \
-            --message "Emergency rollback after unified supply active state DEV deployment failure"
+            --message "Emergency rollback after product duplication DEV deployment failure"
 
       - name: Verify rollback if needed
         if: failure()
