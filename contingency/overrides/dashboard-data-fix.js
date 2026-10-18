@@ -43,3 +43,56 @@
   }
   let tries=0,t=setInterval(async()=>{try{if(await refresh())clearInterval(t)}catch(e){console.error('dashboard data',e);clearInterval(t)}if(++tries>80)clearInterval(t)},100);
 })();
+
+/* Final canonical row normalizer. Bounded post-render cleanup only: no observer, no global event interception. */
+(function(){
+  'use strict';
+  const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
+  const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+  function currentPublished(kind,id){const list=kind==='product'?(window.adminCache?.products||[]):(window.adminCache?.fragrances||[]);const x=list.find(v=>String(v.id)===String(id));return x?x.published!==false:true}
+  function visibility(id,checked){const l=document.createElement('label');l.className='visibility-control canonical-only-visibility';l.title=checked?'Ocultar / inhabilitar':'Mostrar / habilitar';l.setAttribute('aria-label',l.title);l.innerHTML='<input type="checkbox" data-visible="'+esc(id)+'" '+(checked?'checked':'')+'><span>Visible</span>';return l}
+  function actionKind(b){const t=((b.title||'')+' '+(b.getAttribute('aria-label')||'')+' '+(b.textContent||'')).toLowerCase();if(b.matches('[data-product-duplicate],[data-fragrance-duplicate],[data-clone]')||t.includes('duplic'))return'duplicate';if(b.matches('.icon-trash,[data-trash],[data-fragrance-trash]')||t.includes('eliminar')||t.includes('borrar')||t.includes('🗑'))return'trash';if(b.matches('.icon-edit')||t.includes('editar'))return'edit';if(t.trim()==='✓'||b.matches('[data-supply-active]'))return'rogue';return''}
+  function normalizeRow(row,kind){
+    const name=row.querySelector(kind==='product'?'[data-v2product].catalog-v2-name':'[data-v2frag].catalog-v2-name');if(!name)return;
+    const id=kind==='product'?name.dataset.v2product:name.dataset.v2frag;
+    row.classList.add(kind==='product'?'canonical-product-row':'canonical-fragrance-row');
+    if(kind==='product')row.querySelectorAll(':scope>.cell-visible').forEach(x=>x.remove());
+    if(kind==='fragrance')row.querySelectorAll(':scope>[data-label="Tienda"]').forEach(x=>x.remove());
+    const buttons=[];
+    [...row.querySelectorAll(':scope>button,:scope>.catalog-v2-row-actions button,:scope>.canonical-row-actions button')].forEach(b=>{if(b===name)return;const k=actionKind(b);if(k==='rogue'){b.remove();return}if(k&&!buttons.some(x=>x.k===k))buttons.push({k,b});else if(k)b.remove()});
+    row.querySelectorAll('.visibility-control').forEach(v=>v.remove());
+    row.querySelectorAll(':scope>.catalog-v2-row-actions').forEach(w=>{if(!w.querySelector('button'))w.remove()});
+    let box=row.querySelector(':scope>.canonical-row-actions');if(!box){box=document.createElement('div');box.className='canonical-row-actions';row.appendChild(box)}else box.innerHTML='';
+    box.appendChild(visibility(id,currentPublished(kind,id)));
+    for(const {b} of buttons)box.appendChild(b);
+  }
+  function normalizeProducts(root){const list=$('#v2ProductList',root);if(!list)return false;$$(':scope>.catalog-v2-row',list).forEach(r=>normalizeRow(r,'product'));return true}
+  function normalizeFragrances(root){const list=$('#v2FragList',root);if(!list)return false;$$(':scope>.catalog-v2-row',list).forEach(r=>normalizeRow(r,'fragrance'));return true}
+  function normalizeStock(root){const head=$('#gridHead',root),body=$('#stockBody',root);if(!head||!body)return false;if((window.stockMode||'stock')==='stock'){head.innerHTML='<tr><th>Fragancia</th><th>Familia</th><th>Stock</th><th>SKU completo</th></tr>';$$(':scope>tr',body).forEach(tr=>{const cells=[...tr.children];if(cells.length===5){const current=cells[2],qty=cells[3],inp=$('.matrix-stock',qty);if(inp&&!inp.value)inp.value=(current.textContent||'').trim().replace(/[^0-9.-]/g,'')||'0';current.remove()}})}return true}
+  function css(){if($('#canonicalFinalTableCss'))return;const s=document.createElement('style');s.id='canonicalFinalTableCss';s.textContent=`
+    .canonical-product-row,.canonical-fragrance-row{align-items:center!important}
+    .canonical-product-row>[data-label="Completitud"]{grid-column:4!important;justify-self:center!important;position:relative!important;z-index:1!important}
+    .canonical-product-row>.canonical-row-actions{grid-column:5!important;position:relative!important;z-index:2!important;min-width:0!important}
+    .canonical-fragrance-row>[data-label="Composición"]{grid-column:2!important;align-self:center!important}
+    .canonical-fragrance-row>[data-label="Completitud"]{grid-column:3!important;justify-self:center!important}
+    .canonical-fragrance-row>.canonical-row-actions{grid-column:4!important;align-self:center!important}
+    .canonical-product-row>:not(.catalog-v2-name):not(.cell-money):not(.cell-number):not([data-label="Completitud"]):not(.canonical-row-actions),.canonical-fragrance-row>:not(.catalog-v2-name):not([data-label="Composición"]):not([data-label="Completitud"]):not(.canonical-row-actions){display:none!important}
+    .canonical-stock-screen>.sheet-wrap{border:0!important;background:transparent!important}
+    .canonical-stock-screen .stock-sheet{display:block!important;width:100%!important;border:0!important;border-collapse:separate!important;border-spacing:0!important;background:transparent!important}
+    .canonical-stock-screen .stock-sheet thead,.canonical-stock-screen .stock-sheet tbody{display:block!important;width:100%!important}
+    .canonical-stock-screen .stock-sheet thead{position:sticky!important;top:0!important;z-index:8!important;background:#fbf9f4!important}
+    .canonical-stock-screen .stock-sheet thead tr,.canonical-stock-screen .stock-sheet tbody tr{display:grid!important;grid-template-columns:minmax(260px,1.15fr) minmax(240px,1fr) 150px minmax(300px,1.2fr)!important;column-gap:14px!important;width:100%!important;box-sizing:border-box!important}
+    .canonical-stock-screen .stock-sheet thead tr{height:30px!important;padding:0 10px!important;border-bottom:1px solid #d8d0c4!important;background:#fbf9f4!important}
+    .canonical-stock-screen .stock-sheet thead th{position:static!important;width:auto!important;height:30px!important;min-height:30px!important;padding:0!important;border:0!important;background:transparent!important;display:flex!important;align-items:center!important;font-size:10px!important;font-weight:400!important;letter-spacing:.55px!important;text-transform:uppercase!important;color:#68655f!important;text-align:left!important}
+    .canonical-stock-screen .stock-sheet thead th:nth-child(3){justify-content:center!important}.canonical-stock-screen .stock-sheet thead th:nth-child(4){justify-content:flex-start!important}
+    .canonical-stock-screen .stock-sheet tbody tr{min-height:52px!important;padding:0 10px!important;border-bottom:1px solid #e1d9ce!important;background:#fffdf8!important;align-items:center!important}
+    .canonical-stock-screen .stock-sheet tbody td{width:auto!important;height:auto!important;min-height:0!important;padding:6px 0!important;border:0!important;background:transparent!important;display:flex!important;align-items:center!important;min-width:0!important;font-size:12px!important;text-align:left!important}
+    .canonical-stock-screen .stock-sheet tbody td:nth-child(3){justify-content:center!important;text-align:center!important}
+    .canonical-stock-screen .stock-sheet .matrix-stock{width:88px!important;height:32px!important;min-height:32px!important;margin:0!important;border:1px solid #cfc6b8!important;background:#fff!important;text-align:center!important;border-radius:4px!important}
+    .canonical-stock-screen .stock-sheet td small{white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
+  `;document.head.appendChild(s)}
+  function apply(){css();const root=typeof window.adminShell==='function'?window.adminShell():document;normalizeProducts(root)||normalizeFragrances(root)||normalizeStock(root)}
+  function burst(){[0,80,220].forEach(ms=>setTimeout(()=>{try{apply()}catch(e){console.error('final table normalize',e)}},ms))}
+  ['openProducts','openFragrances','openVariants'].forEach(name=>{const fn=window[name];if(typeof fn!=='function'||fn.__finalTableWrapped)return;const w=async function(...a){const r=await fn.apply(this,a);burst();return r};w.__finalTableWrapped=true;window[name]=w});
+  document.addEventListener('DOMContentLoaded',burst,{once:true});burst();
+})();
