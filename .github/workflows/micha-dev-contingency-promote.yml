@@ -17,10 +17,10 @@ jobs:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN_DEV }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
       WORKER: michayco-dev
-      BASE_VERSION: 22db3a26-cc08-4386-a151-d0b91ea47c18
-      CANDIDATE_VERSION: 414bfd09-e34f-4174-846e-ee90ea3c4ec3
-      BASE_RELEASE: dev-admin-canonical-safe-20261017-24
-      CANDIDATE_RELEASE: dev-admin-canonical-tables-20261018-25
+      BASE_VERSION: 414bfd09-e34f-4174-846e-ee90ea3c4ec3
+      CANDIDATE_VERSION: 9779ae63-72a7-454c-9177-ad04b5a44d78
+      BASE_RELEASE: dev-admin-canonical-tables-20261018-25
+      CANDIDATE_RELEASE: dev-admin-tablefix-20261018-26
     steps:
       - uses: actions/checkout@v4
       - name: Preflight DEV safety
@@ -32,11 +32,11 @@ jobs:
           test -n "$CLOUDFLARE_ACCOUNT_ID"
           CURRENT="$(curl -fsS -A 'Mozilla/5.0' https://dev.michahome.com.ar/health | python3 -c "import json,sys; print(json.load(sys.stdin)['release'])")"
           test "$CURRENT" = "$BASE_RELEASE" || { echo "Unexpected active release: $CURRENT" >&2; exit 90; }
-      - name: Promote validated canonical tables DEV release
+      - name: Promote validated tablefix DEV release
         shell: bash
         run: |
           set -euo pipefail
-          npx --yes wrangler@4.151.0 versions deploy "$CANDIDATE_VERSION@100" --name "$WORKER" --yes --message "Promote validated canonical tables DEV admin"
+          npx --yes wrangler@4.151.0 versions deploy "$CANDIDATE_VERSION@100" --name "$WORKER" --yes --message "Promote validated DEV admin tablefix"
       - name: Wait for propagation and validate promoted release
         shell: bash
         run: |
@@ -65,4 +65,4 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          npx --yes wrangler@4.151.0 versions deploy "$BASE_VERSION@100" --name "$WORKER" --yes --message "Emergency restore after failed canonical tables promotion"
+          npx --yes wrangler@4.151.0 versions deploy "$BASE_VERSION@100" --name "$WORKER" --yes --message "Emergency restore after failed DEV tablefix promotion"
