@@ -1,11 +1,11 @@
 {
   "target": "michayco-dev",
   "production_locked": true,
-  "release": "dev-ui-clean-30",
-  "version_id": "431ed7b9-2ffd-4270-af45-968795993637",
-  "sha256": "b57c8d2dd358658b74be13fdd1a9efb339c94ee83f95155aafaccd90d6fa833c",
-  "bytes": 2044037,
+  "release": "dev-ui-clean-31",
+  "version_id": "52d59eb8-403d-4cf1-b590-4ce68b0e508d",
+  "sha256": "fc30b09f62e2c4adb8448c9b24ea4c1b8af59c6b6a4f4832265ee66f8fc4ee3b",
+  "bytes": 2049235,
   "traffic_percentage": 100,
   "captured_at": "2026-10-18",
-  "purpose": "Validated canonical DEV admin renderer cleanup: source-owned Products/Supplies/Fragrances rows, one functional visibility/active control, aligned Stock four-column grid, streamlined Photos filter, no competing catalog MutationObservers. Validated with zero-traffic version override, synthetic browser layout/functional checks and post-promotion served-contract checks. PROD out of scope."
+  "purpose": "Validated DEV admin correction for duplicated row actions and Stock presentation. Products normalize to one right-side action group with visibility, edit, duplicate and delete; Fragrances normalize to one right-side group with visibility, edit and delete; competing second-line controls are removed deterministically. Stock uses a compact unboxed filter row and borderless vertical table styling with four canonical columns. Candidate validated at zero normal traffic, against intentionally injected duplicate action markup, functional visibility update, computed Stock styles, and post-promotion health/served contracts. PROD out of scope."
 }
