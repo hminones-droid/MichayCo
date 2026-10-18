@@ -57,7 +57,8 @@ jobs:
           tools=get('/admin-tools.js',True).decode('utf-8')
           assert 'canonical-products-head' in products and 'data-product-delete' in products
           assert 'MutationObserver' not in fixes and 'decorateSupplyRows' not in fixes
-          assert '<th>Cantidad</th>' not in tools
+          assert "<th>Fragancia</th><th>Familia</th><th>Stock</th><th>SKU completo</th>" in tools
+          assert "<th>Fragancia</th><th>Familia</th><th>Stock actual</th><th>Cantidad</th><th>SKU completo</th>" not in tools
           assert 'Ver todos los artículos' not in tools
           print(json.dumps({'baseline':normal['release'],'candidate':forced['release'],'static_contract':'ok'}))
           PY
