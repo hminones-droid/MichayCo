@@ -46,7 +46,7 @@ jobs:
           base=os.environ['BASE_RELEASE']; cand=os.environ['CANDIDATE_RELEASE']; version=os.environ['CANDIDATE_VERSION']
           def get(path, override=False):
               cmd=['curl','-fsS','-A','Mozilla/5.0']
-              if override: cmd += ['-H',f'Cloudflare-Workers-Version-Overrides: michayco-dev="{version}"']
+              if override: cmd += ['-H',f'Cloudflare-Workers-Version-Overrides: michayco-dev={version}']
               cmd += [f'https://dev.michahome.com.ar{path}?validation={time.time_ns()}']
               return subprocess.check_output(cmd)
           normal=json.loads(get('/health')); assert normal['release']==base and normal['production_locked'] is True
