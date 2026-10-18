@@ -1,1 +1,1 @@
-dev-admin-canonical-safe-20261017-24
+dev-admin-canonical-tables-20261018-25
