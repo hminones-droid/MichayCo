@@ -1,11 +1,11 @@
 {
   "target": "michayco-dev",
   "production_locked": true,
-  "release": "dev-admin-tablefix-20261018-26",
-  "version_id": "9779ae63-72a7-454c-9177-ad04b5a44d78",
-  "sha256": "ef7ae8b07acbb5122c23b2c94de607ad9e90a0a30571dd88bd3459c56af8a52e",
-  "bytes": 2049993,
+  "release": "dev-ui-clean-30",
+  "version_id": "431ed7b9-2ffd-4270-af45-968795993637",
+  "sha256": "b57c8d2dd358658b74be13fdd1a9efb339c94ee83f95155aafaccd90d6fa833c",
+  "bytes": 2044037,
   "traffic_percentage": 100,
   "captured_at": "2026-10-18",
-  "purpose": "Canonical DEV admin cleanup: one functional visibility tick per Products/Fragrances row, actions consolidated into the action column, and Stock styling aligned with catalog tables. Bounded post-render repair only; no MutationObserver or global event interception. PROD is out of scope."
+  "purpose": "Validated canonical DEV admin renderer cleanup: source-owned Products/Supplies/Fragrances rows, one functional visibility/active control, aligned Stock four-column grid, streamlined Photos filter, no competing catalog MutationObservers. Validated with zero-traffic version override, synthetic browser layout/functional checks and post-promotion served-contract checks. PROD out of scope."
 }
