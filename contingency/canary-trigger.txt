@@ -1,5 +1,5 @@
-trigger=2026-10-18T15:28:00-03:00
+trigger=2026-10-18T15:31:00-03:00
 base=dba908ba-1891-4a32-98b2-ba44c7ac03bb
 candidate=9425c25b-3833-4af9-a7bc-7678d466b90c
 release=dev-ui-clean-34
-mode=zero-traffic-validation
+mode=zero-traffic-validation-retry
