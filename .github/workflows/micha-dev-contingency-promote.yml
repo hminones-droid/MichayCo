@@ -17,10 +17,10 @@ jobs:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN_DEV }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
       WORKER: michayco-dev
-      BASE_VERSION: 431ed7b9-2ffd-4270-af45-968795993637
-      CANDIDATE_VERSION: 52d59eb8-403d-4cf1-b590-4ce68b0e508d
-      BASE_RELEASE: dev-ui-clean-30
-      CANDIDATE_RELEASE: dev-ui-clean-31
+      BASE_VERSION: 52d59eb8-403d-4cf1-b590-4ce68b0e508d
+      CANDIDATE_VERSION: dba908ba-1891-4a32-98b2-ba44c7ac03bb
+      BASE_RELEASE: dev-ui-clean-31
+      CANDIDATE_RELEASE: dev-ui-clean-33
     steps:
       - uses: actions/checkout@v4
       - name: Preflight DEV safety
@@ -36,7 +36,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          npx --yes wrangler@4.151.0 versions deploy "$CANDIDATE_VERSION@100" --name "$WORKER" --yes --message "Promote validated DEV UI clean 31"
+          npx --yes wrangler@4.151.0 versions deploy "$CANDIDATE_VERSION@100" --name "$WORKER" --yes --message "Promote validated DEV UI clean 33"
       - name: Wait for propagation and validate promoted release
         shell: bash
         run: |
@@ -55,13 +55,23 @@ jobs:
               time.sleep(1)
           else: raise SystemExit(f'promoted_release_not_stable seen={seen}')
           base='https://dev.michahome.com.ar/'
+          admin=requests.get(base+'admin').text
           dash=requests.get(base+'dashboard-data-fix.js').text
           products=requests.get(base+'catalog-admin-v2-products.js').text
           frags=requests.get(base+'catalog-admin-v2-fragrances.js').text
+          catalog=requests.get(base+'catalog-admin-v2.js').text
+          canonical=requests.get(base+'canonical-admin-ui.js').text
           tools=requests.get(base+'admin-tools.js').text
-          assert 'data-final-product-edit' in dash and 'data-final-fragrance-edit' in dash and 'finalStockVisualFix' in dash
+          assert '/* ADMIN UI CANONICA */' not in admin
+          assert '<script>(function(){function b(t,h,c,f)' not in admin
+          assert "new MutationObserver(n).observe(document.documentElement,{childList:true,subtree:true})" not in admin
+          assert 'function clean(r)' not in dash
+          assert 'data-final-product-edit' not in dash and 'data-final-fragrance-edit' not in dash and 'finalStockVisualFix' in dash
           assert 'canonical-row-actions' in products and 'data-product-duplicate' in products and 'data-product-delete' in products
           assert 'canonical-row-actions' in frags and 'data-fragrance-delete' in frags
+          assert '<span>Tienda</span><span>Acciones</span>' not in catalog
+          assert 'catalog-v2-row-actions canonical-row-actions' in catalog and 'data-catvisible' in catalog
+          assert '82px 82px 88px 92px 78px minmax(145px,max-content)' in canonical
           assert "<th>Fragancia</th><th>Familia</th><th>Stock</th><th>SKU completo</th>" in tools
           print(json.dumps({'stable_release':want,'seen':seen,'ui_contract':'ok'}))
           PY
@@ -72,4 +82,4 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          npx --yes wrangler@4.151.0 versions deploy "$BASE_VERSION@100" --name "$WORKER" --yes --message "Emergency restore DEV UI clean 30"
+          npx --yes wrangler@4.151.0 versions deploy "$BASE_VERSION@100" --name "$WORKER" --yes --message "Emergency restore DEV UI clean 31"
