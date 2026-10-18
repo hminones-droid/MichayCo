@@ -1,1 +1,1 @@
-2026-10-18T12:04:00Z - upload dev-ui-clean-32 candidate removing legacy row rebuilders and canonicalizing categories. No traffic change.
+2026-10-18T12:18:00Z - upload dev-ui-clean-33 candidate removing inline legacy admin action MutationObserver and canonicalizing categories. No traffic change.
