@@ -1,6 +1,7 @@
 from pathlib import Path
 import base64, hashlib, json, subprocess
 from inheritance_patches import apply as apply_inheritance
+from ui_cleanup_patches import apply as apply_ui_cleanup
 
 ROOT=Path(__file__).resolve().parent
 BASE="https://dev.michahome.com.ar"
@@ -41,7 +42,8 @@ def content_for(route,expected,apply_text_patch=True):
     valid=(got==expected) or (route=="/admin" and got in KNOWN_ADMIN_BASE_HASHES and expected in KNOWN_ADMIN_BASE_HASHES)
     if not valid: raise SystemExit(f"active DEV drifted: {route} {got} != {expected}")
     op=override_path(route); raw=op.read_bytes() if op.exists() else remote
-    return apply_inheritance(route,raw) if apply_text_patch else raw
+    if not apply_text_patch: return raw
+    return apply_ui_cleanup(route,apply_inheritance(route,raw))
 
 text={}; admin=store=consent=None
 for route,expected in MANIFEST["text_files"].items():
@@ -54,7 +56,7 @@ for route,expected in MANIFEST["text_files"].items():
 extra_files=["supply-form-fixes.js","product-duplicate-fixes.js","canonical-admin-ui.js","dashboard-data-fix.js","canonical-admin-ui.css"]
 for name in extra_files:
     p=OVERRIDES/name
-    if p.exists(): text["/"+name]={"data":p.read_text(),"binary":False}
+    if p.exists(): text["/"+name]={"data":apply_ui_cleanup("/"+name,p.read_bytes()).decode("utf-8"),"binary":False}
 
 binary={}
 for route,expected in MANIFEST.get("binary_files",{}).items():
