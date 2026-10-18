@@ -135,7 +135,7 @@
     const root=typeof adminShell==='function'?adminShell():document;if(!root?.contains(e.target))return;
     const active=activeCatalog();if(active!=='products'&&active!=='fragrances')return;
     const control=e.target.closest?.('[data-visible]');if(!control)return;
-    e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();
+    e.stopPropagation();e.stopImmediatePropagation();
     if(control.dataset.v2Busy==='1')return;
     const id=control.dataset.visible;if(!id)return;
     const table=active==='products'?'products':'fragrances',list=active==='products'?(window.adminCache?.products||[]):(window.adminCache?.fragrances||[]),item=list.find(x=>String(x.id)===String(id));
