@@ -1,1 +1,1 @@
-2026-10-18T12:08:00-03:00 - upload dev-admin-canonical-tables-20261018-26. No traffic change.
+2026-10-18T12:14:00-03:00 - retry upload dev-admin-canonical-tables-20261018-26 after size reduction. No traffic change.
