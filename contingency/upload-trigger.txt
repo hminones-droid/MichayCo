@@ -1,1 +1,1 @@
-2026-10-18T05:09:00Z - upload dev-ui-clean-28 candidate only after renderer cleanup. No traffic change.
+2026-10-18T05:31:00Z - upload dev-ui-clean-29 candidate after functional visibility correction. No traffic change.
