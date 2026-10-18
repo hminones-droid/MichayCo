@@ -17,10 +17,10 @@ jobs:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN_DEV }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
       WORKER: michayco-dev
-      BASE_VERSION: 9779ae63-72a7-454c-9177-ad04b5a44d78
-      CANDIDATE_VERSION: 431ed7b9-2ffd-4270-af45-968795993637
-      BASE_RELEASE: dev-admin-tablefix-20261018-26
-      CANDIDATE_RELEASE: dev-ui-clean-30
+      BASE_VERSION: 431ed7b9-2ffd-4270-af45-968795993637
+      CANDIDATE_VERSION: 52d59eb8-403d-4cf1-b590-4ce68b0e508d
+      BASE_RELEASE: dev-ui-clean-30
+      CANDIDATE_RELEASE: dev-ui-clean-31
     steps:
       - uses: actions/checkout@v4
       - name: Preflight DEV safety
@@ -36,13 +36,13 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          npx --yes wrangler@4.151.0 versions deploy "$CANDIDATE_VERSION@100" --name "$WORKER" --yes --message "Promote validated DEV canonical admin UI clean 30"
+          npx --yes wrangler@4.151.0 versions deploy "$CANDIDATE_VERSION@100" --name "$WORKER" --yes --message "Promote validated DEV UI clean 31"
       - name: Wait for propagation and validate promoted release
         shell: bash
         run: |
           set -euo pipefail
           python3 - <<'PY'
-          import json, subprocess, time, os
+          import json, subprocess, time, os, requests
           want=os.environ['CANDIDATE_RELEASE']; consecutive=0; deadline=time.time()+180; seen={}
           while time.time()<deadline:
               try:
@@ -50,31 +50,26 @@ jobs:
                   j=json.loads(out); r=j.get('release'); seen[r]=seen.get(r,0)+1
                   assert j.get('ok') is True and j.get('target')=='michayco-dev' and j.get('production_locked') is True
                   consecutive=consecutive+1 if r==want else 0
-                  if consecutive>=12:
-                      print(json.dumps({'stable_release':want,'seen':seen})); break
+                  if consecutive>=12: break
               except Exception: consecutive=0
               time.sleep(1)
           else: raise SystemExit(f'promoted_release_not_stable seen={seen}')
+          base='https://dev.michahome.com.ar/'
+          dash=requests.get(base+'dashboard-data-fix.js').text
+          products=requests.get(base+'catalog-admin-v2-products.js').text
+          frags=requests.get(base+'catalog-admin-v2-fragrances.js').text
+          tools=requests.get(base+'admin-tools.js').text
+          assert 'data-final-product-edit' in dash and 'data-final-fragrance-edit' in dash and 'finalStockVisualFix' in dash
+          assert 'canonical-row-actions' in products and 'data-product-duplicate' in products and 'data-product-delete' in products
+          assert 'canonical-row-actions' in frags and 'data-fragrance-delete' in frags
+          assert "<th>Fragancia</th><th>Familia</th><th>Stock</th><th>SKU completo</th>" in tools
+          print(json.dumps({'stable_release':want,'seen':seen,'ui_contract':'ok'}))
           PY
           test "$(curl -sS -o /dev/null -w '%{http_code}' -I https://dev.michahome.com.ar/admin)" = "200"
           test "$(curl -sS -o /dev/null -w '%{http_code}' -I https://dev.michahome.com.ar/)" = "200"
-          python3 - <<'PY'
-          import requests
-          base='https://dev.michahome.com.ar/'
-          products=requests.get(base+'catalog-admin-v2-products.js').text
-          fixes=requests.get(base+'catalog-admin-v2-fixes.js').text
-          tools=requests.get(base+'admin-tools.js').text
-          css=requests.get(base+'catalog-admin-v2.css').text
-          assert 'canonical-products-head' in products and 'data-product-delete' in products
-          assert 'MutationObserver' not in fixes and 'decorateSupplyRows' not in fixes
-          assert "<th>Fragancia</th><th>Familia</th><th>Stock</th><th>SKU completo</th>" in tools
-          assert 'Ver todos los artículos' not in tools
-          assert '.supply-v2-actions [data-supply-active].is-active' in css
-          print('promoted UI contract ok')
-          PY
       - name: Emergency rollback on promotion failure
         if: failure()
         shell: bash
         run: |
           set -euo pipefail
-          npx --yes wrangler@4.151.0 versions deploy "$BASE_VERSION@100" --name "$WORKER" --yes --message "Emergency restore after failed DEV UI clean 30 promotion"
+          npx --yes wrangler@4.151.0 versions deploy "$BASE_VERSION@100" --name "$WORKER" --yes --message "Emergency restore DEV UI clean 30"
