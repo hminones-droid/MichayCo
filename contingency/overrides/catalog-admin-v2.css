@@ -34,6 +34,11 @@
 /* Per-sheet column definitions */
 .supply-v2-head,.supply-v2-row{grid-template-columns:minmax(230px,2fr) minmax(95px,.75fr) minmax(115px,.9fr) minmax(105px,.85fr) minmax(105px,.8fr) minmax(85px,.7fr)!important}
 .product-supply-head,.product-supply-row{grid-template-columns:minmax(250px,2fr) 90px 120px minmax(145px,1fr) 155px!important}
+.supply-v2-actions{display:flex!important;align-items:center!important;justify-content:flex-end!important;gap:6px!important;white-space:nowrap!important}
+.supply-v2-actions button{width:34px!important;height:34px!important;min-width:34px!important;padding:0!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;border:1px solid #cfc6b8!important;background:#fffdf8!important;color:#2f3028!important;font-size:16px!important;line-height:1!important;border-radius:5px!important;cursor:pointer!important}
+.supply-v2-actions [data-supply-active].is-active{background:#596044!important;color:#fff!important;border-color:#596044!important}
+.supply-v2-actions [data-supply-delete]{color:#8e3e35!important}
+.stock-sheet td:first-child small{display:block!important;margin-top:2px!important;color:#777!important;font-size:10px!important;line-height:1.1!important}
 
 .catalog-v2-form{max-width:760px}.catalog-v2-form-grid{display:grid;grid-template-columns:minmax(0,2fr) minmax(120px,.7fr);gap:.8rem}.catalog-v2-form .catalog-advanced{margin:.7rem 0}.catalog-v2-form .catalog-advanced label{display:block;max-width:220px}
 .catalog-import-result{margin:-.25rem 0 .65rem;padding:.55rem .7rem;border:1px solid #dedbd0;border-radius:6px;background:#f8f7f2;font-size:12.5px}.catalog-import-result:empty{display:none}.catalog-import-result details{margin-top:.35rem}.catalog-import-result ul{margin:.35rem 0 0;padding-left:1.2rem;max-height:160px;overflow:auto}
