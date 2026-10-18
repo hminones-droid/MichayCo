@@ -17,10 +17,10 @@ jobs:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN_DEV }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
       WORKER: michayco-dev
-      BASE_VERSION: 9779ae63-72a7-454c-9177-ad04b5a44d78
-      CANDIDATE_VERSION: 431ed7b9-2ffd-4270-af45-968795993637
-      BASE_RELEASE: dev-admin-tablefix-20261018-26
-      CANDIDATE_RELEASE: dev-ui-clean-30
+      BASE_VERSION: 431ed7b9-2ffd-4270-af45-968795993637
+      CANDIDATE_VERSION: 52d59eb8-403d-4cf1-b590-4ce68b0e508d
+      BASE_RELEASE: dev-ui-clean-30
+      CANDIDATE_RELEASE: dev-ui-clean-31
     steps:
       - uses: actions/checkout@v4
       - name: Safety checks
@@ -36,7 +36,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          npx --yes wrangler@4.151.0 versions deploy "$BASE_VERSION@100" "$CANDIDATE_VERSION@0" --name "$WORKER" --yes --message "Stage DEV UI candidate at zero traffic for validation"
+          npx --yes wrangler@4.151.0 versions deploy "$BASE_VERSION@100" "$CANDIDATE_VERSION@0" --name "$WORKER" --yes --message "Stage DEV UI clean 31 at zero traffic"
       - name: Validate baseline and explicit candidate override
         shell: bash
         run: |
@@ -51,19 +51,17 @@ jobs:
               return subprocess.check_output(cmd)
           normal=json.loads(get('/health')); assert normal['release']==base and normal['production_locked'] is True
           forced=json.loads(get('/health',True)); assert forced['release']==cand and forced['production_locked'] is True
-          admin=get('/admin',True).decode('utf-8'); assert 'Administración' in admin or 'Micha & Co' in admin
+          dashboard=get('/dashboard-data-fix.js',True).decode('utf-8')
           products=get('/catalog-admin-v2-products.js',True).decode('utf-8')
-          fixes=get('/catalog-admin-v2-fixes.js',True).decode('utf-8')
+          frags=get('/catalog-admin-v2-fragrances.js',True).decode('utf-8')
           tools=get('/admin-tools.js',True).decode('utf-8')
-          css=get('/catalog-admin-v2.css',True).decode('utf-8')
-          assert 'canonical-products-head' in products and 'data-product-delete' in products
-          assert 'MutationObserver' not in fixes and 'decorateSupplyRows' not in fixes
-          assert 'e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();' not in fixes.split('async function handleVisibilityClick',1)[1]
+          assert 'data-final-product-edit' in dashboard
+          assert 'data-final-fragrance-edit' in dashboard
+          assert 'finalStockVisualFix' in dashboard
+          assert 'canonical-row-actions' in products and 'data-product-duplicate' in products and 'data-product-delete' in products
+          assert 'canonical-row-actions' in frags and 'data-fragrance-delete' in frags
           assert "<th>Fragancia</th><th>Familia</th><th>Stock</th><th>SKU completo</th>" in tools
           assert "<th>Fragancia</th><th>Familia</th><th>Stock actual</th><th>Cantidad</th><th>SKU completo</th>" not in tools
-          assert 'Ver todos los artículos' not in tools
-          assert '.supply-v2-actions [data-supply-active].is-active' in css
-          assert '.stock-sheet td:first-child small' in css
           print(json.dumps({'baseline':normal['release'],'candidate':forced['release'],'static_contract':'ok'}))
           PY
       - name: Emergency rollback on failure
@@ -71,7 +69,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          npx --yes wrangler@4.151.0 versions deploy "$BASE_VERSION@100" --name "$WORKER" --yes --message "Emergency restore DEV baseline after candidate validation failure"
+          npx --yes wrangler@4.151.0 versions deploy "$BASE_VERSION@100" --name "$WORKER" --yes --message "Emergency restore DEV clean 30"
       - name: Verify normal traffic remains baseline
         if: always()
         shell: bash
