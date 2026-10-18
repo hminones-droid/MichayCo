@@ -29,10 +29,28 @@ STOCK_STYLE = r'''(function(){
 '''
 
 
+def patch_admin(s: str) -> str:
+    # Remove the obsolete inline canonical-action compatibility layer. It runs a
+    # document-wide MutationObserver and appends a second admin-row-actions block
+    # to every V2 Product/Fragrance row after the source renderer has already
+    # created the canonical controls. This is the root cause of the duplicate tick.
+    style_marker = '<style>/* ADMIN UI CANONICA */'
+    script_marker = '<script>(function(){function b(t,h,c,f)'
+    start = s.find(style_marker)
+    script = s.find(script_marker, start if start >= 0 else 0)
+    if start >= 0 and script >= 0:
+        end = s.find('</script>', script)
+        if end < 0:
+            raise RuntimeError('final cleanup admin: legacy script end not found')
+        return s[:start] + s[end + len('</script>'):]
+    if style_marker not in s and script_marker not in s:
+        return s
+    raise RuntimeError('final cleanup admin: incomplete legacy action layer')
+
+
 def patch_dashboard(s: str) -> str:
     # dashboard-data-fix must only update dashboard data. The old second IIFE
-    # repeatedly rebuilt Products/Fragrances rows after their source renderers,
-    # which is the competing layer that caused duplicated visibility controls.
+    # repeatedly rebuilt Products/Fragrances rows after their source renderers.
     marker = "\n(function(){\n const q=(s,r=document)=>r.querySelector(s),qa=(s,r=document)=>[...r.querySelectorAll(s)],T=()=>typeof trashIcon==='function'?trashIcon():'🗑';\n function clean(r)"
     i = s.find(marker)
     if i >= 0:
@@ -68,14 +86,16 @@ def patch_canonical_runtime(s: str) -> str:
 
 def patch_canonical_css(s: str) -> str:
     # Product catalog rows intentionally reuse product-supply-row for historical
-    # reasons. Keep component-row layout rules away from the canonical catalog rows.
+    # reasons. Keep component-row layout rules away from canonical catalog rows.
     s = s.replace('.product-supply-row{display:grid!important;', '.product-supply-row:not(.canonical-product-row):not(.canonical-fragrance-row){display:grid!important;', 1)
     return s
 
 
 def apply(route: str, raw: bytes) -> bytes:
     s = _text(raw)
-    if route == '/dashboard-data-fix.js':
+    if route == '/admin':
+        s = patch_admin(s)
+    elif route == '/dashboard-data-fix.js':
         s = patch_dashboard(s)
     elif route == '/catalog-admin-v2.js':
         s = patch_categories(s)
