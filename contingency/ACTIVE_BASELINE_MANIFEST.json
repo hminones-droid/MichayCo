@@ -1,18 +1,18 @@
 {
   "text_files": {
-    "/admin": "dc9c08e5a597f7331518a02598de0a4e6a3b146e0b7ac7a740a80353e994565b",
+    "/admin": "d8b17b5811f74719a960ebf4f727f176262255b7c5c54f18e3d983e7342ef842",
     "/": "eff86b94a684cddea9c3ae9ba83f3e87bfb73b2ed98982e75fb43db2ee865444",
     "/oauth/consent": "8b769ae8f6040d07766bdb58ffde28263d839a20b8e7d774e260a10ccf24b74e",
     "/admin-gallery.css": "3302c6f71c06b848c92a2576b09830f3a357e343d24cb549d3695a565df157d9",
     "/admin-gallery.js": "d6bd69157f532442878a3557ee7ee1b623107b5e1d55dcbfa89ef38e15f98977",
     "/admin-tools.js": "5189dd2fe7ec23fdae9556b140beadc8ad4e46d8cf4e62c0ee8d340c95ff7d69",
-    "/app.js": "23cec621628e714038fc004e1cb06552c42949f4c540dc5202382c636bcce300",
+    "/app.js": "c4f22f35fec74bb866e48656cb9d86966d566e1e4757224a98cf5ad8bd199532",
     "/catalog-admin-v2-fixes.js": "0b4f7521756193ffd1b3bbdc0d6e74c1da938a02233fa613a94b4150d4685b79",
     "/catalog-admin-v2-fragrances.js": "f9f542da00c4455f1bd04dae9528a7fa34d9181bbeb750e362d1257d5861c9d4",
     "/catalog-admin-v2-products.js": "7094be7fc8af70b80de9426c4fdc789b687f8e366c208b291c866e6b724b5180",
     "/catalog-admin-v2-utilities.js": "24033f09855d54066cdb97df482d49beb202f4db4d480fa00d5d4e98b004fcc0",
     "/catalog-admin-v2.css": "cf46370cbebec849941cae46998992e50cebf14ac1288366c9de363a05618842",
-    "/catalog-admin-v2.js": "90c85f33c3f12d21702bda4c74a6deae0e76e5c8a28cf7eb373f2f4a8cf9b870",
+    "/catalog-admin-v2.js": "b879b7c2cf217b95cb1033e4850f6fd68472647c5126bd403813a61e6cae8382",
     "/catalog-layout.css": "1c9e648d7caba6d0cd4b29e7cfca7a3b01bf86c5076c25ca55137a33ad175175",
     "/catalog-layout.js": "7bcd1f82a17056cb3965d8882fc44c5c1b3c446be72c8beb5f61568bbaa27f4b",
     "/catalog-ux.css": "3003f0949a9e50fadbcd64c2aed2a683f131db4a7a2d7e513a0ff782143eb6f1",
@@ -27,9 +27,9 @@
     "/vendor/xlsx.js": "c9506197caf809a075b6dee1da0d36fb19da7158ffe8a88e7b0c96c5d8623c99",
     "/supply-form-fixes.js": "3dfe93cdb57dedcf82c981be89abb92be1374dfbe264493e88a68c4c66a66f81",
     "/product-duplicate-fixes.js": "62ecb9c4e966eec11ded12bb741214acc55f202ddb31e632ed537272e89c71b5",
-    "/canonical-admin-ui.js": "0e5dcccbc8ed1f9ed1812140c1196f291a36510452dd0c8056a425ff367fc40e",
-    "/dashboard-data-fix.js": "810775a2ad48515af94661e0e4ecd906c0688ee969688ba9c5dc81662a56fd4e",
-    "/canonical-admin-ui.css": "9b7e6658bcfb6c98cbf8ee2cadb69730eaf165697468f13ee2d70cc9c657f225"
+    "/canonical-admin-ui.js": "93607efa04c0f103bf2902921434b771c78f87b973646dc3f231d0670632d231",
+    "/dashboard-data-fix.js": "a594efe527dc67f668a7d889a4408f1c58397be53a0aabbeb9afc1e274127293",
+    "/canonical-admin-ui.css": "35430646df79e3c8f84bd0b6abdf254ca3cfc14aa79b03f49b62ed1e825bd1d6"
   },
   "binary_files": {
     "/assets/MichaCo_Hero_HD.webp": "44e1c4c8bc4c4d0d0baa4c4090dd159b920d7664fe6f21f057a94fe6294c4481",
