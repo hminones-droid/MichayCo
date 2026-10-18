@@ -1,11 +1,11 @@
 {
   "target": "michayco-dev",
   "production_locked": true,
-  "release": "dev-ui-clean-33",
-  "version_id": "dba908ba-1891-4a32-98b2-ba44c7ac03bb",
-  "sha256": "e2cf874ac4c574f1e4b5a4aa4e75c2cccb8766b82a0b8aac0e2abf107c2f1c2a",
-  "bytes": 2041653,
+  "release": "dev-ui-clean-35",
+  "version_id": "57aab447-0c65-49f9-ad5a-68f21ef278be",
+  "sha256": "ba6e4f33b4e6aad1396a81343b3bd9960f8bacc3e46752365581b8519dfda236",
+  "bytes": 2042245,
   "traffic_percentage": 100,
   "captured_at": "2026-10-18",
-  "purpose": "Validated DEV cleanup of the legacy inline ADMIN UI CANONICA action layer and its document-wide MutationObserver. Products and Fragrances now rely only on their source-owned canonical action group, with exactly one visibility control per row. Categories is reduced to seven aligned columns and integrates visibility with edit/delete in the Actions column. Functional visibility updates were verified for Products, Categories and Fragrances in the browser harness; zero-traffic canary and post-promotion served contracts passed. PROD out of scope."
+  "purpose": "Validated DEV category alignment correction. Categories header and rows now share the same canonical seven-column grid; numeric headings align with their row values and Actions shares the same right edge. The correction is persisted in an unstripped loaded override. Existing Products/Fragrances action cleanup and all functional behavior from dev-ui-clean-33 are preserved. PROD out of scope."
 }
