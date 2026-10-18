@@ -18,9 +18,9 @@ jobs:
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
       WORKER: michayco-dev
       BASE_VERSION: dba908ba-1891-4a32-98b2-ba44c7ac03bb
-      CANDIDATE_VERSION: 9425c25b-3833-4af9-a7bc-7678d466b90c
+      CANDIDATE_VERSION: 57aab447-0c65-49f9-ad5a-68f21ef278be
       BASE_RELEASE: dev-ui-clean-33
-      CANDIDATE_RELEASE: dev-ui-clean-34
+      CANDIDATE_RELEASE: dev-ui-clean-35
     steps:
       - uses: actions/checkout@v4
       - name: Preflight DEV safety
@@ -36,7 +36,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          npx --yes wrangler@4.151.0 versions deploy "$CANDIDATE_VERSION@100" --name "$WORKER" --yes --message "Promote validated DEV UI clean 34"
+          npx --yes wrangler@4.151.0 versions deploy "$CANDIDATE_VERSION@100" --name "$WORKER" --yes --message "Promote validated DEV UI clean 35"
       - name: Wait for propagation and validate promoted release
         shell: bash
         run: |
@@ -55,9 +55,9 @@ jobs:
               time.sleep(1)
           else: raise SystemExit(f'promoted_release_not_stable seen={seen}')
           base='https://dev.michahome.com.ar/'
-          dash=requests.get(base+'dashboard-data-fix.js').text
-          assert '.catalog-v2-head.canonical-categories-head:has(+ #categoryList)' in dash
-          assert 'grid-template-columns:minmax(230px,1.4fr) 82px 82px 88px 92px 78px minmax(145px,max-content)' in dash
+          supply=requests.get(base+'supply-form-fixes.js?x='+str(time.time_ns())).text
+          assert 'canonicalCategoryAlignment' in supply
+          assert 'grid-template-columns:minmax(230px,1.4fr) 82px 82px 88px 92px 78px minmax(145px,max-content)' in supply
           print(json.dumps({'stable_release':want,'seen':seen,'category_alignment_contract':'ok'}))
           PY
           test "$(curl -sS -o /dev/null -w '%{http_code}' -I https://dev.michahome.com.ar/admin)" = "200"
