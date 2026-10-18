@@ -1,11 +1,11 @@
 {
   "target": "michayco-dev",
   "production_locked": true,
-  "release": "dev-admin-canonical-safe-20261017-24",
-  "version_id": "22db3a26-cc08-4386-a151-d0b91ea47c18",
-  "sha256": "d45dee7f609ab52ef4d430c4e8cae2520ad52dcd8c5be4910170ea6a89560e15",
-  "bytes": 2026381,
+  "release": "dev-admin-canonical-tables-20261018-25",
+  "version_id": "414bfd09-e34f-4174-846e-ee90ea3c4ec3",
+  "sha256": "2bb97df86e577032efb4231e35e5d5f4fe028adc22aa487f2ede7f1383ceb10c",
+  "bytes": 2047682,
   "traffic_percentage": 100,
-  "captured_at": "2026-10-17",
-  "purpose": "DEV admin restoration based on stable pre-canonical release, reintroducing approved visual and functional improvements without MutationObserver, global navigation interception, or continuous DOM reparenting. PROD is out of scope."
+  "captured_at": "2026-10-18",
+  "purpose": "Canonical DEV admin table layout: one visibility tick, compact operational summary, fixed page/table headers with data-only scrolling, aligned Products/Categories/Supplies/Fragrances, and corrected four-column Stock grid. Canonical layer remains observer-free; PROD is out of scope."
 }
