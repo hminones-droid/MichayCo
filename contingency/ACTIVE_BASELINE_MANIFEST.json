@@ -28,7 +28,7 @@
     "/supply-form-fixes.js": "3dfe93cdb57dedcf82c981be89abb92be1374dfbe264493e88a68c4c66a66f81",
     "/product-duplicate-fixes.js": "60b00ae07c5829bd52b67486f856bd0a5861ebc91c1b3417a035ab5bfb4edb08",
     "/canonical-admin-ui.js": "620484dac6aa0d1a284e51f30bc442e3373f05aa0ac3aa81fe8fbba68086df2a",
-    "/dashboard-data-fix.js": "7590966e3b47e1550b0e07f448af59b4a845937500909caed464bb69dc48d8c1",
+    "/dashboard-data-fix.js": "42222c3e830d764c1b18c98e8d3f937aab9836eec1944604f6ddb10325551a61",
     "/canonical-admin-ui.css": "fded1e9a89bca7ad381e351725f0074ed3d746b810002cb93e288aa03fb825af"
   },
   "binary_files": {
