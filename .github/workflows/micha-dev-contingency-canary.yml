@@ -18,9 +18,9 @@ jobs:
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
       WORKER: michayco-dev
       BASE_VERSION: 9779ae63-72a7-454c-9177-ad04b5a44d78
-      CANDIDATE_VERSION: 4b15ab59-8f0d-4672-bfee-a6c64844d23b
+      CANDIDATE_VERSION: 0f9bf1c8-7f81-464f-a6d5-6fb47ec9f1e0
       BASE_RELEASE: dev-admin-tablefix-20261018-26
-      CANDIDATE_RELEASE: dev-ui-clean-28
+      CANDIDATE_RELEASE: dev-ui-clean-29
     steps:
       - uses: actions/checkout@v4
       - name: Safety checks
@@ -57,6 +57,7 @@ jobs:
           tools=get('/admin-tools.js',True).decode('utf-8')
           assert 'canonical-products-head' in products and 'data-product-delete' in products
           assert 'MutationObserver' not in fixes and 'decorateSupplyRows' not in fixes
+          assert 'e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();' not in fixes.split('async function handleVisibilityClick',1)[1]
           assert "<th>Fragancia</th><th>Familia</th><th>Stock</th><th>SKU completo</th>" in tools
           assert "<th>Fragancia</th><th>Familia</th><th>Stock actual</th><th>Cantidad</th><th>SKU completo</th>" not in tools
           assert 'Ver todos los artículos' not in tools
