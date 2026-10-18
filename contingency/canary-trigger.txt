@@ -1,4 +1,4 @@
-trigger=2026-10-17T20:47:00-03:00
-base=9641e736-9cc1-429c-92af-109520b3787f
-candidate=22db3a26-cc08-4386-a151-d0b91ea47c18
-release=dev-admin-canonical-safe-20261017-24
+trigger=2026-10-18T00:52:00-03:00
+base=22db3a26-cc08-4386-a151-d0b91ea47c18
+candidate=414bfd09-e34f-4174-846e-ee90ea3c4ec3
+release=dev-admin-canonical-tables-20261018-25
