@@ -1,1 +1,1 @@
-2026-10-18T12:22:00-03:00 - retry upload dev-admin-tablefix-20261018-26. No traffic change.
+2026-10-18T04:31:00Z - upload dev-ui-clean-27 candidate only. No traffic change.
