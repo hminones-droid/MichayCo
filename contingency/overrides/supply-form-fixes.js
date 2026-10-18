@@ -3,7 +3,7 @@
   const previousSupplyForm=window.supplyForm;
   const physicalTypes=new Set(['container','component']);
 
-  function escapeHtml(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+  function escapeHtml(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#39;'}[c]))}
   function escapeRegex(v){return String(v||'').replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}
   function normalize(v){return String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim()}
 
@@ -38,10 +38,6 @@
     type.addEventListener('change',refresh);
     await refresh();
 
-    // La vigencia no se edita como un campo independiente: la controla
-    // exclusivamente la tilde de la grilla de Insumos. Conservamos el input
-    // internamente porque el formulario legado lo usa al guardar, pero no se
-    // muestra al usuario ni crea una segunda fuente de verdad.
     const active=document.getElementById('supActive');
     const activeLabel=active?.closest('label');
     if(activeLabel)activeLabel.style.display='none';
@@ -116,4 +112,12 @@
     e.stopImmediatePropagation();
     duplicateSupplyFixed(button.dataset.supplyDuplicate).catch(err=>alert('No se pudo duplicar el insumo: '+(err?.message||err)));
   },true);
+})();
+
+/* Canonical table contract: Categories header and rows must share one 7-column grid. */
+(function(){
+  const style=document.createElement('style');
+  style.id='canonicalCategoryAlignment';
+  style.textContent='.catalog-v2-head.canonical-categories-head:has(+ #categoryList),#categoryList>.catalog-v2-row{grid-template-columns:minmax(230px,1.4fr) 82px 82px 88px 92px 78px minmax(145px,max-content)!important;column-gap:10px!important}.catalog-v2-head.canonical-categories-head:has(+ #categoryList)>span:not(:first-child):not(:last-child){justify-content:center!important;text-align:center!important}.catalog-v2-head.canonical-categories-head:has(+ #categoryList)>span:last-child{justify-content:flex-end!important;text-align:right!important}';
+  document.head.appendChild(style);
 })();
