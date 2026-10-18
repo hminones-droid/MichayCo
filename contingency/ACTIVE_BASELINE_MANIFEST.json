@@ -1,8 +1,8 @@
 {
   "text_files": {
-    "/admin": "63ea8a84d76ee8660330f00fd6535c90c00be6d8465ee43b65f8091cfebb8a8f",
-    "/": "26e9ab7041b812dfead365c6e9b8b618a743a19c9b682f5fbd1910dc18829d8d",
-    "/oauth/consent": "3ec2fc196e6a32a97792156b4d38fc087498d1f7451f59a11e7da8f5727e9eb9",
+    "/admin": "dc9c08e5a597f7331518a02598de0a4e6a3b146e0b7ac7a740a80353e994565b",
+    "/": "eff86b94a684cddea9c3ae9ba83f3e87bfb73b2ed98982e75fb43db2ee865444",
+    "/oauth/consent": "8b769ae8f6040d07766bdb58ffde28263d839a20b8e7d774e260a10ccf24b74e",
     "/admin-gallery.css": "3302c6f71c06b848c92a2576b09830f3a357e343d24cb549d3695a565df157d9",
     "/admin-gallery.js": "d6bd69157f532442878a3557ee7ee1b623107b5e1d55dcbfa89ef38e15f98977",
     "/admin-tools.js": "5189dd2fe7ec23fdae9556b140beadc8ad4e46d8cf4e62c0ee8d340c95ff7d69",
