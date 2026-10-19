@@ -102,6 +102,10 @@ def patch_categories(s: str) -> str:
     old_rows = """      '<label class=\"visibility-control\" data-label=\"Tienda\"><input type=\"checkbox\" data-catvisible=\"'+c.id+'\" '+(c.published!==false?'checked':'')+'><span>Mostrar</span></label>'+\n      '<div class=\"catalog-v2-row-actions\"><button class=\"icon-edit\" data-catedit=\"'+c.id+'\" title=\"Editar\" aria-label=\"Editar\">✎</button><button class=\"icon-trash\" data-cattrash=\"'+c.id+'\" data-name=\"'+ae(c.name)+'\" title=\"Eliminar\" aria-label=\"Eliminar\">'+trashIcon()+'</button></div></article>'"""
     new_rows = """      '<div class=\"catalog-v2-row-actions canonical-row-actions\"><label class=\"visibility-control\" title=\"'+(c.published!==false?'Ocultar / inhabilitar':'Mostrar / habilitar')+'\"><input type=\"checkbox\" data-catvisible=\"'+c.id+'\" '+(c.published!==false?'checked':'')+'><span>Visible</span></label><button class=\"icon-edit\" data-catedit=\"'+c.id+'\" title=\"Editar\" aria-label=\"Editar\">✎</button><button class=\"icon-trash\" data-cattrash=\"'+c.id+'\" data-name=\"'+ae(c.name)+'\" title=\"Eliminar\" aria-label=\"Eliminar\">'+trashIcon()+'</button></div></article>'"""
     s = _once(s, old_rows, new_rows, 'category actions')
+
+    old_component = "<span data-label=\"Contenido en\">'+ae(l.content_container?.purchase_name||'—')+'</span><button class=\"text-link\" data-remove=\"'+l.id+'\">Quitar</button></article>"
+    new_component = "<span data-label=\"Contenido en\">'+ae(l.content_container?.purchase_name||'—')+'</span><button type=\"button\" class=\"text-link\" data-replace-supply=\"'+l.id+'\">Cambiar</button><button type=\"button\" class=\"text-link\" data-remove=\"'+l.id+'\">Quitar</button></article>"
+    s = _once(s, old_component, new_component, 'component replace action')
     return s
 
 
@@ -127,12 +131,46 @@ def patch_canonical_css(s: str) -> str:
     return s
 
 
+def patch_product_duplicate(s: str) -> str:
+    # Product rows and component rows now render their controls at source. Remove
+    # the document-wide DOM decoration observer and its two redundant decorators.
+    start = s.find('  function decorateV2Products(){')
+    end = s.find("  document.addEventListener('click',e=>{", start if start >= 0 else 0)
+    if start >= 0 and end >= 0:
+        s = s[:start] + s[end:]
+    elif start >= 0 or 'function decorateComponentRows(){' in s:
+        raise RuntimeError('final cleanup product duplicate: incomplete decorator block')
+    observer = "\n  new MutationObserver(()=>queueMicrotask(()=>{decorateV2Products();decorateComponentRows()})).observe(document.documentElement,{childList:true,subtree:true});\n  queueMicrotask(()=>{decorateV2Products();decorateComponentRows()});"
+    return _remove_optional_once(s, observer, 'product duplicate observer')
+
+
+def patch_catalog_utilities(s: str) -> str:
+    # Filter controls already reapply on their own input/change events and on
+    # visibility changes. The list MutationObserver duplicated that work.
+    observer = "    new MutationObserver(()=>queueMicrotask(applyFilters)).observe(root.querySelector('.catalog-v2-list')||root,{childList:true,subtree:true});\n"
+    return _remove_optional_once(s, observer, 'catalog utility observer')
+
+
+def patch_admin_tools(s: str) -> str:
+    # The admin navigation is static in admin.html and is already bound on
+    # DOMContentLoaded. The document-wide hidden-attribute observer only repeated
+    # the same binding after login and had no unique behavior.
+    obsolete = "new MutationObserver(()=>{if(!adminApp.hidden)bindAdminTools()}).observe(document.documentElement,{subtree:true,attributes:true,attributeFilter:['hidden']});\n"
+    return _remove_optional_once(s, obsolete, 'admin-tools nav observer')
+
+
 def apply(route: str, raw: bytes) -> bytes:
     s = _text(raw)
     if route == '/admin':
         s = patch_admin(s)
     elif route == '/dashboard-data-fix.js':
         s = patch_dashboard(s)
+    elif route == '/admin-tools.js':
+        s = patch_admin_tools(s)
+    elif route == '/product-duplicate-fixes.js':
+        s = patch_product_duplicate(s)
+    elif route == '/catalog-admin-v2-utilities.js':
+        s = patch_catalog_utilities(s)
     elif route == '/catalog-admin-v2.js':
         s = patch_categories(s)
     elif route == '/canonical-admin-ui.js':
