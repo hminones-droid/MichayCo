@@ -29,6 +29,17 @@ STOCK_STYLE = r'''(function(){
 '''
 
 
+COLUMN_ALIGNMENT_CSS = r'''
+/* Final Stock / Fragancias column alignment contract. */
+#catalogWorkspace.canonical-stock-screen .stock-sheet thead th:nth-child(4){text-align:left!important}
+#catalogWorkspace.canonical-table-screen>.catalog-v2-head.canonical-fragrances-head,
+#catalogWorkspace.canonical-table-screen>#v2FragList>.catalog-v2-row.canonical-fragrance-row{
+  grid-template-columns:minmax(270px,1.35fr) minmax(250px,1fr) 84px 128px!important;
+  column-gap:8px!important;
+}
+'''
+
+
 def patch_admin(s: str) -> str:
     # Remove the obsolete inline canonical-action compatibility layer. It runs a
     # document-wide MutationObserver and appends a second admin-row-actions block
@@ -88,6 +99,8 @@ def patch_canonical_css(s: str) -> str:
     # Product catalog rows intentionally reuse product-supply-row for historical
     # reasons. Keep component-row layout rules away from canonical catalog rows.
     s = s.replace('.product-supply-row{display:grid!important;', '.product-supply-row:not(.canonical-product-row):not(.canonical-fragrance-row){display:grid!important;', 1)
+    if 'Final Stock / Fragancias column alignment contract.' not in s:
+        s += COLUMN_ALIGNMENT_CSS
     return s
 
 
