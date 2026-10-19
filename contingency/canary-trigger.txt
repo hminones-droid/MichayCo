@@ -1,5 +1,5 @@
-trigger=2026-10-19T08:24:00-03:00
-base=8dcc9891-93f3-456b-91d4-25b46a60a420
-candidate=b582c3d4-5838-4f7c-b6f5-ff0efad76a46
-release=dev-ui-clean-38
+trigger=2026-10-19T12:31:00-03:00
+base=b582c3d4-5838-4f7c-b6f5-ff0efad76a46
+candidate=7df5742a-2702-49dd-89dc-798ef48ffefd
+release=dev-ui-clean-39
 mode=zero-traffic-validation
