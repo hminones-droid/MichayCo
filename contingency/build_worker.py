@@ -54,7 +54,7 @@ for route,expected in MANIFEST["text_files"].items():
     elif route=="/oauth/consent": consent=value
     else: text[route]={"data":value,"binary":False}
 
-extra_files=["supply-form-fixes.js","product-duplicate-fixes.js","canonical-admin-ui.js","dashboard-data-fix.js","canonical-admin-ui.css"]
+extra_files=["supply-form-fixes.js","product-duplicate-fixes.js","canonical-admin-ui.js","dashboard-data-fix.js","canonical-admin-ui.css","mobile-admin.css"]
 for name in extra_files:
     p=OVERRIDES/name
     if p.exists():
