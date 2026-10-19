@@ -17,10 +17,10 @@ jobs:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN_DEV }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
       WORKER: michayco-dev
-      BASE_VERSION: 8dcc9891-93f3-456b-91d4-25b46a60a420
-      CANDIDATE_VERSION: b582c3d4-5838-4f7c-b6f5-ff0efad76a46
-      BASE_RELEASE: dev-ui-clean-37
-      CANDIDATE_RELEASE: dev-ui-clean-38
+      BASE_VERSION: b582c3d4-5838-4f7c-b6f5-ff0efad76a46
+      CANDIDATE_VERSION: 7df5742a-2702-49dd-89dc-798ef48ffefd
+      BASE_RELEASE: dev-ui-clean-38
+      CANDIDATE_RELEASE: dev-ui-clean-39
     steps:
       - uses: actions/checkout@v4
       - name: Preflight DEV safety
@@ -36,7 +36,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          npx --yes wrangler@4.151.0 versions deploy "$CANDIDATE_VERSION@100" --name "$WORKER" --yes --message "Promote validated DEV UI clean 38"
+          npx --yes wrangler@4.151.0 versions deploy "$CANDIDATE_VERSION@100" --name "$WORKER" --yes --message "Promote validated DEV UI clean 39"
       - name: Wait for propagation and validate promoted release
         shell: bash
         run: |
@@ -54,11 +54,22 @@ jobs:
               except Exception: consecutive=0
               time.sleep(1)
           else: raise SystemExit(f'promoted_release_not_stable seen={seen}')
-          css=requests.get('https://dev.michahome.com.ar/canonical-admin-ui.css?x='+str(time.time_ns())).text
+          def get(path):
+              sep='&' if '?' in path else '?'
+              return requests.get('https://dev.michahome.com.ar'+path+sep+'x='+str(time.time_ns()),headers={'User-Agent':'Mozilla/5.0'},timeout=20).text
+          css=get('/canonical-admin-ui.css')
           assert 'Final Stock / Fragancias column alignment contract.' in css
           assert '#catalogWorkspace.canonical-stock-screen .stock-sheet thead th:nth-child(4){text-align:left!important}' in css
           assert 'grid-template-columns:minmax(270px,1.35fr) minmax(250px,1fr) 84px 128px!important' in css
-          print(json.dumps({'stable_release':want,'seen':seen,'stock_fragancias_alignment':'ok'}))
+          admin=get('/admin')
+          assert '/mobile-admin.css' in admin
+          assert '/catalog-layout.js' not in admin and '/catalog-layout.css' not in admin
+          assert '/manufacturing.js' not in admin and '/manufacturing.css' not in admin
+          mobile=get('/mobile-admin.css')
+          assert 'Smartphone contract' in mobile and '@media(max-width:850px)' in mobile
+          for path in ['/admin-tools.js','/product-duplicate-fixes.js','/catalog-admin-v2-utilities.js']:
+              assert 'new MutationObserver' not in get(path), path
+          print(json.dumps({'stable_release':want,'seen':seen,'alignment':'ok','inactive_layers_removed':'ok','smartphone_contract':'ok','mutation_observers_removed':'ok'}))
           PY
           test "$(curl -sS -o /dev/null -w '%{http_code}' -I https://dev.michahome.com.ar/admin)" = "200"
           test "$(curl -sS -o /dev/null -w '%{http_code}' -I https://dev.michahome.com.ar/)" = "200"
@@ -67,4 +78,4 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          npx --yes wrangler@4.151.0 versions deploy "$BASE_VERSION@100" --name "$WORKER" --yes --message "Emergency restore DEV UI clean 37"
+          npx --yes wrangler@4.151.0 versions deploy "$BASE_VERSION@100" --name "$WORKER" --yes --message "Emergency restore DEV UI clean 38"
