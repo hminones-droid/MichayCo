@@ -51,3 +51,25 @@
 .catalog-v2-inherited{grid-column:1/-1;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 18px;margin:.35rem 0 .8rem;padding:.75rem .9rem;border:1px solid #dedcd2;border-radius:8px;background:#f8f7f2;font-size:13px}
 .catalog-v2-inherited>b,.catalog-v2-inherited>small{grid-column:1/-1}.catalog-v2-inherited>span{min-width:0}.catalog-v2-inherited small{color:#74756d}
 @media(max-width:700px){.catalog-v2-inherited{grid-template-columns:1fr}}
+
+/* Final category alignment contract: header and row share the exact same seven columns. */
+html body #catalogWorkspace.canonical-table-screen .canonical-categories-head,
+html body #catalogWorkspace.canonical-table-screen #categoryList>.catalog-v2-row{
+  grid-template-columns:minmax(300px,1fr) 90px 90px 100px 110px 90px 160px!important;
+  column-gap:12px!important;
+}
+html body #catalogWorkspace.canonical-table-screen .canonical-categories-head>span:nth-child(1){grid-column:1!important;justify-content:flex-start!important;text-align:left!important}
+html body #catalogWorkspace.canonical-table-screen .canonical-categories-head>span:nth-child(2){grid-column:2!important}
+html body #catalogWorkspace.canonical-table-screen .canonical-categories-head>span:nth-child(3){grid-column:3!important}
+html body #catalogWorkspace.canonical-table-screen .canonical-categories-head>span:nth-child(4){grid-column:4!important}
+html body #catalogWorkspace.canonical-table-screen .canonical-categories-head>span:nth-child(5){grid-column:5!important}
+html body #catalogWorkspace.canonical-table-screen .canonical-categories-head>span:nth-child(6){grid-column:6!important}
+html body #catalogWorkspace.canonical-table-screen .canonical-categories-head>span:nth-child(7){grid-column:7!important;justify-content:flex-end!important;text-align:right!important}
+html body #catalogWorkspace.canonical-table-screen #categoryList>.catalog-v2-row>.catalog-v2-name{grid-column:1!important}
+html body #catalogWorkspace.canonical-table-screen #categoryList>.catalog-v2-row>[data-label="Productos"]{grid-column:2!important}
+html body #catalogWorkspace.canonical-table-screen #categoryList>.catalog-v2-row>[data-label="Visibles"]{grid-column:3!important}
+html body #catalogWorkspace.canonical-table-screen #categoryList>.catalog-v2-row>[data-label="Con stock"]{grid-column:4!important}
+html body #catalogWorkspace.canonical-table-screen #categoryList>.catalog-v2-row>[data-label="Incompletos"]{grid-column:5!important}
+html body #catalogWorkspace.canonical-table-screen #categoryList>.catalog-v2-row>.category-alert-count{grid-column:6!important}
+html body #catalogWorkspace.canonical-table-screen #categoryList>.catalog-v2-row>.visibility-control{grid-column:7!important;justify-self:start!important}
+html body #catalogWorkspace.canonical-table-screen #categoryList>.catalog-v2-row>.catalog-v2-row-actions{grid-column:7!important;justify-self:end!important}
