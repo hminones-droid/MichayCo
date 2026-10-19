@@ -17,10 +17,10 @@ jobs:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN_DEV }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
       WORKER: michayco-dev
-      BASE_VERSION: dba908ba-1891-4a32-98b2-ba44c7ac03bb
-      CANDIDATE_VERSION: 57aab447-0c65-49f9-ad5a-68f21ef278be
-      BASE_RELEASE: dev-ui-clean-33
-      CANDIDATE_RELEASE: dev-ui-clean-35
+      BASE_VERSION: 57aab447-0c65-49f9-ad5a-68f21ef278be
+      CANDIDATE_VERSION: 8dcc9891-93f3-456b-91d4-25b46a60a420
+      BASE_RELEASE: dev-ui-clean-35
+      CANDIDATE_RELEASE: dev-ui-clean-37
     steps:
       - uses: actions/checkout@v4
       - name: Preflight DEV safety
@@ -36,7 +36,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          npx --yes wrangler@4.151.0 versions deploy "$CANDIDATE_VERSION@100" --name "$WORKER" --yes --message "Promote validated DEV UI clean 35"
+          npx --yes wrangler@4.151.0 versions deploy "$CANDIDATE_VERSION@100" --name "$WORKER" --yes --message "Promote validated DEV UI clean 37"
       - name: Wait for propagation and validate promoted release
         shell: bash
         run: |
@@ -54,10 +54,10 @@ jobs:
               except Exception: consecutive=0
               time.sleep(1)
           else: raise SystemExit(f'promoted_release_not_stable seen={seen}')
-          base='https://dev.michahome.com.ar/'
-          supply=requests.get(base+'supply-form-fixes.js?x='+str(time.time_ns())).text
-          assert 'canonicalCategoryAlignment' in supply
-          assert 'grid-template-columns:minmax(230px,1.4fr) 82px 82px 88px 92px 78px minmax(145px,max-content)' in supply
+          css=requests.get('https://dev.michahome.com.ar/catalog-admin-v2.css?x='+str(time.time_ns())).text
+          assert 'Final category alignment contract' in css
+          assert 'width:calc(100% - 16px)!important' in css
+          assert 'grid-template-columns:minmax(300px,1fr) 90px 90px 100px 110px 90px 160px' in css
           print(json.dumps({'stable_release':want,'seen':seen,'category_alignment_contract':'ok'}))
           PY
           test "$(curl -sS -o /dev/null -w '%{http_code}' -I https://dev.michahome.com.ar/admin)" = "200"
@@ -67,4 +67,4 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          npx --yes wrangler@4.151.0 versions deploy "$BASE_VERSION@100" --name "$WORKER" --yes --message "Emergency restore DEV UI clean 33"
+          npx --yes wrangler@4.151.0 versions deploy "$BASE_VERSION@100" --name "$WORKER" --yes --message "Emergency restore DEV UI clean 35"
