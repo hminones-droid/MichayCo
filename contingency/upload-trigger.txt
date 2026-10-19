@@ -1,1 +1,1 @@
-2026-10-19T09:00:00-03:00 - retry dev-ui-clean-39 after exact active DEV 38 manifest reconciliation. No traffic change.
+2026-10-19T12:25:00-03:00 - upload certified dev-ui-clean-39: deep inactive-layer cleanup plus smartphone admin. No traffic change.
