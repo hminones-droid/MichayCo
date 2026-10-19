@@ -1,8 +1,8 @@
 {
   "text_files": {
-    "/admin": "bce1e4a45b7f4405f7c7bd21f691729f20320baae75d7c969762eff513e8c179",
-    "/": "26e9ab7041b812dfead365c6e9b8b618a743a19c9b682f5fbd1910dc18829d8d",
-    "/oauth/consent": "3ec2fc196e6a32a97792156b4d38fc087498d1f7451f59a11e7da8f5727e9eb9",
+    "/admin": "d8b17b5811f74719a960ebf4f727f176262255b7c5c54f18e3d983e7342ef842",
+    "/": "eff86b94a684cddea9c3ae9ba83f3e87bfb73b2ed98982e75fb43db2ee865444",
+    "/oauth/consent": "8b769ae8f6040d07766bdb58ffde28263d839a20b8e7d774e260a10ccf24b74e",
     "/admin-gallery.css": "3302c6f71c06b848c92a2576b09830f3a357e343d24cb549d3695a565df157d9",
     "/admin-gallery.js": "d6bd69157f532442878a3557ee7ee1b623107b5e1d55dcbfa89ef38e15f98977",
     "/admin-tools.js": "5189dd2fe7ec23fdae9556b140beadc8ad4e46d8cf4e62c0ee8d340c95ff7d69",
@@ -13,11 +13,7 @@
     "/catalog-admin-v2-utilities.js": "24033f09855d54066cdb97df482d49beb202f4db4d480fa00d5d4e98b004fcc0",
     "/catalog-admin-v2.css": "9a44497c69659722a1b9c1e8a535dd652135bcac04bb634355b8f1f1359143b3",
     "/catalog-admin-v2.js": "b879b7c2cf217b95cb1033e4850f6fd68472647c5126bd403813a61e6cae8382",
-    "/catalog-layout.css": "1c9e648d7caba6d0cd4b29e7cfca7a3b01bf86c5076c25ca55137a33ad175175",
-    "/catalog-layout.js": "7bcd1f82a17056cb3965d8882fc44c5c1b3c446be72c8beb5f61568bbaa27f4b",
     "/catalog-ux.css": "3003f0949a9e50fadbcd64c2aed2a683f131db4a7a2d7e513a0ff782143eb6f1",
-    "/manufacturing.css": "324ed5cc721a9929d1c2002264740413bd6d7879d6c969d85874a367ba296837",
-    "/manufacturing.js": "e0c19dbec559062bdf68b761a35c49a36cc15b625a49b4511c9cb4c03698e55b",
     "/photo-frame.css": "a486a315d984ffe8261d78be250c5a4b31507c21b6b1f3c7a0c05c2530aa4aee",
     "/product-gallery.css": "aea8fae7dd4e33f5fb12ec022279813c0b6d3928d66a7ffbf9ebc829b6f9b9c0",
     "/product-gallery.js": "09f8a48e1800ff8dbaf0ce8fdbd6bfa96d14fd2fc0902b8d49a81a338586bfd0",
@@ -32,7 +28,7 @@
     "/canonical-admin-ui.css": "59a63eabe2a4c29ffbdd1a9f9d7b74cccca4183e6040ca6984b6bbc7f723526f"
   },
   "binary_files": {
-    "/assets/MichaCo_Hero_HD.webp": "44e1c4c8bc4c0d0baa4c4090dd159b920d7664fe6f21f057a94fe6294c4481",
+    "/assets/MichaCo_Hero_HD.webp": "44e1c4c8bc4c4d0d0baa4c4090dd159b920d7664fe6f21f057a94fe6294c4481",
     "/assets/aroma-moments-minimal.webp": "8ff7bd58360892aefec5f66c4e5925ef68a8ad4dbd12fff9a0153af3e6209a16"
   }
 }
