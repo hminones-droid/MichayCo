@@ -18,6 +18,13 @@ def _once(s: str, old: str, new: str, label: str) -> str:
     raise RuntimeError(f'final cleanup {label}: expected one occurrence, found {n}')
 
 
+def _remove_optional_once(s: str, token: str, label: str) -> str:
+    n = s.count(token)
+    if n > 1:
+        raise RuntimeError(f'final cleanup {label}: expected at most one occurrence, found {n}')
+    return s.replace(token, '', 1) if n else s
+
+
 STOCK_STYLE = r'''(function(){
  const q=(s,r=document)=>r.querySelector(s);
  if(q('#finalStockVisualFix'))return;
@@ -41,10 +48,7 @@ COLUMN_ALIGNMENT_CSS = r'''
 
 
 def patch_admin(s: str) -> str:
-    # Remove the obsolete inline canonical-action compatibility layer. It runs a
-    # document-wide MutationObserver and appends a second admin-row-actions block
-    # to every V2 Product/Fragrance row after the source renderer has already
-    # created the canonical controls. This is the root cause of the duplicate tick.
+    # Remove obsolete compatibility layer that duplicated row actions.
     style_marker = '<style>/* ADMIN UI CANONICA */'
     script_marker = '<script>(function(){function b(t,h,c,f)'
     start = s.find(style_marker)
@@ -53,10 +57,29 @@ def patch_admin(s: str) -> str:
         end = s.find('</script>', script)
         if end < 0:
             raise RuntimeError('final cleanup admin: legacy script end not found')
-        return s[:start] + s[end + len('</script>'):]
-    if style_marker not in s and script_marker not in s:
-        return s
-    raise RuntimeError('final cleanup admin: incomplete legacy action layer')
+        s = s[:start] + s[end + len('</script>'):]
+    elif style_marker in s or script_marker in s:
+        raise RuntimeError('final cleanup admin: incomplete legacy action layer')
+
+    # Differential Chromium certification proved these two historical modules have
+    # no active visual or behavioral participation in any current admin screen.
+    # Remove both their CSS and JS requests; active layers remain untouched.
+    for token, label in [
+        ('<link rel="stylesheet" href="/catalog-layout.css?v=20261003-1">', 'catalog-layout css'),
+        ('<link rel="stylesheet" href="/manufacturing.css?v=20261003-1">', 'manufacturing css'),
+        ('<script src="/catalog-layout.js?v=20261003-1"></script>', 'catalog-layout js'),
+        ('<script src="/manufacturing.js?v=20261003-1"></script>', 'manufacturing js'),
+    ]:
+        s = _remove_optional_once(s, token, label)
+
+    mobile = '<link rel="stylesheet" href="/mobile-admin.css">'
+    if mobile not in s:
+        if '</body>' not in s:
+            raise RuntimeError('final cleanup admin: body end not found for mobile stylesheet')
+        # Placed after admin scripts so responsive rules win over runtime legacy
+        # style injection without changing desktop cascade.
+        s = s.replace('</body>', mobile + '</body>', 1)
+    return s
 
 
 def patch_dashboard(s: str) -> str:
