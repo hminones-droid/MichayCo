@@ -1,1 +1,1 @@
-2026-10-18T23:48:00-03:00 - upload dev-ui-clean-37 with measured scrollbar-aware category alignment. No traffic change.
+2026-10-19T08:20:00-03:00 - upload dev-ui-clean-38 with Stock SKU and Fragancias column-header alignment fixes. No traffic change.
