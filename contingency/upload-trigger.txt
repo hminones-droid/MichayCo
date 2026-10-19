@@ -1,1 +1,1 @@
-2026-10-18T23:36:00-03:00 - upload dev-ui-clean-36 with forced category header/data grid alignment. No traffic change.
+2026-10-18T23:40:00-03:00 - retry upload dev-ui-clean-36 after manifest reconciliation. No traffic change.
