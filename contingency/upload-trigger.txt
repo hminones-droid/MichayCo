@@ -1,1 +1,1 @@
-2026-10-18T15:42:00-03:00 - upload dev-ui-clean-35 with canonical category alignment persisted in unstripped override. No traffic change.
+2026-10-18T23:36:00-03:00 - upload dev-ui-clean-36 with forced category header/data grid alignment. No traffic change.
