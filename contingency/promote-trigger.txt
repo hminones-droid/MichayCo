@@ -1,4 +1,4 @@
-trigger=2026-10-18T15:47:00-03:00
-base=dba908ba-1891-4a32-98b2-ba44c7ac03bb
-candidate=57aab447-0c65-49f9-ad5a-68f21ef278be
-release=dev-ui-clean-35
+trigger=2026-10-18T23:54:00-03:00
+base=57aab447-0c65-49f9-ad5a-68f21ef278be
+candidate=8dcc9891-93f3-456b-91d4-25b46a60a420
+release=dev-ui-clean-37
