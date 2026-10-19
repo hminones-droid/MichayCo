@@ -1,1 +1,1 @@
-2026-10-18T23:40:00-03:00 - retry upload dev-ui-clean-36 after manifest reconciliation. No traffic change.
+2026-10-18T23:48:00-03:00 - upload dev-ui-clean-37 with measured scrollbar-aware category alignment. No traffic change.
