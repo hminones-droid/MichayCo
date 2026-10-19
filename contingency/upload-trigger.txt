@@ -1,1 +1,1 @@
-2026-10-19T08:45:00-03:00 - upload dev-ui-clean-39: certified desktop-preserving cleanup plus smartphone admin layout. No traffic change.
+2026-10-19T09:00:00-03:00 - retry dev-ui-clean-39 after exact active DEV 38 manifest reconciliation. No traffic change.
