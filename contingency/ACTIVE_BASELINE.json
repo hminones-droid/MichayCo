@@ -1,11 +1,11 @@
 {
   "target": "michayco-dev",
   "production_locked": true,
-  "release": "dev-ui-clean-38",
-  "version_id": "b582c3d4-5838-4f7c-b6f5-ff0efad76a46",
-  "sha256": "fd5188bf18bce9ec074af968f34dcc91aa11f8640c01f7b31d477f67ba7eb5c1",
-  "bytes": 2045500,
+  "release": "dev-ui-clean-39",
+  "version_id": "7df5742a-2702-49dd-89dc-798ef48ffefd",
+  "sha256": "35fbbb7f217d48490beb99a29bf5f062959f4044d7ab29ee29a2b475bfda3788",
+  "bytes": 2019140,
   "traffic_percentage": 100,
   "captured_at": "2026-10-19",
-  "purpose": "Validated DEV desktop alignment baseline before admin layer cleanup and smartphone layout. Stock SKU completo and Fragrancias header/row alignment certified; production_locked true. PROD out of scope."
+  "purpose": "Certified DEV admin cleanup and smartphone baseline. Desktop differential Chromium tests preserve release 38 visual behavior across current screens, inactive historical catalog-layout/manufacturing layers and redundant MutationObservers were removed, and smartphone layouts were validated at 390 px without horizontal overflow across current lists and forms. production_locked true; PROD out of scope."
 }
