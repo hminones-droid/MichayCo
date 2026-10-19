@@ -1,11 +1,11 @@
 {
   "target": "michayco-dev",
   "production_locked": true,
-  "release": "dev-ui-clean-35",
-  "version_id": "57aab447-0c65-49f9-ad5a-68f21ef278be",
-  "sha256": "ba6e4f33b4e6aad1396a81343b3bd9960f8bacc3e46752365581b8519dfda236",
-  "bytes": 2042245,
+  "release": "dev-ui-clean-37",
+  "version_id": "8dcc9891-93f3-456b-91d4-25b46a60a420",
+  "sha256": "b739694e684238432f8513dca8b25e63eacdae59e5678e2a40861e97043dec74",
+  "bytes": 2044944,
   "traffic_percentage": 100,
   "captured_at": "2026-10-18",
-  "purpose": "Validated DEV category alignment correction. Categories header and rows now share the same canonical seven-column grid; numeric headings align with their row values and Actions shares the same right edge. The correction is persisted in an unstripped loaded override. Existing Products/Fragrances action cleanup and all functional behavior from dev-ui-clean-33 are preserved. PROD out of scope."
+  "purpose": "Validated DEV category alignment with exact seven-column header/row contract plus explicit scrollbar-width compensation. Measured in Chromium against the candidate: numeric header centers and row values differ by less than 1px and Actions shares the same right edge. Existing Products/Fragrances cleanup and functional behavior are preserved. PROD out of scope."
 }
